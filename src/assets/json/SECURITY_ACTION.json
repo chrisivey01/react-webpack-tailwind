@@ -1,0 +1,42 @@
+[
+  {
+    "SECURITY_ACTION_UUID": "D5DEAE036B5E05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ACTION_NAME": "Edit",
+    "ACTION_DESC": "Edit data which also implies View",
+    "PRIORITY_NBR": 1,
+    "LAST_UPD_DT_TM": "2022-01-18 10:22:47.501634",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ACTION_UUID": "D5DEAE036B5F05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ACTION_NAME": "Access",
+    "ACTION_DESC": "Access to assigned functionality",
+    "PRIORITY_NBR": 2,
+    "LAST_UPD_DT_TM": "2022-01-18 10:22:47.555858",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ACTION_UUID": "D5DEAE036B6005FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ACTION_NAME": "Have",
+    "ACTION_DESC": "Used for case restrictions by plan period day",
+    "PRIORITY_NBR": 3,
+    "LAST_UPD_DT_TM": "2022-01-18 10:22:47.608527",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ACTION_UUID": "D5DEAE036B6105FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ACTION_NAME": "View",
+    "ACTION_DESC": "View data",
+    "PRIORITY_NBR": 4,
+    "LAST_UPD_DT_TM": "2022-01-18 10:22:47.661372",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  }
+]

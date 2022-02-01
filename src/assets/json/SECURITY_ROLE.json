@@ -1,0 +1,605 @@
+[
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BF805FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Preliminary_View",
+    "ROLE_DESC": "View Preliminary Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.253827",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BF905FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_MiniFlow_ForcedLinks_for_CC",
+    "ROLE_DESC": "MiniFlow and ForcedLinks role for Contract Carriers",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.310577",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFA05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Standard_LH_Contract_Truck",
+    "ROLE_DESC": "Edit Linehaul Contract Carrier Trucks",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.360605",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFB05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Final_Edit_Networks",
+    "ROLE_DESC": "Role for Network Edits Only",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.409901",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFC05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Preliminary_Edit",
+    "ROLE_DESC": "Edit Preliminary Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.459054",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFD05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Contract_Carriers",
+    "ROLE_DESC": "Common Parameters Access for Contract Carrier Group",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.511520",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFE05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Business_Plan_Edit",
+    "ROLE_DESC": "Edit Business Plan Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.559524",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036BFF05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Linehaul_Costing",
+    "ROLE_DESC": "View Linehaul Cost",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.609154",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0005FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_GOC_and_INTL_Engrs_Read_Only",
+    "ROLE_DESC": "GOC and International Engineering GRP",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.659963",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0105FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Pegasus_Tortes_Editors",
+    "ROLE_DESC": "Tortes editors access",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.710658",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0205FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_APAC_Edit",
+    "ROLE_DESC": "Edit APAC case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.759880",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0305FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Airline_Relations",
+    "ROLE_DESC": "Airline Relations Role",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.810032",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0405FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Edit",
+    "ROLE_DESC": "Common Parameters Edit",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.860186",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0505FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Final_Edit",
+    "ROLE_DESC": "Edit Final Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.908981",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0605FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Business_Plan_View",
+    "ROLE_DESC": "View Busiiness Plan Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:36.959507",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0705FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_EMEA_View",
+    "ROLE_DESC": "View EMEA Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.009250",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0805FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Final_Edit_GNP_Planning",
+    "ROLE_DESC": "Role for GNP Planning Only",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.061474",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0905FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_CA_View",
+    "ROLE_DESC": "View Canada Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.112124",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0A05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Truck_Mileage",
+    "ROLE_DESC": "Truck Mileage Edits",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.164195",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0B05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Help_Desk",
+    "ROLE_DESC": "Help Desk Role",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.214308",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0C05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Truck_Planning_CC_DT_ET",
+    "ROLE_DESC": "Contract Carrier_Regional PE_Eur Trck Engrs",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.264559",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0D05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Long_Range_Plan_Edit",
+    "ROLE_DESC": "Edit Long Range Plan Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.314358",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0E05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_LAC_View",
+    "ROLE_DESC": "View LAC Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.363671",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C0F05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Regional_Engineers",
+    "ROLE_DESC": "Common Parameters for Regional PE and Europe Trucking Engineers",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.418372",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1005FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Prelim_Edit_GNP_Planning",
+    "ROLE_DESC": "Access to edit trucking",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.474399",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1105FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Final_Edit_URSA",
+    "ROLE_DESC": "Role for FECURSA Edits",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.526088",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1205FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_GNP_International_Products_Edit",
+    "ROLE_DESC": "GNP Planning edits Intl Products",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.578137",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1305FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Airline_Relations",
+    "ROLE_DESC": "Common Parameters Access for Airline Relations Group",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.627823",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1405FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Contingency_View",
+    "ROLE_DESC": "View Contingency Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.677182",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1505FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Preliminary_Day66_Restriction",
+    "ROLE_DESC": "Roles that have a Preliminary Day 66 Restriciton",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.726369",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1605FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_GNP_Management",
+    "ROLE_DESC": "GNP Managers for CallSign Validation",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.778276",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1705FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Final_View",
+    "ROLE_DESC": "View Final Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.830263",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1805FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Overrides_View",
+    "ROLE_DESC": "View Overrides",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.882313",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1905FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_LAC_Edit",
+    "ROLE_DESC": "Edit LAC Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.934661",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1A05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "StasRole",
+    "ROLE_DESC": "STAS related functionality",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:37.983763",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1B05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_IT_Group",
+    "ROLE_DESC": "IT Group Role",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.033118",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1C05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Finance",
+    "ROLE_DESC": "For MiniFly",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.100640",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1D05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Publish_Flight_TailOR",
+    "ROLE_DESC": "Access for Case Publish to TailOR",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.151834",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1E05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_Overrides_Edit",
+    "ROLE_DESC": "Edit Overrides",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.201313",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C1F05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Long_Range_Plan_View",
+    "ROLE_DESC": "View Long Range Plan Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.256352",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2005FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Standard_Linehaul_Truck",
+    "ROLE_DESC": "Edit FedEx Linehaul Trucks",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.309349",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2105FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Contingency_Edit",
+    "ROLE_DESC": "Edit Contingency Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.363804",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2205FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Standard_Truck",
+    "ROLE_DESC": "Edit to standard truck",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.414405",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2305FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Regional_Trunk_Feeder_Plng",
+    "ROLE_DESC": "CLH Trunk and Feeder Plng",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.465840",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2405FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_APAC_View",
+    "ROLE_DESC": "View APAC case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.515059",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2505FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Canada_Trunk_Feeder_Edit",
+    "ROLE_DESC": "Canada Engineer edit trunk feeder flights",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.564376",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2605FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Pegasus_Tortes_Viewers",
+    "ROLE_DESC": "Tortes viewers access",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.614722",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2705FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Standard_Shuttle_Contract_Truck",
+    "ROLE_DESC": "Edit Contract Shuttles",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.663799",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2805FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_SuperUser",
+    "ROLE_DESC": "Super User Access",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.714201",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2905FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_GNP_Planning",
+    "ROLE_DESC": "Domestic_INTL_Slot Planning and GNP Programmers",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.764769",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2A05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_What_If_View",
+    "ROLE_DESC": "View What If Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.819369",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2B05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_EMEA_Edit",
+    "ROLE_DESC": "Edit EMEA Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.870851",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2C05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Personal_Edit",
+    "ROLE_DESC": "Edit Personal Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.921191",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2D05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Planning_Support_Groups",
+    "ROLE_DESC": "FIN_OR_PSTL TRNS_SCAR_SP_SALES SPPRT_USI GRP",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:38.972335",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2E05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_International_Regional_Planning",
+    "ROLE_DESC": "Planning Role for Intl Groups and Global Domestic Expansion ",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.022894",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C2F05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_MiniFlow_for_Europe_Trucking_Engineers",
+    "ROLE_DESC": "MiniFlow Role for Europe Trucking Engineers",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.075078",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3005FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_GNP_Domestic_Copy",
+    "ROLE_DESC": "Network Copy",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.125230",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3105FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Phoenix_Security",
+    "ROLE_DESC": "Phoenix Security",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.174313",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3205FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Slot_Edit",
+    "ROLE_DESC": "Edit Slot Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.225899",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3305FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_Slot_View",
+    "ROLE_DESC": "View Slot Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.276088",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3405FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Truck_Network",
+    "ROLE_DESC": "Contract Carrier Network Edits Prelim",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.344028",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3505FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_CA_Edit",
+    "ROLE_DESC": "Edit Canada Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.394965",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3605FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Standard_Shuttle_Truck",
+    "ROLE_DESC": "Edit FedEx Shuttle Trucks",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.450207",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3705FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Case_Type_What_If_Edit",
+    "ROLE_DESC": "Edit What If Case",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.500897",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3805FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Final_Edit_Trucking",
+    "ROLE_DESC": "Role to Edit Trucks",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.552147",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3905FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_Common_Parameters_View",
+    "ROLE_DESC": "Common Parameters View",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.601926",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  },
+  {
+    "SECURITY_ROLE_UUID": "D5DEAE036C3A05FBE053377AFF0AED84",
+    "SECURITY_APP_EAI_NBR": 5907,
+    "ROLE_NAME": "R_FECURSA_Team",
+    "ROLE_DESC": "FECURSA Team Role",
+    "LAST_UPD_DT_TM": "2022-01-18 10:23:39.654515",
+    "LAST_UPD_USER": "BATCH",
+    "CHANGE_FLAG": "I"
+  }
+]

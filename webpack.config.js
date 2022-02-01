@@ -3,7 +3,7 @@ const { ProvidePlugin } = require("webpack");
 const path = require("path");
 const buildPath = path.resolve(__dirname, "dist");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
+const { ESBuildMinifyPlugin } = require("esbuild-loader");
 
 module.exports = {
     entry: "./src/index.tsx",
@@ -32,13 +32,13 @@ module.exports = {
             React: "react",
         }),
     ],
-     optimization: {
-    minimizer: [
-      new ESBuildMinifyPlugin({
-        css: true
-      })
-    ]
-  },
+    optimization: {
+        minimizer: [
+            new ESBuildMinifyPlugin({
+                css: true,
+            }),
+        ],
+    },
     module: {
         rules: [
             {
