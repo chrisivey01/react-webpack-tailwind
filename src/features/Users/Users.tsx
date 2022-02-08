@@ -1,11 +1,4 @@
-import {
-    Autocomplete,
-    Box,
-    Container,
-    Divider,
-    Stack,
-    TextField,
-} from "@mui/material";
+import { Autocomplete, Box, Divider, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect, useState } from "react";
@@ -27,7 +20,6 @@ import securityUserGroupListJson from "../../assets/json/SECURITY_USER_GROUP.jso
 import securityUserRoleListJson from "../../assets/json/SECURITY_USER_ROLE.json";
 import { SecurityTable } from "../../components/Table/SecurityTable";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
-import { GroupRolesContainer, Wrapper } from "./styles";
 
 export const Users = () => {
     const phxUsers: PhxUser[] = phxUsersJson;
@@ -143,34 +135,41 @@ export const Users = () => {
     return (
         <PageWrapper>
             <PageContainer>
-                <Autocomplete
-                    size="small"
-                    sx={{ width: 300 }}
-                    options={phxUsers}
-                    getOptionLabel={(option) => option.USER_ID}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label="Employee Numbers"
-                            margin="normal"
-                        />
-                    )}
-                    onChange={(e, option) => changeUser(option)}
-                    renderOption={(props, option, { inputValue }) => {
-                        const matches = match(option.USER_ID, inputValue);
-                        const parts = parse(option.USER_ID, matches);
+                <Box style={{width: "50%"}}>
+                    <Autocomplete
+                        size="small"
+                        sx={{ width: 300 }}
+                        options={phxUsers}
+                        getOptionLabel={(option) => option.USER_ID}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Employee Numbers"
+                                margin="normal"
+                            />
+                        )}
+                        onChange={(e, option) => changeUser(option)}
+                        renderOption={(props, option, { inputValue }) => {
+                            const matches = match(option.USER_ID, inputValue);
+                            const parts = parse(option.USER_ID, matches);
 
-                        return (
-                            <li {...props}>
-                                <div>
-                                    {parts.map((part: any, index: number) => (
-                                        <span key={index}>{part.text}</span>
-                                    ))}
-                                </div>
-                            </li>
-                        );
-                    }}
-                />
+                            return (
+                                <li {...props}>
+                                    <div>
+                                        {parts.map(
+                                            (part: any, index: number) => (
+                                                <span key={index}>
+                                                    {part.text}
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                </li>
+                            );
+                        }}
+                    />
+                </Box>
+
                 <OptionsWrapper>
                     <Autocomplete
                         size="small"
@@ -202,7 +201,7 @@ export const Users = () => {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Roles"
+                                label="User Roles"
                                 style={{ fontSize: 12 }}
                                 margin="normal"
                             />
@@ -211,7 +210,13 @@ export const Users = () => {
                 </OptionsWrapper>
             </PageContainer>
             <Divider orientation="horizontal" flexItem />
-            <SecurityTable data={createdList} />
+            <SecurityTable
+                data={createdList}
+                name={"RESOURCE_NAME"}
+                value={"ACTION_NAME"}
+                headerKey={"Resource"}
+                headerValue={"Action"}
+            />
         </PageWrapper>
     );
 };

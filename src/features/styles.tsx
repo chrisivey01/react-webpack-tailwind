@@ -4,14 +4,14 @@ import styled from "styled-components";
 export const PageContainer = styled(Box)`
     display: flex;
     width: 100%;
-    justify-content: space-around;
+    padding-top: 20px;
 `;
 
 export const PageWrapper = styled(Container)`
-    display: flex;
-    flex-wrap: wrap;
+
 `;
 
 export const OptionsWrapper = styled(Box)`
+    position: relative;
     padding-bottom: 10px;
-`
+`;

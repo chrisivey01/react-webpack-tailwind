@@ -1,31 +1,37 @@
-import { Autocomplete, Container, Divider, TextField } from "@mui/material";
+import { Autocomplete, Box, Divider } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect, useState } from "react";
 import { PhxUser } from "../../../types/PhxUser";
-import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityGroup } from "../../../types/SecurityGroup";
 import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
-import { SecurityUserGroup } from "../../../types/SecurityUserGroup";
-import { SecurityUserRole } from "../../../types/SecurityUserRole";
 import phxUsersJson from "../../assets/json/PHX_USER_FILTERED.json";
-import securityActionJson from "../../assets/json/SECURITY_ACTION.json";
-import securityGroupListJson from "../../assets/json/SECURITY_GROUP.json";
 import securityResourceJson from "../../assets/json/SECURITY_RESOURCE.json";
 import securityRolesListJson from "../../assets/json/SECURITY_ROLE.json";
 import securityRoleResourceJson from "../../assets/json/SECURITY_ROLE_RESOURCE.json";
-import securityUserGroupListJson from "../../assets/json/SECURITY_USER_GROUP.json";
-import securityUserRoleListJson from "../../assets/json/SECURITY_USER_ROLE.json";
-import { SecurityTable } from "../../components/Table/SecurityTable";
-import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
-import { GroupRolesContainer, Wrapper } from "./styles";
+import securityActionListJson from "../../assets/json/SECURITY_ACTION.json";
 
-export const Roles = () => {
+import { SecurityTable } from "../../components/Table/SecurityTable";
+import { PageContainer, PageWrapper } from "../styles";
+import { RoleDescField, RoleField } from "./styles";
+import { SecurityAction } from "../../../types/SecurityAction";
+
+interface Props {
+    checkedState: boolean;
+}
+
+export const Roles = ({ checkedState }: Props) => {
     const phxUsers: PhxUser[] = phxUsersJson;
     const [user, setUser] = useState<PhxUser>();
     const [userRoles, setUserRoles] = useState<SecurityRole[]>([]);
+    const [resourceFiltered, setResourceFiltered] = useState<
+        SecurityResource[]
+    >([]);
+    const [selectedRole, setSelectedRole] = useState<SecurityRole | undefined>(
+        undefined
+    );
     const [userPickedRoles, setUserPickedRoles] = useState<SecurityRole[]>([]);
     const [userGroups, setUserGroups] = useState<SecurityGroup[]>([]);
     const [userPickedGroups, setUserPickedGroups] = useState<SecurityGroup[]>(
@@ -34,125 +40,77 @@ export const Roles = () => {
     const [createdList, setCreatedList] = useState<any>([]);
     const [securityAction, setSecurityAction] = useState<any>([]);
 
-    const changeUser = (option: PhxUser | null) => {
-        console.log(option);
-        if (option) {
-            setUser(option);
-            const empId = option.USER_ID;
+    const changeRole = (option: SecurityRole) => {
+        const securityUuid = option.SECURITY_ROLE_UUID;
+        let securityRolesList: SecurityRole[] = securityRolesListJson;
+        let securityRoleResourceList: SecurityRoleResource[] =
+            securityRoleResourceJson;
 
-            /**
-             * User Groups
-             */
+        let filteredSecurityRoleResourceList = securityRoleResourceList.filter(
+            (securityRoleResource: SecurityRoleResource) => {
+                return securityRoleResource.SECURITY_ROLE_UUID === securityUuid;
+            }
+        );
 
-            const securityUserGroupList: SecurityUserGroup[] =
-                securityUserGroupListJson;
-            let filteredSecurityGroupList: SecurityUserGroup[] =
-                securityUserGroupList.filter(
-                    (sec: SecurityUserGroup) => sec.USER_ID === empId
-                );
-            let securityGroupList: SecurityGroup[] = securityGroupListJson;
-            setUserGroups(securityGroupList);
-            const displayedGroups: SecurityGroup[] = securityGroupList.filter(
-                (sgl: SecurityGroup) => {
-                    for (const fsgl of filteredSecurityGroupList) {
-                        if (
-                            sgl.SECURITY_GROUP_UUID === fsgl.SECURITY_GROUP_UUID
-                        ) {
-                            return sgl;
-                        }
-                    }
+        console.log(filteredSecurityRoleResourceList);
+
+        let securityResourceFilteredList: SecurityResource[] = [];
+        /**
+         * Compares the two lists off the SECURITY_RESOURCE_UUID which
+         * will return the SECURITY_ACTION_UUID which needs to be filtered off
+         * SECURITY_ACTION.json
+         */
+        filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
+            securityResourceJson.map((srl: SecurityResource) => {
+                if (
+                    srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
+                ) {
+                    srl.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
+                    securityResourceFilteredList.push(srl);
                 }
-            );
-            setUserPickedGroups(displayedGroups);
+            });
+        });
 
-            /**
-             * User Roles
-             */
-
-            const securityUserRolesList: SecurityUserRole[] =
-                securityUserRoleListJson;
-            let filteredSecurityRolesList: SecurityUserRole[] =
-                securityUserRolesList.filter(
-                    (sec: SecurityUserRole) => sec.USER_ID === empId
-                );
-            let securityRolesList: SecurityRole[] = securityRolesListJson;
-            setUserRoles(securityRolesList);
-            const displayedRoles: SecurityRole[] = securityRolesList.filter(
-                (sgl: SecurityRole) => {
-                    for (const fsgl of filteredSecurityRolesList) {
-                        if (
-                            sgl.SECURITY_ROLE_UUID === fsgl.SECURITY_ROLE_UUID
-                        ) {
-                            return sgl;
-                        }
-                    }
-                }
+        securityResourceFilteredList.map((srr: SecurityResource) => {
+            const saIndex = securityActionListJson.findIndex(
+                (sa: SecurityAction) =>
+                    srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
             );
-            setUserPickedRoles(displayedRoles);
-        }
+            srr.ACTION_NAME = securityActionListJson[saIndex].ACTION_NAME;
+            return srr;
+        });
+        setResourceFiltered(securityResourceFilteredList);
+        setSelectedRole(option);
     };
 
     useEffect(() => {
-        setSecurityAction(securityActionJson);
+        let securityRolesList: SecurityRole[] = securityRolesListJson;
+        setUserRoles(securityRolesList);
     }, []);
 
-    useEffect(() => {
-        const securityRoleResource: SecurityRoleResource[] =
-            securityRoleResourceJson;
-        console.log(userPickedRoles.length);
-        let resources: SecurityRoleResource[] = [];
-        userPickedRoles.map((ur: SecurityRole) => {
-            resources = securityRoleResource.filter(
-                (srr: SecurityRoleResource) =>
-                    ur.SECURITY_ROLE_UUID === srr.SECURITY_ROLE_UUID
-            );
-        });
-
-        let editViewAccessResources: any[] = [];
-        if (resources) {
-            resources.map((res: SecurityRoleResource) => {
-                securityAction.map((sa: SecurityAction) => {
-                    if (res.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID) {
-                        res.ACTION_NAME = sa.ACTION_NAME;
-                        securityResourceJson.map((srj: SecurityResource) => {
-                            if (
-                                res.SECURITY_RESOURCE_UUID ===
-                                srj.SECURITY_RESOURCE_UUID
-                            ) {
-                                res.RESOURCE_NAME = srj.RESOURCE_NAME;
-                                editViewAccessResources.push(res);
-                            }
-                        });
-                    }
-                });
-            });
-
-            setCreatedList(editViewAccessResources);
-        }
-
-        console.log(editViewAccessResources);
-    }, [user]);
+    const handleChange = () => {};
 
     return (
         <PageWrapper>
             <PageContainer>
-                <OptionsWrapper>
+                <Box style={{ width: "50%", padding: 10 }}>
                     <Autocomplete
                         size="small"
-                        sx={{ width: 300 }}
-                        options={phxUsers}
-                        getOptionLabel={(option) => option.USER_ID}
+                        fullWidth
+                        options={userRoles}
+                        getOptionLabel={(option) => option.ROLE_NAME}
                         renderInput={(params) => (
-                            <TextField
+                            <RoleField
                                 {...params}
+                                size="small"
                                 label="Roles"
                                 margin="normal"
                             />
                         )}
-                        onChange={(e, option) => changeUser(option)}
+                        onChange={(e, option: any) => changeRole(option)}
                         renderOption={(props, option, { inputValue }) => {
-                            const matches = match(option.USER_ID, inputValue);
-                            const parts = parse(option.USER_ID, matches);
+                            const matches = match(option.ROLE_NAME, inputValue);
+                            const parts = parse(option.ROLE_NAME, matches);
 
                             return (
                                 <li {...props}>
@@ -169,10 +127,50 @@ export const Roles = () => {
                             );
                         }}
                     />
-                </OptionsWrapper>
+                </Box>
+                <Divider orientation="vertical" flexItem light />
+
+                <Box style={{ width: "50%", padding: 10 }}>
+                    {selectedRole ? (
+                        <>
+                            <RoleField
+                                label="Role Name"
+                                size="small"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={selectedRole.ROLE_NAME}
+                                onChange={handleChange}
+                            />
+                            <RoleDescField
+                                label="Role Description"
+                                size="small"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                value={selectedRole.ROLE_DESC}
+                                onChange={handleChange}
+                                style={{ width: "90%" }}
+                            />
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </Box>
             </PageContainer>
-            <Divider orientation="horizontal" flexItem />
-            <SecurityTable data={createdList} />
+
+            <Divider
+                orientation="horizontal"
+                flexItem
+                style={{ paddingBottom: "5px" }}
+            />
+            <SecurityTable
+                data={resourceFiltered}
+                name={"RESOURCE_NAME"}
+                value={"ACTION_NAME"}
+                headerKey={"Resource"}
+                headerValue={"Action"}
+            />
         </PageWrapper>
     );
 };

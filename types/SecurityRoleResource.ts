@@ -9,4 +9,6 @@ export interface SecurityRoleResource {
     CHANGE_FLAG: string;
     ACTION_NAME?: string;
     RESOURCE_NAME?: string;
+    name?: any;
+    value?: any;
 }

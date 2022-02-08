@@ -5,8 +5,7 @@ export const Container = styled(Box)`
     display: flex;
 `;
 
-export const Wrapper = styled(Box)`
-`;
+export const Wrapper = styled(Box)``;
 
 export const GroupRolesContainer = styled(Box)`
     display: flex;

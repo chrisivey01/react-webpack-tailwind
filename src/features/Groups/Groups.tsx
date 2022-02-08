@@ -3,21 +3,11 @@ import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect, useState } from "react";
 import { PhxUser } from "../../../types/PhxUser";
-import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
-import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
-import { SecurityUserGroup } from "../../../types/SecurityUserGroup";
-import { SecurityUserRole } from "../../../types/SecurityUserRole";
 import phxUsersJson from "../../assets/json/PHX_USER_FILTERED.json";
 import securityActionJson from "../../assets/json/SECURITY_ACTION.json";
 import securityGroupListJson from "../../assets/json/SECURITY_GROUP.json";
-import securityResourceJson from "../../assets/json/SECURITY_RESOURCE.json";
-import securityRolesListJson from "../../assets/json/SECURITY_ROLE.json";
-import securityRoleResourceJson from "../../assets/json/SECURITY_ROLE_RESOURCE.json";
-import securityUserGroupListJson from "../../assets/json/SECURITY_USER_GROUP.json";
-import securityUserRoleListJson from "../../assets/json/SECURITY_USER_ROLE.json";
 import { SecurityTable } from "../../components/Table/SecurityTable";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
 
@@ -32,22 +22,22 @@ export const Groups = () => {
     );
     const [createdList, setCreatedList] = useState<any>([]);
     const [securityAction, setSecurityAction] = useState<any>([]);
-
+    
     const changeUser = (option: SecurityGroup | null) => {
         console.log(option);
         if (option) {
         }
     };
-
+    
     useEffect(() => {
         setUserGroups(securityGroupListJson);
         setSecurityAction(securityActionJson);
     }, []);
-
+    
     useEffect(() => {
         console.log(userGroups);
     }, [user]);
-
+    
     return (
         <PageWrapper>
             <PageContainer>
@@ -60,7 +50,7 @@ export const Groups = () => {
                 >
                     <Autocomplete
                         size="small"
-                        sx={{ width: 300 }}
+                        sx={{width: 300}}
                         options={userGroups}
                         getOptionLabel={(option) => option.GROUP_NAME}
                         renderInput={(params) => (
@@ -71,13 +61,13 @@ export const Groups = () => {
                             />
                         )}
                         onChange={(e, option) => changeUser(option)}
-                        renderOption={(props, option, { inputValue }) => {
+                        renderOption={(props, option, {inputValue}) => {
                             const matches = match(
                                 option.GROUP_NAME,
                                 inputValue
                             );
                             const parts = parse(option.GROUP_NAME, matches);
-
+                            
                             return (
                                 <li {...props}>
                                     <div>
@@ -95,7 +85,7 @@ export const Groups = () => {
                     />
                     <Autocomplete
                         size="small"
-                        sx={{ width: 500 }}
+                        sx={{width: 500}}
                         multiple
                         id="tags-outlined"
                         options={userRoles}
@@ -106,15 +96,15 @@ export const Groups = () => {
                             <TextField
                                 {...params}
                                 label="Roles"
-                                style={{ fontSize: 12 }}
+                                style={{fontSize: 12}}
                                 margin="normal"
                             />
                         )}
                     />
                 </OptionsWrapper>
             </PageContainer>
-            <Divider orientation="horizontal" flexItem />
-            <SecurityTable data={createdList} />
+            <Divider orientation="horizontal" flexItem/>
+            <SecurityTable data={createdList}/>
         </PageWrapper>
     );
 };
