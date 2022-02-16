@@ -1,4 +1,5 @@
 import {
+    Autocomplete,
     Paper,
     SelectChangeEvent,
     Table,
@@ -7,15 +8,18 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TextField,
 } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { Selector } from "./Selector";
 
 interface Props {
-    data: any[];
+    data?: any[];
     name: string;
     value: string;
     headerKey: string;
     headerValue: string;
+    securityResourceList?: any;
 }
 
 export const SecurityTable = ({
@@ -24,7 +28,9 @@ export const SecurityTable = ({
     value,
     headerKey,
     headerValue,
+    securityResourceList,
 }: Props) => {
+    const location = useLocation();
     const handleChange = (event: SelectChangeEvent) => {
         console.log(event.target.value);
     };
@@ -53,7 +59,7 @@ export const SecurityTable = ({
             sx={{ maxHeight: 440, marginTop: "10px" }}
             component={Paper}
         >
-            <Table>
+            <Table size="small">
                 <TableHead>
                     <TableRow>
                         <TableCell
@@ -77,27 +83,50 @@ export const SecurityTable = ({
                         return (
                             <TableRow tabIndex={-1} key={index}>
                                 <TableCell
-                                    key={cl[name]}
                                     align={"left"}
                                     style={{
                                         fontSize: "12px",
                                     }}
                                 >
-                                    {cl[name]}
+                                    {location.pathname === "/roles" ? (
+                                        <Autocomplete
+                                            size="small"
+                                            sx={{ width: 500 }}
+                                            id="tags-outlined"
+                                            options={securityResourceList}
+                                            getOptionLabel={(option) =>
+                                                option.RESOURCE_NAME
+                                            }
+                                            value={cl}
+                                            filterSelectedOptions
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    style={{ fontSize: 12 }}
+                                                    margin="normal"
+                                                />
+                                            )}
+                                        />
+                                    ) : (
+                                        <>{cl[name]}</>
+                                    )}
                                 </TableCell>
                                 <TableCell
-                                    key={cl[value]}
                                     align={"left"}
                                     style={{
                                         fontSize: "12px",
                                     }}
                                 >
-                                    <Selector
-                                        handleChange={handleChange}
-                                        options={options}
-                                        cl={cl}
-                                        value={value}
-                                    />
+                                    {location.pathname === "/roles" ? (
+                                        <Selector
+                                            handleChange={handleChange}
+                                            options={options}
+                                            cl={cl}
+                                            value={value}
+                                        />
+                                    ) : (
+                                        <>{cl[name]}</>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         );

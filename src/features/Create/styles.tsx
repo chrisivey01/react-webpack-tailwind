@@ -1,6 +1,12 @@
-import { Dialog as MuiDialog, Button, styled } from "@mui/material";
+import {
+    Box,
+    Button,
+    TextField as MuiTextField,
+    TextField,
+} from "@mui/material";
+import styled from "styled-components";
 
-export const SaveButton = styled(Button)`
+export const CreateRoleButton = styled(Button)`
     margin: 5px;
     right: 0;
     color: rgb(255, 255, 255);
@@ -26,14 +32,18 @@ export const SaveButton = styled(Button)`
     }
 `;
 
-export const Dialog = styled(MuiDialog)`
-    .MuiDialog-paper {
-        position: relative;
-        width: 800px;
-        height: 600px;
-        overflow: unset;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+export const CreateRoleContainer = styled(Box)`
+    position: absolute;
+`;
+
+export const CreateRoleFields = styled(TextField)`
+    margin: 10px;
+    display: block;
+    padding-bottom: 10px;
+    .MuiOutlinedInput-root {
+        width: 70%;
+    }
+    input {
+        font-size: 12px;
     }
 `;

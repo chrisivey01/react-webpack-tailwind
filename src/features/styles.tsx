@@ -1,10 +1,8 @@
-import { Box, Container } from "@mui/material";
+import { Box, Container, Grid } from "@mui/material";
 import styled from "styled-components";
 
-export const PageContainer = styled(Box)`
-    display: flex;
-    width: 100%;
-    padding-top: 20px;
+export const PageContainer = styled(Grid)`
+
 `;
 
 export const PageWrapper = styled(Container)`

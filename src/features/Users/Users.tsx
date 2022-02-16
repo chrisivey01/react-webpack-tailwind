@@ -211,6 +211,7 @@ export const Users = () => {
             </PageContainer>
             <Divider orientation="horizontal" flexItem />
             <SecurityTable
+                securityActionList={[]}
                 data={createdList}
                 name={"RESOURCE_NAME"}
                 value={"ACTION_NAME"}

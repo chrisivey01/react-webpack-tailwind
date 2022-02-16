@@ -1,12 +1,13 @@
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Body } from "./components/Body";
 import { Head } from "./components/Head";
 import { GlobalStyle } from "./GlobalStyle";
 
 const App = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [navigation, setNavigation]: any[] = useState([
         { name: "Users", to: "/", current: true },
@@ -39,6 +40,19 @@ const App = () => {
             }),
         []
     );
+
+    useEffect(() => {
+        let copyNavigate = [...navigation];
+        copyNavigate.map((nav: any) => {
+            if (nav.to === location.pathname) {
+                nav.current = true;
+            } else {
+                nav.current = false;
+            }
+            return nav;
+        });
+        setNavigation(copyNavigate);
+    }, [location.key]);
 
     return (
         <ThemeProvider theme={theme}>
