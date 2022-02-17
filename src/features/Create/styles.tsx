@@ -1,8 +1,10 @@
 import {
     Box,
     Button,
+    Grid,
     TextField as MuiTextField,
     TextField,
+    Autocomplete as AutocompleteMui,
 } from "@mui/material";
 import styled from "styled-components";
 
@@ -33,7 +35,9 @@ export const CreateRoleButton = styled(Button)`
 `;
 
 export const CreateRoleContainer = styled(Box)`
-    position: absolute;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
 `;
 
 export const CreateRoleFields = styled(TextField)`
@@ -46,4 +50,7 @@ export const CreateRoleFields = styled(TextField)`
     input {
         font-size: 12px;
     }
+`;
+
+export const Autocomplete = styled<any>(AutocompleteMui)`
 `;

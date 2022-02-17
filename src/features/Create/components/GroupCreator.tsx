@@ -5,16 +5,20 @@ import { Selector } from "../../../components/Table/Selector";
 import { CreateRoleFields } from "../styles";
 
 interface Props {
-    options: any;
+    actions: any;
     securityRolesList: SecurityRole[];
+    selectedActions: any;
+    setSelectedActions: any;
     roleSelectHandler: any;
     securityResourceList: SecurityResource[];
     resourceFiltered: SecurityResource[];
 }
 
 export const GroupCreator = ({
-    options,
+    actions,
     securityRolesList,
+    selectedActions,
+    setSelectedActions,
     roleSelectHandler,
     securityResourceList,
     resourceFiltered,
@@ -39,7 +43,12 @@ export const GroupCreator = ({
             </Box>
             <Divider style={{ margin: 10 }} />
             <Box>
-                <Selector options={options} />
+                <Selector
+                    options={actions}
+                    setOptions={setSelectedActions}
+                    selectedActions={selectedActions}
+                    setSelectedActions={setSelectedActions}
+                />
                 <Autocomplete
                     size="small"
                     multiple

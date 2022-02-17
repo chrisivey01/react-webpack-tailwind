@@ -1,24 +1,33 @@
-import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
+import { Box, Chip, Divider, Grid, TextField } from "@mui/material";
+import { useEffect } from "react";
 import { SecurityResource } from "../../../../types/SecurityResource";
 import { SecurityRole } from "../../../../types/SecurityRole";
 import { Selector } from "../../../components/Table/Selector";
-import { CreateRoleFields } from "../styles";
+import { Autocomplete, CreateRoleFields } from "../styles";
 
 interface Props {
-    options: any;
+    actions: any;
     securityRolesList: SecurityRole[];
+    selectedActions: any;
+    setSelectedActions: any;
     roleSelectHandler: any;
     securityResourceList: SecurityResource[];
     resourceFiltered: SecurityResource[];
 }
 
 export const RoleCreator = ({
-    options,
+    actions,
     securityRolesList,
+    selectedActions,
+    setSelectedActions,
     roleSelectHandler,
     securityResourceList,
     resourceFiltered,
 }: Props) => {
+    useEffect(() => {
+        console.log(resourceFiltered);
+    }, [resourceFiltered]);
+
     return (
         <Grid>
             <Box>
@@ -38,21 +47,22 @@ export const RoleCreator = ({
                 />
             </Box>
             <Divider style={{ margin: 10 }} />
-            <Box>
-                <Selector options={options} />
+            <Box style={{ width: "100%" }}>
                 <Autocomplete
                     size="small"
                     multiple
+                    fullWidth={true}
                     id="tags-outlined"
                     options={securityRolesList}
-                    getOptionLabel={(option) => option.ROLE_NAME}
+                    getOptionLabel={(option: any) => option.ROLE_NAME}
                     filterSelectedOptions
                     onChange={roleSelectHandler}
-                    renderInput={(params) => (
+                    sx={{ maxHeight: 120, maxWidth: 570, overflow: "auto" }}
+                    renderInput={(params: any) => (
                         <TextField
                             {...params}
                             label="Select Resources by Role"
-                            style={{ fontSize: 12 }}
+                            maxRows={3}
                             margin="normal"
                             InputLabelProps={{
                                 shrink: true,
@@ -60,19 +70,56 @@ export const RoleCreator = ({
                         />
                     )}
                 />
+                <Divider style={{ margin: 10 }} />
+                <Selector
+                    options={actions}
+                    setOptions={setSelectedActions}
+                    selectedActions={selectedActions}
+                    setSelectedActions={setSelectedActions}
+                />
                 <Autocomplete
                     size="small"
                     multiple
+                    fullWidth
                     id="tags-outlined"
                     options={securityResourceList}
-                    getOptionLabel={(option) => option.RESOURCE_NAME}
+                    getOptionLabel={(option: any) => option.RESOURCE_NAME}
                     filterSelectedOptions
                     value={resourceFiltered}
-                    renderInput={(params) => (
+                    sx={{
+                        height: 205,
+                        maxHeight: 205,
+                        maxWidth: 570,
+                        overflow: "auto",
+                    }}
+                    renderTags={(tagValue: any, getTagProps: any) =>
+                        tagValue.map((option: any, index: any) => {
+                            console.log(option);
+                            return (
+                                <Chip
+                                    // sx={{
+                                    //     color:
+                                    //         option.ACTION_NAME.toLowerCase() ===
+                                    //         "view"
+                                    //             ? "blue"
+                                    //             : "orange",
+                                    // }}
+                                    label={
+                                        option.ACTION_NAME.toLowerCase() ===
+                                        "view"
+                                            ? option.RESOURCE_NAME + " [VIEW]"
+                                            : option.RESOURCE_NAME + " [EDIT]"
+                                    }
+                                    {...getTagProps({ index })}
+                                />
+                            );
+                        })
+                    }
+                    renderInput={(params: any) => (
                         <TextField
                             {...params}
                             label="Select Resources"
-                            style={{ fontSize: 12 }}
+                            maxRows={3}
                             margin="normal"
                             InputLabelProps={{
                                 shrink: true,

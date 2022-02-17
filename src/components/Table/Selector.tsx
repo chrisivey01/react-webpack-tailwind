@@ -1,4 +1,12 @@
-import { FormControl, MenuItem, Select } from "@mui/material";
+import {
+    Box,
+    FormControl,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Typography,
+} from "@mui/material";
+import styled from "styled-components";
 
 interface Props {
     cl?: any;
@@ -7,19 +15,48 @@ interface Props {
     options: any;
 }
 
-export const Selector = (props: Props) => {
+const SelectAction = styled(Select)`
+    font-size: 12px;
+    width: auto !important;
+    min-width: 70px;
+    margin-left: 3px;
+    padding: 0px !important;
+
+    .MuiInputBase-input {
+        padding: 5px;
+    }
+`;
+
+interface Props {
+    options: any;
+    setOptions: any;
+    setSelectedActions: any;
+    selectedActions: any;
+}
+
+export const Selector = ({ options, setOptions, setSelectedActions, selectedActions }: Props) => {
+    const selectHandler = (event: any) => {
+        setSelectedActions(event.target.value);
+    };
+
     return (
         <FormControl>
-            <Select
-
-                style={{fontSize: 12}}
-            >
-                {props.options.map((option: any, index: number) => (
-                    <MenuItem key={index} value={option.value} style={{fontSize:12}}>
-                        {option.name}
-                    </MenuItem>
-                ))}
-            </Select>
+            <Box style={{ display: "flex", alignItems: "center", margin: 8 }}>
+                <Typography style={{ fontSize: 12 }}>
+                    Action Selected:
+                </Typography>
+                <SelectAction onChange={selectHandler} value={selectedActions}>
+                    {options.map((option: any, index: number) => (
+                        <MenuItem
+                            key={index}
+                            value={option.value}
+                            style={{ fontSize: 12 }}
+                        >
+                            {option.name}
+                        </MenuItem>
+                    ))}
+                </SelectAction>
+            </Box>
         </FormControl>
     );
 };

@@ -29,11 +29,12 @@ export const SaveButton = styled(Button)`
 export const Dialog = styled(MuiDialog)`
     .MuiDialog-paper {
         position: relative;
-        width: 800px;
+        width: 1000px;
         height: 600px;
         overflow: unset;
         display: flex;
         justify-content: center;
         align-items: center;
+        border: 1px solid;
     }
 `;

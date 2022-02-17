@@ -34,7 +34,7 @@ export const Roles = ({
     selectedRole,
     resourceFiltered,
     securityResourceList,
-    setOpen
+    setOpen,
 }: Props) => {
     const phxUsers: PhxUser[] = phxUsersJson;
     const [user, setUser] = useState<PhxUser>();
