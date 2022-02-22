@@ -9,5 +9,5 @@ export interface SecurityResource {
     CHANGE_FLAG: string;
     ACTION?:string;
     ACTION_NAME?: string;
-    ACTION_COLOR?: string;
+    COLOR?: string;
 }

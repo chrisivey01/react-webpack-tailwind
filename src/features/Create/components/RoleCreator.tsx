@@ -13,6 +13,8 @@ interface Props {
     roleSelectHandler: any;
     securityResourceList: SecurityResource[];
     resourceFiltered: SecurityResource[];
+    selectedRole: any;
+    roleValues: any;
 }
 
 export const RoleCreator = ({
@@ -23,10 +25,13 @@ export const RoleCreator = ({
     roleSelectHandler,
     securityResourceList,
     resourceFiltered,
+    selectedRole,
+    roleValues,
 }: Props) => {
     useEffect(() => {
         console.log(resourceFiltered);
-    }, [resourceFiltered]);
+        console.log(roleValues);
+    }, [resourceFiltered, roleValues]);
 
     return (
         <Grid>
@@ -61,7 +66,7 @@ export const RoleCreator = ({
                     renderInput={(params: any) => (
                         <TextField
                             {...params}
-                            label="Select Resources by Role"
+                            label="Select Role to Copy"
                             maxRows={3}
                             margin="normal"
                             InputLabelProps={{
@@ -83,6 +88,7 @@ export const RoleCreator = ({
                     fullWidth
                     id="tags-outlined"
                     options={securityResourceList}
+                    
                     getOptionLabel={(option: any) => option.RESOURCE_NAME}
                     filterSelectedOptions
                     value={resourceFiltered}
@@ -94,16 +100,8 @@ export const RoleCreator = ({
                     }}
                     renderTags={(tagValue: any, getTagProps: any) =>
                         tagValue.map((option: any, index: any) => {
-                            console.log(option);
                             return (
                                 <Chip
-                                    // sx={{
-                                    //     color:
-                                    //         option.ACTION_NAME.toLowerCase() ===
-                                    //         "view"
-                                    //             ? "blue"
-                                    //             : "orange",
-                                    // }}
                                     label={
                                         option.ACTION_NAME.toLowerCase() ===
                                         "view"

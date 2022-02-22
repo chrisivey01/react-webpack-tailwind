@@ -86,6 +86,8 @@ export const Create = ({ setOpen, windowType }: Props) => {
             return srr;
         });
         setResourceFiltered(securityResourceFilteredList);
+        let selectedRoleCopy = option;
+        console.log(option)
         setSelectedRole(option);
     };
 
@@ -93,6 +95,8 @@ export const Create = ({ setOpen, windowType }: Props) => {
         <CreateRoleContainer>
             {windowType === "role" ? (
                 <RoleCreator
+                    roleValues={securityFiltered}
+                    selectedRole={selectedRole}
                     actions={actions}
                     selectedActions={selectedActions}
                     setSelectedActions={setSelectedActions}

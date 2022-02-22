@@ -43,12 +43,7 @@ export const GroupCreator = ({
             </Box>
             <Divider style={{ margin: 10 }} />
             <Box>
-                <Selector
-                    options={actions}
-                    setOptions={setSelectedActions}
-                    selectedActions={selectedActions}
-                    setSelectedActions={setSelectedActions}
-                />
+
                 <Autocomplete
                     size="small"
                     multiple
@@ -60,7 +55,7 @@ export const GroupCreator = ({
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Select Resources by Group"
+                            label="Select Group to Copy"
                             style={{ fontSize: 12 }}
                             margin="normal"
                             InputLabelProps={{
@@ -80,7 +75,7 @@ export const GroupCreator = ({
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Select Resources"
+                            label="Select Roles"
                             style={{ fontSize: 12 }}
                             margin="normal"
                             InputLabelProps={{

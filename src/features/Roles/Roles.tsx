@@ -1,59 +1,80 @@
 import { Autocomplete, Box, Divider } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
-import { useEffect, useState } from "react";
-import { PhxUser } from "../../../types/PhxUser";
-import { SecurityGroup } from "../../../types/SecurityGroup";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
-import phxUsersJson from "../../assets/json/PHX_USER_FILTERED.json";
-import securityResourceJson from "../../assets/json/SECURITY_RESOURCE.json";
-import securityRolesListJson from "../../assets/json/SECURITY_ROLE.json";
-import securityActionListJson from "../../assets/json/SECURITY_ACTION.json";
-
+import * as JSON from "../../assets/json";
 import { SecurityTable } from "../../components/Table/SecurityTable";
 import { PageContainer, PageWrapper } from "../styles";
+import {
+    setFilteredResourceList,
+    setRolesMasterList,
+    setSelectedRole,
+} from "./roles-slice";
 import { RoleDescField, RoleField } from "./styles";
-import { SecurityAction } from "../../../types/SecurityAction";
 
-interface Props {
-    checkedState: boolean;
-    clickHandler: any;
-    changeRole: any;
-    selectedRole: any;
-    resourceFiltered: any;
-    securityResourceList: any;
-    setOpen: any;
-}
-
-export const Roles = ({
-    checkedState,
-    clickHandler,
-    changeRole,
-    selectedRole,
-    resourceFiltered,
-    securityResourceList,
-    setOpen,
-}: Props) => {
-    const phxUsers: PhxUser[] = phxUsersJson;
-    const [user, setUser] = useState<PhxUser>();
-    const [userRoles, setUserRoles] = useState<SecurityRole[]>([]);
-
-    const [userPickedRoles, setUserPickedRoles] = useState<SecurityRole[]>([]);
-    const [userGroups, setUserGroups] = useState<SecurityGroup[]>([]);
-    const [userPickedGroups, setUserPickedGroups] = useState<SecurityGroup[]>(
-        []
+export const Roles = () => {
+    const dispatch = useDispatch();
+    const roleSelected = useSelector((state: any) => state.roles.roleSelected);
+    const filteredResourceList = useSelector(
+        (state: any) => state.roles.filteredResourceList
     );
-    const [createdList, setCreatedList] = useState<any>([]);
-    const [securityAction, setSecurityAction] = useState<any>([]);
+    const rolesMasterList = useSelector(
+        (state: any) => state.roles.rolesMasterList
+    );
 
     useEffect(() => {
-        let securityRolesList: SecurityRole[] = securityRolesListJson;
-        setUserRoles(securityRolesList);
+        dispatch(setRolesMasterList(JSON.securityRoleJson));
     }, []);
 
     const handleChange = () => {};
+
+    const changeRole = (option: SecurityRole) => {
+        const securityUuid = option.SECURITY_ROLE_UUID;
+        let securityRoleResourceList: SecurityRoleResource[] =
+            JSON.securityRoleResourceJson;
+
+        let filteredSecurityRoleResourceList = securityRoleResourceList.filter(
+            (securityRoleResource: SecurityRoleResource) => {
+                return securityRoleResource.SECURITY_ROLE_UUID === securityUuid;
+            }
+        );
+
+        console.log(filteredSecurityRoleResourceList);
+
+        let securityResourceFilteredList: SecurityResource[] = [];
+        /**
+         * Compares the two lists off the SECURITY_RESOURCE_UUID which
+         * will return the SECURITY_ACTION_UUID which needs to be filtered off
+         * SECURITY_ACTION.json
+         */
+        filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
+            JSON.securityResourceJson.map((srl: SecurityResource) => {
+                if (
+                    srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
+                ) {
+                    srl.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
+                    securityResourceFilteredList.push(srl);
+                }
+            });
+        });
+
+        securityResourceFilteredList.map((srr: SecurityResource) => {
+            const saIndex = JSON.securityActionJson.findIndex(
+                (sa: SecurityAction) =>
+                    srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
+            );
+            srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
+            srr.COLOR = "white";
+            return srr;
+        });
+        dispatch(setFilteredResourceList(securityResourceFilteredList));
+        dispatch(setSelectedRole(option));
+    };
 
     return (
         <PageWrapper>
@@ -62,8 +83,8 @@ export const Roles = ({
                     <Autocomplete
                         size="small"
                         fullWidth
-                        options={userRoles}
-                        getOptionLabel={(option) => option.ROLE_NAME}
+                        options={rolesMasterList}
+                        getOptionLabel={(option: any) => option.ROLE_NAME}
                         renderInput={(params) => (
                             <RoleField
                                 {...params}
@@ -96,7 +117,7 @@ export const Roles = ({
                 <Divider orientation="vertical" flexItem light />
 
                 <Box style={{ width: "50%", padding: 10 }}>
-                    {selectedRole ? (
+                    {roleSelected.ROLE_NAME !== "" ? (
                         <>
                             <RoleField
                                 label="Role Name"
@@ -104,7 +125,7 @@ export const Roles = ({
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={selectedRole.ROLE_NAME}
+                                value={roleSelected.ROLE_NAME ?? ""}
                                 onChange={handleChange}
                             />
                             <RoleDescField
@@ -113,7 +134,7 @@ export const Roles = ({
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={selectedRole.ROLE_DESC}
+                                value={roleSelected.ROLE_DESC ?? ""}
                                 onChange={handleChange}
                                 style={{ width: "90%" }}
                             />
@@ -130,8 +151,8 @@ export const Roles = ({
                 style={{ paddingBottom: "5px" }}
             />
             <SecurityTable
-                securityResourceList={securityResourceJson}
-                data={resourceFiltered}
+                securityResourceList={JSON.securityResourceJson}
+                tableData={filteredResourceList}
                 name={"RESOURCE_NAME"}
                 value={"ACTION_NAME"}
                 headerKey={"Resource"}

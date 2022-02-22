@@ -1,20 +1,25 @@
 import {
     Autocomplete,
+    IconButton,
     Paper,
     SelectChangeEvent,
     Table,
     TableBody,
     TableCell,
     TableContainer,
-    TableHead,
     TableRow,
     TextField,
 } from "@mui/material";
+
 import { useLocation } from "react-router-dom";
 import { Selector } from "./Selector";
+import { RolesAutocomplete } from "./Roles/RolesAutocomplete";
+import { TableHead } from "./Roles/TableHead";
+import { RolesRow } from "./Roles/RolesRow";
+import { useState } from "react";
 
 interface Props {
-    data?: any[];
+    tableData?: any[];
     name: string;
     value: string;
     headerKey: string;
@@ -23,7 +28,7 @@ interface Props {
 }
 
 export const SecurityTable = ({
-    data,
+    tableData,
     name,
     value,
     headerKey,
@@ -34,25 +39,7 @@ export const SecurityTable = ({
     const handleChange = (event: SelectChangeEvent) => {
         console.log(event.target.value);
     };
-
-    const options = [
-        {
-            name: "VIEW",
-            value: "view",
-        },
-        {
-            name: "HAVE",
-            value: "have",
-        },
-        {
-            name: "ACCESS",
-            value: "access",
-        },
-        {
-            name: "EDIT",
-            value: "edit",
-        },
-    ];
+    const [selectedActions, setSelectedActions] = useState<any>("view");
 
     return (
         <TableContainer
@@ -60,77 +47,19 @@ export const SecurityTable = ({
             component={Paper}
         >
             <Table size="small">
-                <TableHead>
-                    <TableRow>
-                        <TableCell
-                            style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                            }}
-                        >
-                            {headerKey}
-                        </TableCell>
-                        <TableCell
-                            style={{
-                                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                            }}
-                        >
-                            {headerValue}
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
+                <TableHead tableKey={headerKey} tableValue={headerValue} />
                 <TableBody>
-                    {data.map((cl: any, index: number) => {
-                        return (
-                            <TableRow tabIndex={-1} key={index}>
-                                <TableCell
-                                    align={"left"}
-                                    style={{
-                                        fontSize: "12px",
-                                    }}
-                                >
-                                    {location.pathname === "/roles" ? (
-                                        <Autocomplete
-                                            size="small"
-                                            sx={{ width: 500 }}
-                                            id="tags-outlined"
-                                            options={securityResourceList}
-                                            getOptionLabel={(option) =>
-                                                option.RESOURCE_NAME
-                                            }
-                                            value={cl}
-                                            filterSelectedOptions
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    style={{ fontSize: 12 }}
-                                                    margin="normal"
-                                                />
-                                            )}
-                                        />
-                                    ) : (
-                                        <>{cl[name]}</>
-                                    )}
-                                </TableCell>
-                                <TableCell
-                                    align={"left"}
-                                    style={{
-                                        fontSize: "12px",
-                                    }}
-                                >
-                                    {location.pathname === "/roles" ? (
-                                        <Selector
-                                            handleChange={handleChange}
-                                            options={options}
-                                            cl={cl}
-                                            value={value}
-                                        />
-                                    ) : (
-                                        <>{cl[name]}</>
-                                    )}
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
+                    {tableData &&
+                        tableData.map((rowData: any, index: number) => {
+                            return (
+                                <RolesRow
+                                    key={index}
+                                    index={index}
+                                    autocompleteData={securityResourceList}
+                                    rowData={rowData}
+                                />
+                            );
+                        })}
                 </TableBody>
             </Table>
         </TableContainer>

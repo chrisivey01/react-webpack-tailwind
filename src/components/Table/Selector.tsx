@@ -28,25 +28,43 @@ const SelectAction = styled(Select)`
 `;
 
 interface Props {
-    options: any;
-    setOptions: any;
-    setSelectedActions: any;
-    selectedActions: any;
+    actionSelectorHandler: any;
+    rowData: any;
 }
 
-export const Selector = ({ options, setOptions, setSelectedActions, selectedActions }: Props) => {
-    const selectHandler = (event: any) => {
-        setSelectedActions(event.target.value);
-    };
-
+export const Selector = ({
+    actionSelectorHandler,
+    rowData,
+}: Props) => {
+    const actionOptions = [
+        {
+            name: "VIEW",
+            value: "view",
+        },
+        {
+            name: "HAVE",
+            value: "have",
+        },
+        {
+            name: "ACCESS",
+            value: "access",
+        },
+        {
+            name: "EDIT",
+            value: "edit",
+        },
+    ];
     return (
         <FormControl>
             <Box style={{ display: "flex", alignItems: "center", margin: 8 }}>
                 <Typography style={{ fontSize: 12 }}>
                     Action Selected:
                 </Typography>
-                <SelectAction onChange={selectHandler} value={selectedActions}>
-                    {options.map((option: any, index: number) => (
+                <SelectAction
+                    onChange={actionSelectorHandler}
+                    value={rowData.ACTION_NAME.toLowerCase()}
+                >
+                    {actionOptions.map((option: any, index: number) => (
                         <MenuItem
                             key={index}
                             value={option.value}
