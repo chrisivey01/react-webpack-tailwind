@@ -10,4 +10,5 @@ export interface SecurityResource {
     ACTION?:string;
     ACTION_NAME?: string;
     COLOR?: string;
+    OPERATION_CODE?: string;
 }

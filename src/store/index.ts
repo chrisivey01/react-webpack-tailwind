@@ -1,10 +1,11 @@
-import { Action, configureStore, createReducer, ThunkAction } from "@reduxjs/toolkit";
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import logger from "redux-logger";
+import { creatorReducer } from "../features/Create/creator-slice";
 import { rolesReducer } from "../features/Roles/roles-slice";
 
 export const store = configureStore({
     reducer: {
-        creator: createReducer,
+        creator: creatorReducer,
         roles: rolesReducer
     },
     middleware: (getDefaultMiddleware) =>

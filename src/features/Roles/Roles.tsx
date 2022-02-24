@@ -8,10 +8,11 @@ import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
 import * as JSON from "../../assets/json";
-import { SecurityTable } from "../../components/Table/SecurityTable";
+import { SecurityTable } from "../Table/SecurityTable";
 import { PageContainer, PageWrapper } from "../styles";
 import {
     setFilteredResourceList,
+    setResourcesMasterList,
     setRolesMasterList,
     setSelectedRole,
 } from "./roles-slice";
@@ -19,7 +20,7 @@ import { RoleDescField, RoleField } from "./styles";
 
 export const Roles = () => {
     const dispatch = useDispatch();
-    const roleSelected = useSelector((state: any) => state.roles.roleSelected);
+    const rolesSelected = useSelector((state: any) => state.roles.rolesSelected);
     const filteredResourceList = useSelector(
         (state: any) => state.roles.filteredResourceList
     );
@@ -29,6 +30,7 @@ export const Roles = () => {
 
     useEffect(() => {
         dispatch(setRolesMasterList(JSON.securityRoleJson));
+        dispatch(setResourcesMasterList(JSON.securityResourceJson));
     }, []);
 
     const handleChange = () => {};
@@ -44,21 +46,21 @@ export const Roles = () => {
             }
         );
 
-        console.log(filteredSecurityRoleResourceList);
-
         let securityResourceFilteredList: SecurityResource[] = [];
         /**
          * Compares the two lists off the SECURITY_RESOURCE_UUID which
          * will return the SECURITY_ACTION_UUID which needs to be filtered off
          * SECURITY_ACTION.json
          */
+        let copySecurityResourceList = JSON.securityResourceJson;
         filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
-            JSON.securityResourceJson.map((srl: SecurityResource) => {
+            copySecurityResourceList.map((srl: SecurityResource) => {
                 if (
                     srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
                 ) {
-                    srl.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
-                    securityResourceFilteredList.push(srl);
+                    let copySrl = Object.assign({}, srl)
+                    copySrl.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
+                    securityResourceFilteredList.push(copySrl);
                 }
             });
         });
@@ -117,7 +119,7 @@ export const Roles = () => {
                 <Divider orientation="vertical" flexItem light />
 
                 <Box style={{ width: "50%", padding: 10 }}>
-                    {roleSelected.ROLE_NAME !== "" ? (
+                    {rolesSelected.ROLE_NAME !== "" ? (
                         <>
                             <RoleField
                                 label="Role Name"
@@ -125,7 +127,7 @@ export const Roles = () => {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={roleSelected.ROLE_NAME ?? ""}
+                                value={rolesSelected.ROLE_NAME ?? ""}
                                 onChange={handleChange}
                             />
                             <RoleDescField
@@ -134,7 +136,7 @@ export const Roles = () => {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={roleSelected.ROLE_DESC ?? ""}
+                                value={rolesSelected.ROLE_DESC ?? ""}
                                 onChange={handleChange}
                                 style={{ width: "90%" }}
                             />

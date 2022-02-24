@@ -15,7 +15,7 @@ import securityRoleListJson from "../../assets/json/SECURITY_ROLE.json";
 import securityResourceJson from "../../assets/json/SECURITY_RESOURCE.json";
 import securityRoleResourceListJson from "../../assets/json/SECURITY_ROLE_RESOURCE.json";
 
-import { SecurityTable } from "../../components/Table/SecurityTable";
+import { SecurityTable } from "../Table/SecurityTable";
 import { PageWrapper } from "../styles";
 import { SecurityResource } from "../../../types/SecurityResource";
 

@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { SecurityResource } from "../../../../types/SecurityResource";
 import { SecurityRole } from "../../../../types/SecurityRole";
-import { Selector } from "../../../components/Table/Selector";
+import { Selector } from "../../Selector/Selector";
 import { CreateRoleFields } from "../styles";
 
 interface Props {
@@ -43,7 +43,6 @@ export const GroupCreator = ({
             </Box>
             <Divider style={{ margin: 10 }} />
             <Box>
-
                 <Autocomplete
                     size="small"
                     multiple

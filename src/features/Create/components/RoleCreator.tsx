@@ -1,37 +1,83 @@
 import { Box, Chip, Divider, Grid, TextField } from "@mui/material";
-import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { SecurityAction } from "../../../../types/SecurityAction";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { SecurityRole } from "../../../../types/SecurityRole";
-import { Selector } from "../../../components/Table/Selector";
+import { SecurityRoleResource } from "../../../../types/SecurityRoleResource";
+import * as JSON from "../../../assets/json";
+import { Selector } from "../../Selector/Selector";
+import {
+    rolesSelectedHandler,
+    rolesSingleSelectHandler,
+} from "../creator-slice";
 import { Autocomplete, CreateRoleFields } from "../styles";
 
-interface Props {
-    actions: any;
-    securityRolesList: SecurityRole[];
-    selectedActions: any;
-    setSelectedActions: any;
-    roleSelectHandler: any;
-    securityResourceList: SecurityResource[];
-    resourceFiltered: SecurityResource[];
-    selectedRole: any;
-    roleValues: any;
-}
+export const RoleCreator = () => {
+    const dispatch = useDispatch();
+    const rolesMasterList = useSelector(
+        (state: any) => state.roles.rolesMasterList
+    );
+    const resourcesMasterList = useSelector(
+        (state: any) => state.roles.resourcesMasterList
+    );
+    const resourcesFiltered = useSelector(
+        (state: any) => state.creator.resourcesFiltered
+    );
+    const actionSelected = useSelector(
+        (state: any) => state.creator.actionSelected
+    );
 
-export const RoleCreator = ({
-    actions,
-    securityRolesList,
-    selectedActions,
-    setSelectedActions,
-    roleSelectHandler,
-    securityResourceList,
-    resourceFiltered,
-    selectedRole,
-    roleValues,
-}: Props) => {
-    useEffect(() => {
-        console.log(resourceFiltered);
-        console.log(roleValues);
-    }, [resourceFiltered, roleValues]);
+    const roleSelectHandler = (option: any, value: any) => {
+        const roleList = value.reverse();
+        const securityUuid = roleList[0].SECURITY_ROLE_UUID;
+        let securityRoleResourceList: SecurityRoleResource[] =
+            JSON.securityRoleResourceJson;
+
+        let filteredSecurityRoleResourceList = securityRoleResourceList.filter(
+            (securityRoleResource: SecurityRoleResource) => {
+                return securityRoleResource.SECURITY_ROLE_UUID === securityUuid;
+            }
+        );
+
+        let securityResourceFilteredList: SecurityResource[] = [];
+        /**
+         * Compares the two lists off the SECURITY_RESOURCE_UUID which
+         * will return the SECURITY_ACTION_UUID which needs to be filtered off
+         * SECURITY_ACTION.json
+         */
+
+        filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
+            resourcesMasterList.map((srl: SecurityResource) => {
+                if (
+                    srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
+                ) {
+                    let srlCopy = Object.assign({}, srl);
+                    srlCopy.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
+                    securityResourceFilteredList.push(srlCopy);
+                }
+            });
+        });
+
+        securityResourceFilteredList.map((srr: SecurityResource) => {
+            const saIndex = JSON.securityActionJson.findIndex(
+                (sa: SecurityAction) =>
+                    srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
+            );
+            srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
+            return srr;
+        });
+
+        dispatch(rolesSelectedHandler(securityResourceFilteredList));
+    };
+
+    const resourceSelectHandler = (option: any, resourceList: any) => {
+        let resourceObj = Object.assign(
+            {},
+            resourceList[resourceList.length - 1]
+        );
+        resourceObj.ACTION_NAME = actionSelected;
+        resourceList[resourceList.length - 1] = resourceObj;
+        dispatch(rolesSingleSelectHandler(resourceList));
+    };
 
     return (
         <Grid>
@@ -58,7 +104,7 @@ export const RoleCreator = ({
                     multiple
                     fullWidth={true}
                     id="tags-outlined"
-                    options={securityRolesList}
+                    options={rolesMasterList}
                     getOptionLabel={(option: any) => option.ROLE_NAME}
                     filterSelectedOptions
                     onChange={roleSelectHandler}
@@ -76,22 +122,20 @@ export const RoleCreator = ({
                     )}
                 />
                 <Divider style={{ margin: 10 }} />
-                <Selector
-                    options={actions}
-                    setOptions={setSelectedActions}
-                    selectedActions={selectedActions}
-                    setSelectedActions={setSelectedActions}
-                />
+                <Selector />
                 <Autocomplete
                     size="small"
                     multiple
                     fullWidth
                     id="tags-outlined"
-                    options={securityResourceList}
-                    
+                    options={resourcesMasterList}
                     getOptionLabel={(option: any) => option.RESOURCE_NAME}
                     filterSelectedOptions
-                    value={resourceFiltered}
+                    value={resourcesFiltered}
+                    onChange={resourceSelectHandler}
+                    isOptionEqualToValue={(option: any, value: any) =>
+                        option.RESOURCE_NAME === value.RESOURCE_NAME
+                    }
                     sx={{
                         height: 205,
                         maxHeight: 205,

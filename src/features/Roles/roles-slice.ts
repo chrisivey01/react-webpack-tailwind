@@ -3,22 +3,25 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SecurityRole } from "../../../types/SecurityRole";
 
 interface RolesState {
-    roleSelected: SecurityRole;
+    rolesSelected: SecurityRole[];
     filteredResourceList: SecurityResource[];
+    rolesMasterList: SecurityRole[];
+    resourcesMasterList: SecurityResource[];
 }
 
-const initialState: any = {
-    roleSelected: {},
+const initialState = {
+    rolesSelected: [],
     filteredResourceList: [],
-    rolesMasterList: []
-};
+    rolesMasterList: [],
+    resourcesMasterList: []
+} as RolesState;
 
 export const rolesSlice = createSlice({
     name: "roles",
     initialState,
     reducers: {
         setSelectedRole: (state, { payload }) => {
-            state.roleSelected = payload;
+            state.rolesSelected = payload;
         },
         setFilteredResourceList: (state, { payload }) => {
             state.filteredResourceList = payload;
@@ -26,11 +29,14 @@ export const rolesSlice = createSlice({
         setRolesMasterList: (state, { payload }) => {
             state.rolesMasterList = payload;
         },
+        setResourcesMasterList: (state, { payload }) => {
+            state.resourcesMasterList = payload;
+        },
         addNewResourceToList: (state, { payload }) => {
             state.filteredResourceList = payload;
         },
         updateResourceAction: (state, { payload }) => {
-            state.filteredResourceList = payload;
+            state.filteredResourceList = payload
         }
     }
 });
@@ -39,6 +45,7 @@ export const rolesReducer = rolesSlice.reducer;
 export const {
     setSelectedRole,
     setFilteredResourceList,
+    setResourcesMasterList,
     setRolesMasterList,
     addNewResourceToList,
     updateResourceAction

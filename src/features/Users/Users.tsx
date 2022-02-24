@@ -18,7 +18,7 @@ import securityRolesListJson from "../../assets/json/SECURITY_ROLE.json";
 import securityRoleResourceJson from "../../assets/json/SECURITY_ROLE_RESOURCE.json";
 import securityUserGroupListJson from "../../assets/json/SECURITY_USER_GROUP.json";
 import securityUserRoleListJson from "../../assets/json/SECURITY_USER_ROLE.json";
-import { SecurityTable } from "../../components/Table/SecurityTable";
+import { SecurityTable } from "../Table/SecurityTable";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
 
 export const Users = () => {

@@ -1,3 +1,4 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
     Box,
     IconButton,
@@ -5,12 +6,15 @@ import {
     TableCell,
     TableRow,
 } from "@mui/material";
-import { Selector } from "../Selector";
-import { RolesAutocomplete } from "./RolesAutocomplete";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { updateResourceAction } from "../../../features/Roles/roles-slice";
+import { SecurityRole } from "../../../../types/SecurityRole";
+import {
+    addNewResourceToList,
+    updateResourceAction,
+} from "../../Roles/roles-slice";
+import { Selector } from "../../Selector/Selector";
+import { RolesAutocomplete } from "./RolesAutocomplete";
 
 interface Props {
     index: number;
@@ -35,17 +39,30 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
         }
     };
 
-    const actionSelectorHandler = (event: SelectChangeEvent) => {
-        let copySelectedRow = JSON.parse(JSON.stringify(filteredResourceList));
-        copySelectedRow[index].ACTION_NAME = event.target.value;
-        copySelectedRow[index].COLOR = "yellow";
-        dispatch(updateResourceAction(copySelectedRow));
-    };
+    // const actionSelectorHandler = (event: SelectChangeEvent) => {
+    //     let copySelectedRows = JSON.parse(JSON.stringify(filteredResourceList));
+    //     let copyRow = Object.assign({}, copySelectedRows[index]);
+    //     copyRow.ACTION_NAME = event.target.value;
+    //     copyRow.COLOR = "yellow";
+    //     copySelectedRows[index] = copyRow;
+    //     dispatch(updateResourceAction(copySelectedRows));
+    // };
 
     const deleteHandler = (index: number) => {
-        let copySelectedRow = JSON.parse(JSON.stringify(filteredResourceList));
-        copySelectedRow[index].COLOR = "red";
-        dispatch(updateResourceAction(copySelectedRow));
+        let copySelectedRows = [...filteredResourceList];
+        let copyRow = Object.assign({}, copySelectedRows[index]);
+        copyRow.COLOR = "red";
+        copyRow.OPERATION_CODE = "D";
+        copySelectedRows[index] = copyRow;
+        dispatch(updateResourceAction(copySelectedRows));
+    };
+
+    const newResourceDropdownHandler = (option: SecurityResource) => {
+        let copySelectedRows = [...filteredResourceList];
+        let copyRow = Object.assign({}, option);
+        copyRow.COLOR = "yellow";
+        copySelectedRows[index] = copyRow;
+        dispatch(updateResourceAction(copySelectedRows));
     };
 
     return (
@@ -55,6 +72,7 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
                 style={{
                     fontSize: "12px",
                     color: rowData.COLOR,
+                    width: "770px",
                 }}
             >
                 <Box style={{ display: "flex", alignItems: "center" }}>
@@ -62,6 +80,7 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
                     <RolesAutocomplete
                         rowData={rowData}
                         autocompleteData={autocompleteData}
+                        newResourceDropdownHandler={newResourceDropdownHandler}
                     />
                 </Box>
             </TableCell>
@@ -72,10 +91,7 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
                     color: rowData.COLOR,
                 }}
             >
-                <Selector
-                    actionSelectorHandler={actionSelectorHandler}
-                    rowData={rowData}
-                />
+                <Selector table={true} index={index} rowData={rowData} />
             </TableCell>
         </TableRow>
     );
