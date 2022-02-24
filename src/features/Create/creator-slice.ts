@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { SecurityGroup } from "../../../types/SecurityGroup";
 import { SecurityResource } from './../../../types/SecurityResource';
 import { SecurityRole } from './../../../types/SecurityRole';
 
@@ -6,12 +7,15 @@ interface CreatorState {
     rolesSelected: SecurityRole[];
     resourcesFiltered: SecurityResource[];
     actionSelected: string;
+    groupGroupSelected?: SecurityGroup;
+    rolesFiltered: SecurityRole[];
 }
 
-const initialState: any = {
+const initialState = {
     rolesSelected: [],
     resourcesFiltered: [],
-    actionSelected: 'view'
+    actionSelected: 'view',
+    rolesFiltered: []
 } as CreatorState;
 
 export const createsSlice = createSlice({
@@ -26,6 +30,12 @@ export const createsSlice = createSlice({
         },
         actionSelectorCreate: (state, { payload }) => {
             state.actionSelected = payload;
+        },
+        setRoleFiltered: (state, { payload }) => {
+            state.rolesFiltered = payload;
+        },
+        addSingleRoleHandler: (state, { payload }) => {
+            state.rolesFiltered = payload;
         }
     }
 });
@@ -34,5 +44,7 @@ export const creatorReducer = createsSlice.reducer;
 export const {
     rolesSelectedHandler,
     rolesSingleSelectHandler,
-    actionSelectorCreate
+    actionSelectorCreate,
+    setRoleFiltered,
+    addSingleRoleHandler
 } = createsSlice.actions;

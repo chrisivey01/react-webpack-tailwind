@@ -153,7 +153,7 @@ export const Roles = () => {
                 style={{ paddingBottom: "5px" }}
             />
             <SecurityTable
-                securityResourceList={JSON.securityResourceJson}
+                dataList={JSON.securityResourceJson}
                 tableData={filteredResourceList}
                 name={"RESOURCE_NAME"}
                 value={"ACTION_NAME"}

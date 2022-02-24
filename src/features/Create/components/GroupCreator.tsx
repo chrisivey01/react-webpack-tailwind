@@ -1,28 +1,57 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
-import { SecurityResource } from "../../../../types/SecurityResource";
+import { useDispatch, useSelector } from "react-redux";
+import { SecurityGroup } from "../../../../types/SecurityGroup";
+import { SecurityGroupRole } from "../../../../types/SecurityGroupRole";
 import { SecurityRole } from "../../../../types/SecurityRole";
-import { Selector } from "../../Selector/Selector";
+import { RootState } from "../../../store";
+import { addSingleRoleHandler, setRoleFiltered } from "../creator-slice";
 import { CreateRoleFields } from "../styles";
 
-interface Props {
-    actions: any;
-    securityRolesList: SecurityRole[];
-    selectedActions: any;
-    setSelectedActions: any;
-    roleSelectHandler: any;
-    securityResourceList: SecurityResource[];
-    resourceFiltered: SecurityResource[];
-}
+export const GroupCreator = () => {
+    const dispatch = useDispatch();
+    const groupsMasterList = useSelector(
+        (state: RootState) => state.groups.groupsMasterList
+    );
+    const groupsRoleMasterList = useSelector(
+        (state: RootState) => state.groups.groupsRoleMasterList
+    );
+    const rolesMasterList = useSelector(
+        (state: RootState) => state.groups.rolesMasterList
+    );
+    const rolesFiltered = useSelector(
+        (state: RootState) => state.creator.rolesFiltered
+    );
 
-export const GroupCreator = ({
-    actions,
-    securityRolesList,
-    selectedActions,
-    setSelectedActions,
-    roleSelectHandler,
-    securityResourceList,
-    resourceFiltered,
-}: Props) => {
+    const groupSelectHandler = (option: any, value: any) => {
+        let securityGroupRoleSelected: SecurityGroupRole[] = [];
+
+        value.forEach((sg: SecurityGroup) => {
+            console.log(sg);
+            groupsRoleMasterList.forEach((grml: SecurityGroupRole) => {
+                if (sg.SECURITY_GROUP_UUID === grml.SECURITY_GROUP_UUID) {
+                    securityGroupRoleSelected.push(grml);
+                }
+            });
+        });
+
+        let filteredRoles: SecurityRole[] = [];
+        securityGroupRoleSelected.forEach((sgrs: SecurityGroupRole) => {
+            rolesMasterList.forEach((rml: SecurityRole) => {
+                if (sgrs.SECURITY_ROLE_UUID === rml.SECURITY_ROLE_UUID) {
+                    filteredRoles.push(rml);
+                }
+            });
+        });
+
+        dispatch(setRoleFiltered(filteredRoles));
+    };
+
+    const roleSelectHandler = (option: any, rolesList: any) => {
+        let resourceObj = Object.assign({}, rolesList[rolesList.length - 1]);
+        rolesList[rolesList.length - 1] = resourceObj;
+        dispatch(addSingleRoleHandler(rolesList));
+    };
+
     return (
         <Grid>
             <Box>
@@ -47,10 +76,10 @@ export const GroupCreator = ({
                     size="small"
                     multiple
                     id="tags-outlined"
-                    options={securityRolesList}
-                    getOptionLabel={(option) => option.ROLE_NAME}
+                    options={groupsMasterList}
+                    onChange={groupSelectHandler}
+                    getOptionLabel={(option: any) => option.GROUP_NAME}
                     filterSelectedOptions
-                    onChange={roleSelectHandler}
                     renderInput={(params) => (
                         <TextField
                             {...params}
@@ -67,10 +96,16 @@ export const GroupCreator = ({
                     size="small"
                     multiple
                     id="tags-outlined"
-                    options={securityResourceList}
-                    getOptionLabel={(option) => option.RESOURCE_NAME}
+                    options={rolesMasterList}
+                    value={rolesFiltered}
+                    getOptionLabel={(option) => option.ROLE_NAME}
                     filterSelectedOptions
-                    value={resourceFiltered}
+                    onChange={roleSelectHandler}
+                    sx={{
+                        height: 305,
+                        maxHeight: 305,
+                        overflow: "auto",
+                    }}
                     renderInput={(params) => (
                         <TextField
                             {...params}

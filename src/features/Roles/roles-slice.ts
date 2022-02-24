@@ -20,23 +20,23 @@ export const rolesSlice = createSlice({
     name: "roles",
     initialState,
     reducers: {
-        setSelectedRole: (state, { payload }) => {
-            state.rolesSelected = payload;
-        },
-        setFilteredResourceList: (state, { payload }) => {
-            state.filteredResourceList = payload;
-        },
         setRolesMasterList: (state, { payload }) => {
             state.rolesMasterList = payload;
         },
         setResourcesMasterList: (state, { payload }) => {
             state.resourcesMasterList = payload;
         },
+        setSelectedRole: (state, { payload }) => {
+            state.rolesSelected = payload;
+        },
+        setFilteredResourceList: (state, { payload }) => {
+            state.filteredResourceList = payload;
+        },
         addNewResourceToList: (state, { payload }) => {
             state.filteredResourceList = payload;
         },
         updateResourceAction: (state, { payload }) => {
-            state.filteredResourceList = payload
+            state.filteredResourceList = payload;
         }
     }
 });

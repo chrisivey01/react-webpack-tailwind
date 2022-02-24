@@ -20,7 +20,7 @@ interface Props {
     rowData?: any;
     options?: any;
     table?: boolean;
-    index: number;
+    index?: number;
 }
 
 export const Selector = ({ rowData, table, index }: Props) => {

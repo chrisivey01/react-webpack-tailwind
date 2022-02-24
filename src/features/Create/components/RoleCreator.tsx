@@ -139,7 +139,6 @@ export const RoleCreator = () => {
                     sx={{
                         height: 205,
                         maxHeight: 205,
-                        maxWidth: 570,
                         overflow: "auto",
                     }}
                     renderTags={(tagValue: any, getTagProps: any) =>

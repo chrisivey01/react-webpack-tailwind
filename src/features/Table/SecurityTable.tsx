@@ -14,14 +14,14 @@ interface Props {
     value: string;
     headerKey: string;
     headerValue: string;
-    securityResourceList?: any;
+    dataList?: any;
 }
 
 export const SecurityTable = ({
     tableData,
     headerKey,
     headerValue,
-    securityResourceList,
+    dataList,
 }: Props) => {
     const location = useLocation();
 
@@ -39,7 +39,7 @@ export const SecurityTable = ({
                                 <RolesRow
                                     key={index}
                                     index={index}
-                                    autocompleteData={securityResourceList}
+                                    autocompleteData={dataList}
                                     rowData={rowData}
                                 />
                             );
