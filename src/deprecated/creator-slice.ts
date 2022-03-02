@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityResource } from './../../../types/SecurityResource';
-import { SecurityRole } from './../../../types/SecurityRole';
+import { SecurityGroup } from "../../types/SecurityGroup";
+import { SecurityResource } from '../../types/SecurityResource';
+import { SecurityRole } from '../../types/SecurityRole';
 
 interface CreatorState {
     rolesSelected: SecurityRole[];

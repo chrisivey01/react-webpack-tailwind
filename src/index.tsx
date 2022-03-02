@@ -1,14 +1,15 @@
 import ReactDOM from "react-dom";
 import { HashRouter } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import App from "./App";
-import { store } from "./store/index";
-import { Provider } from "react-redux";
+import { Debug } from "./Debug";
 
 ReactDOM.render(
     <HashRouter>
-        <Provider store={store}>
+        <RecoilRoot>
+            <Debug />
             <App />
-        </Provider>
+        </RecoilRoot>
     </HashRouter>,
     document.getElementById("root")
 );

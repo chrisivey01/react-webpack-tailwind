@@ -1,9 +1,10 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../types/SecurityResource";
-import { addNewResourceToList } from "../../features/Roles/roles-slice";
+import { appState } from "../../recoil/atoms/app";
+import { rolesState, useRoles } from "../../recoil/atoms/roles";
 import { SaveButton } from "./styles";
 
 interface Props {
@@ -12,16 +13,14 @@ interface Props {
 }
 
 export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
-    const dispatch = useDispatch();
     const location = useLocation();
-    const resourceFilteredByRoleView = useSelector(
-        (state: any) => state.roles.filteredResourceList
-    );
+    const roles = useRecoilValue(rolesState);
+    const setRoles = useRoles();
     const [checkedState, setCheckedState] = useState<any>(false);
 
     const clickHandler = (type: string) => {
         if (type === "create") {
-            let resourceCopy = [...resourceFilteredByRoleView];
+            let resourceCopy = [...roles.filteredResourceList];
             let securityObj: SecurityResource = {
                 ACTION_NAME: "Access",
                 CHANGE_FLAG: "I",
@@ -34,7 +33,10 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
                 SECURITY_RESOURCE_UUID: "",
             };
             resourceCopy.push(securityObj);
-            dispatch(addNewResourceToList(resourceCopy));
+            setRoles((state) => ({
+                ...state,
+                filteredResourceList: resourceCopy,
+            }));
         }
     };
 

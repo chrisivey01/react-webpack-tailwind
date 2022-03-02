@@ -1,9 +1,9 @@
-import { SecurityRoleResource } from './../../../types/SecurityRoleResource';
+import { SecurityRoleResource } from '../../types/SecurityRoleResource';
 import { createSlice } from "@reduxjs/toolkit";
-import { SecurityGroup } from '../../../types/SecurityGroup';
-import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRole } from "../../../types/SecurityRole";
+import { SecurityGroup } from '../../types/SecurityGroup';
+import { SecurityGroupRole } from "../../types/SecurityGroupRole";
+import { SecurityResource } from "../../types/SecurityResource";
+import { SecurityRole } from "../../types/SecurityRole";
 
 interface GroupsState {
     groupsRoleMasterList: SecurityGroupRole[];

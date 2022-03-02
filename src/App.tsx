@@ -55,12 +55,12 @@ const App = () => {
     }, [location.key]);
 
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <CssBaseline />
             <GlobalStyle />
             <Head navigateHandler={navigateHandler} navigation={navigation} />
             <Body />
-        </ThemeProvider>
+        </>
     );
 };
 

@@ -1,223 +1,261 @@
 import { Autocomplete, Box, Divider, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useRecoilValue } from "recoil";
 import { PhxUser } from "../../../types/PhxUser";
-import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityGroup } from "../../../types/SecurityGroup";
+import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
 import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
 import { SecurityUserGroup } from "../../../types/SecurityUserGroup";
-import { SecurityUserRole } from "../../../types/SecurityUserRole";
-import phxUsersJson from "../../assets/json/PHX_USER_FILTERED.json";
-import securityActionJson from "../../assets/json/SECURITY_ACTION.json";
-import securityGroupListJson from "../../assets/json/SECURITY_GROUP.json";
-import securityResourceJson from "../../assets/json/SECURITY_RESOURCE.json";
-import securityRolesListJson from "../../assets/json/SECURITY_ROLE.json";
-import securityRoleResourceJson from "../../assets/json/SECURITY_ROLE_RESOURCE.json";
-import securityUserGroupListJson from "../../assets/json/SECURITY_USER_GROUP.json";
-import securityUserRoleListJson from "../../assets/json/SECURITY_USER_ROLE.json";
-import { SecurityTable } from "../Table/SecurityTable";
+import * as JSON from "../../assets/json";
+import { userState, useUser } from "../../recoil/atoms/users";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
+import { SecurityTable } from "../Table/SecurityTable";
 
 export const Users = () => {
-    const phxUsers: PhxUser[] = phxUsersJson;
-    const [user, setUser] = useState<PhxUser>();
-    const [userRoles, setUserRoles] = useState<SecurityRole[]>([]);
-    const [userPickedRoles, setUserPickedRoles] = useState<SecurityRole[]>([]);
-    const [userGroups, setUserGroups] = useState<SecurityGroup[]>([]);
-    const [userPickedGroups, setUserPickedGroups] = useState<SecurityGroup[]>(
-        []
-    );
-    const [createdList, setCreatedList] = useState<any>([]);
-    const [securityAction, setSecurityAction] = useState<any>([]);
+    const setUser = useUser();
+    const user = useRecoilValue(userState);
+
+    useEffect(() => {
+        setUser((state) => ({
+            ...state,
+            employeeMasterList: JSON.phxUserFilteredJson,
+            securityGroupMasterList: JSON.securityGroupJson,
+            securityGroupRoleMasterList: JSON.securityGroupRoleJson,
+            securityUserGroupMasterList: JSON.securityUserGroupJson,
+            securityRolesMasterList: JSON.securityRoleJson,
+            securityUserRoleMasterList: JSON.securityUserRoleJson,
+            rolesMasterList: JSON.securityRoleJson,
+            resourcesMasterList: JSON.securityResourceJson,
+            securityActionMasterList: JSON.securityActionJson,
+            securityRoleResourceMasterList: JSON.securityRoleResourceJson,
+        }));
+    }, []);
 
     const changeUser = (option: PhxUser | null) => {
-        console.log(option);
         if (option) {
-            setUser(option);
             const empId = option.USER_ID;
 
             /**
              * User Groups
              */
 
-            const securityUserGroupList: SecurityUserGroup[] =
-                securityUserGroupListJson;
-            let filteredSecurityGroupList: SecurityUserGroup[] =
-                securityUserGroupList.filter(
+            let filteredSecurityUserGroupList =
+                user.securityUserGroupMasterList.filter(
                     (sec: SecurityUserGroup) => sec.USER_ID === empId
                 );
-            let securityGroupList: SecurityGroup[] = securityGroupListJson;
-            setUserGroups(securityGroupList);
-            const displayedGroups: SecurityGroup[] = securityGroupList.filter(
-                (sgl: SecurityGroup) => {
-                    for (const fsgl of filteredSecurityGroupList) {
-                        if (
-                            sgl.SECURITY_GROUP_UUID === fsgl.SECURITY_GROUP_UUID
-                        ) {
-                            return sgl;
-                        }
-                    }
-                }
-            );
-            setUserPickedGroups(displayedGroups);
 
             /**
-             * User Roles
+             * Groups dropdown
              */
 
-            const securityUserRolesList: SecurityUserRole[] =
-                securityUserRoleListJson;
-            let filteredSecurityRolesList: SecurityUserRole[] =
-                securityUserRolesList.filter(
-                    (sec: SecurityUserRole) => sec.USER_ID === empId
-                );
-            let securityRolesList: SecurityRole[] = securityRolesListJson;
-            setUserRoles(securityRolesList);
-            const displayedRoles: SecurityRole[] = securityRolesList.filter(
-                (sgl: SecurityRole) => {
-                    for (const fsgl of filteredSecurityRolesList) {
-                        if (
-                            sgl.SECURITY_ROLE_UUID === fsgl.SECURITY_ROLE_UUID
-                        ) {
-                            return sgl;
-                        }
-                    }
-                }
-            );
-            setUserPickedRoles(displayedRoles);
-        }
-    };
-
-    useEffect(() => {
-        setSecurityAction(securityActionJson);
-    }, []);
-
-    useEffect(() => {
-        const securityRoleResource: SecurityRoleResource[] =
-            securityRoleResourceJson;
-        console.log(userPickedRoles.length);
-        let resources: SecurityRoleResource[] = [];
-        userPickedRoles.map((ur: SecurityRole) => {
-            resources = securityRoleResource.filter(
-                (srr: SecurityRoleResource) =>
-                    ur.SECURITY_ROLE_UUID === srr.SECURITY_ROLE_UUID
-            );
-        });
-
-        let editViewAccessResources: any[] = [];
-        if (resources) {
-            resources.map((res: SecurityRoleResource) => {
-                securityAction.map((sa: SecurityAction) => {
-                    if (res.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID) {
-                        res.ACTION_NAME = sa.ACTION_NAME;
-                        securityResourceJson.map((srj: SecurityResource) => {
-                            if (
-                                res.SECURITY_RESOURCE_UUID ===
-                                srj.SECURITY_RESOURCE_UUID
-                            ) {
-                                res.RESOURCE_NAME = srj.RESOURCE_NAME;
-                                editViewAccessResources.push(res);
-                            }
-                        });
+            let filteredSecurityGroupList: SecurityGroup[] = [];
+            filteredSecurityUserGroupList.forEach((sec: SecurityUserGroup) => {
+                user.securityGroupMasterList.forEach((sgm: SecurityGroup) => {
+                    if (sec.SECURITY_GROUP_UUID === sgm.SECURITY_GROUP_UUID) {
+                        filteredSecurityGroupList.push(sgm);
                     }
                 });
             });
 
-            setCreatedList(editViewAccessResources);
+            /**
+             * Roles dropdown
+             */
+
+            let securityGroupRoleList: SecurityGroupRole[] = [];
+            filteredSecurityGroupList.forEach((sg: SecurityGroup) => {
+                user.securityGroupRoleMasterList.forEach(
+                    (sgr: SecurityGroupRole) => {
+                        if (
+                            sgr.SECURITY_GROUP_UUID === sg.SECURITY_GROUP_UUID
+                        ) {
+                            securityGroupRoleList.push(sgr);
+                        }
+                    }
+                );
+            });
+
+            let filteredRoleList: SecurityRole[] = [];
+            securityGroupRoleList.forEach((sgrl: SecurityGroupRole) => {
+                user.rolesMasterList.forEach((rml: SecurityRole) => {
+                    if (rml.SECURITY_ROLE_UUID === sgrl.SECURITY_ROLE_UUID) {
+                        filteredRoleList.push(rml);
+                    }
+                });
+            });
+
+            /**
+             * Resources table
+             */
+            let filteredResources: SecurityResource[] = [];
+            let selectedRoleResources: SecurityRoleResource[] = [];
+            user.securityRoleResourceMasterList.forEach(
+                (sr: SecurityRoleResource) => {
+                    filteredRoleList.forEach((frl: SecurityRole) => {
+                        if (sr.SECURITY_ROLE_UUID === frl.SECURITY_ROLE_UUID) {
+                            selectedRoleResources.push(sr);
+                        }
+                    });
+                }
+            );
+
+            selectedRoleResources.forEach((srr: SecurityRoleResource) => {
+                user.resourcesMasterList.forEach((sr: SecurityResource) => {
+                    if (
+                        sr.SECURITY_RESOURCE_UUID === srr.SECURITY_RESOURCE_UUID
+                    ) {
+                        filteredResources.push(sr);
+                    }
+                });
+            });
+
+            setUser((state) => ({
+                ...state,
+                employee: option,
+                groups: filteredSecurityGroupList,
+                roles: filteredRoleList,
+                resources: filteredResources,
+            }));
         }
+    };
 
-        console.log(editViewAccessResources);
-    }, [user]);
+    if (
+        user.employeeMasterList &&
+        user.employeeMasterList.length > 0 &&
+        user.securityGroupMasterList &&
+        user.securityGroupMasterList.length > 0
+    ) {
+        return (
+            <PageWrapper>
+                <PageContainer>
+                    <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                        <Autocomplete
+                            size="small"
+                            sx={{ width: 300 }}
+                            options={user.employeeMasterList}
+                            getOptionLabel={(option) => option.USER_ID}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Employee Numbers"
+                                    margin="normal"
+                                />
+                            )}
+                            onChange={(e, option) => changeUser(option)}
+                            renderOption={(props, option, { inputValue }) => {
+                                const matches = match(
+                                    option.USER_ID,
+                                    inputValue
+                                );
+                                const parts = parse(option.USER_ID, matches);
 
-    return (
-        <PageWrapper>
-            <PageContainer>
-                <Box style={{width: "50%"}}>
-                    <Autocomplete
-                        size="small"
-                        sx={{ width: 300 }}
-                        options={phxUsers}
-                        getOptionLabel={(option) => option.USER_ID}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Employee Numbers"
-                                margin="normal"
-                            />
-                        )}
-                        onChange={(e, option) => changeUser(option)}
-                        renderOption={(props, option, { inputValue }) => {
-                            const matches = match(option.USER_ID, inputValue);
-                            const parts = parse(option.USER_ID, matches);
+                                return (
+                                    <li {...props}>
+                                        <div>
+                                            {parts.map(
+                                                (part: any, index: number) => (
+                                                    <span key={index}>
+                                                        {part.text}
+                                                    </span>
+                                                )
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            }}
+                        />
 
-                            return (
-                                <li {...props}>
-                                    <div>
-                                        {parts.map(
-                                            (part: any, index: number) => (
-                                                <span key={index}>
-                                                    {part.text}
-                                                </span>
-                                            )
-                                        )}
-                                    </div>
-                                </li>
-                            );
-                        }}
-                    />
-                </Box>
+                        <Autocomplete
+                            size="small"
+                            sx={{ width: 300 }}
+                            options={user.employeeMasterList}
+                            getOptionLabel={(option) => option.USER_ID}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Copy Access From"
+                                    margin="normal"
+                                />
+                            )}
+                            onChange={(e, option) => changeUser(option)}
+                            renderOption={(props, option, { inputValue }) => {
+                                const matches = match(
+                                    option.USER_ID,
+                                    inputValue
+                                );
+                                const parts = parse(option.USER_ID, matches);
 
-                <OptionsWrapper>
-                    <Autocomplete
-                        size="small"
-                        sx={{ width: 500 }}
-                        multiple
-                        id="tags-outlined"
-                        options={userGroups}
-                        getOptionLabel={(option) => option.GROUP_NAME}
-                        filterSelectedOptions
-                        value={userPickedGroups}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="Groups"
-                                style={{ fontSize: 12 }}
-                                margin="normal"
-                            />
-                        )}
-                    />{" "}
-                    <Autocomplete
-                        size="small"
-                        sx={{ width: 500 }}
-                        multiple
-                        id="tags-outlined"
-                        options={userRoles}
-                        getOptionLabel={(option) => option.ROLE_NAME}
-                        filterSelectedOptions
-                        value={userPickedRoles}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label="User Roles"
-                                style={{ fontSize: 12 }}
-                                margin="normal"
-                            />
-                        )}
-                    />
-                </OptionsWrapper>
-            </PageContainer>
-            <Divider orientation="horizontal" flexItem />
-            <SecurityTable
-                securityActionList={[]}
-                data={createdList}
-                name={"RESOURCE_NAME"}
-                value={"ACTION_NAME"}
-                headerKey={"Resource"}
-                headerValue={"Action"}
-            />
-        </PageWrapper>
-    );
+                                return (
+                                    <li {...props}>
+                                        <div>
+                                            {parts.map(
+                                                (part: any, index: number) => (
+                                                    <span key={index}>
+                                                        {part.text}
+                                                    </span>
+                                                )
+                                            )}
+                                        </div>
+                                    </li>
+                                );
+                            }}
+                        />
+                    </Box>
+
+                    <OptionsWrapper>
+                        <Autocomplete
+                            size="small"
+                            sx={{ width: 500 }}
+                            multiple
+                            id="tags-outlined"
+                            options={user.securityGroupMasterList}
+                            getOptionLabel={(option: any) => option.GROUP_NAME}
+                            filterSelectedOptions
+                            value={user.groups ?? []}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Groups"
+                                    style={{ fontSize: 12 }}
+                                    margin="normal"
+                                />
+                            )}
+                        />{" "}
+                        <Autocomplete
+                            size="small"
+                            sx={{ width: 500 }}
+                            multiple
+                            id="tags-outlined"
+                            options={user.rolesMasterList}
+                            getOptionLabel={(option) => option.ROLE_NAME}
+                            filterSelectedOptions
+                            value={user.roles ?? []}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="User Roles"
+                                    style={{ fontSize: 12 }}
+                                    margin="normal"
+                                />
+                            )}
+                        />
+                    </OptionsWrapper>
+                </PageContainer>
+                <Divider orientation="horizontal" flexItem />
+                <SecurityTable
+                    dataList={JSON.securityResourceJson}
+                    tableData={user.resources}
+                    name={"RESOURCE_NAME"}
+                    value={"ACTION_NAME"}
+                    headerKey={"Resource"}
+                    headerValue={"Action"}
+                />
+            </PageWrapper>
+        );
+    } else {
+        return <></>;
+    }
 };

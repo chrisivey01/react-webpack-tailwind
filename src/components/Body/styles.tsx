@@ -1,7 +1,5 @@
 import { Dialog as MuiDialog, Button, styled } from "@mui/material";
 
-
-
 export const Dialog = styled(MuiDialog)`
     .MuiDialog-paper {
         position: relative;

@@ -2,62 +2,30 @@ import { Autocomplete, Box, Divider, Stack, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useRecoilValue } from "recoil";
 import { SecurityGroup } from "../../../types/SecurityGroup";
 import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
 import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
 import * as JSON from "../../assets/json";
-import { RootState } from "../../store";
+import { groupState, useGroups } from "../../recoil/atoms/groups";
 import { PageWrapper } from "../styles";
 import { SecurityTable } from "../Table/SecurityTable";
-import {
-    selectedGroupHandler,
-    setFilteredResourceList,
-    setFilteredRolesList,
-    setGroupsMasterList,
-    setGroupsRoleMasterList,
-    setResourcesMasterList,
-    setRolesMasterList,
-    setSecurityRoleResourcesMasterList,
-} from "./groups-slice";
 
 export const Groups = () => {
-    const dispatch = useDispatch();
-    const groupsRoleMasterList = useSelector(
-        (state: RootState) => state.groups.groupsRoleMasterList
-    );
-    const groupsMasterList = useSelector(
-        (state: RootState) => state.groups.groupsMasterList
-    );
-    const rolesMasterList = useSelector(
-        (state: RootState) => state.groups.rolesMasterList
-    );
-    const resourcesMasterList = useSelector(
-        (state: RootState) => state.groups.resourcesMasterList
-    );
-    const selectedGroup = useSelector(
-        (state: RootState) => state.groups.selectedGroup
-    );
-    const securityRoleResourcesMasterList = useSelector(
-        (state: RootState) => state.groups.securityRoleResourcesMasterList
-    );
-    const resourcesFilteredList = useSelector(
-        (state: RootState) => state.groups.resourcesFilteredList
-    );
-    const rolesFilteredList = useSelector(
-        (state: RootState) => state.groups.rolesFilteredList
-    );
+    const groups = useRecoilValue(groupState);
+    const setGroups = useGroups();
 
     useEffect(() => {
-        dispatch(setGroupsRoleMasterList(JSON.securityGroupRoleJson));
-        dispatch(setGroupsMasterList(JSON.securityGroupJson));
-        dispatch(setRolesMasterList(JSON.securityRoleJson));
-        dispatch(setResourcesMasterList(JSON.securityResourceJson));
-        dispatch(
-            setSecurityRoleResourcesMasterList(JSON.securityRoleResourceJson)
-        );
+        setGroups((state) => ({
+            ...state,
+            groupsRoleMasterList: JSON.securityGroupRoleJson,
+            groupsMasterList: JSON.securityGroupJson,
+            rolesMasterList: JSON.securityRoleJson,
+            resourcesMasterList: JSON.securityResourceJson,
+            securityRoleResourcesMasterList: JSON.securityRoleResourceJson,
+        }));
     }, []);
 
     const changeGroup = (option: SecurityGroup) => {
@@ -68,7 +36,7 @@ export const Groups = () => {
              * Off selected group, filter from master group list to get be prepared
              * to filter off all of the resources.
              */
-            groupsRoleMasterList.forEach((sgr: SecurityGroupRole) => {
+            groups.groupsRoleMasterList.forEach((sgr: SecurityGroupRole) => {
                 if (sgr.SECURITY_GROUP_UUID === option.SECURITY_GROUP_UUID) {
                     securityGroupRoleSelected.push(sgr);
                 }
@@ -77,7 +45,7 @@ export const Groups = () => {
             let securityRoleResourceFiltered: SecurityRoleResource[] = [];
 
             securityGroupRoleSelected.forEach((sgr: SecurityGroupRole) => {
-                securityRoleResourcesMasterList.forEach(
+                groups.securityRoleResourcesMasterList.forEach(
                     (srrml: SecurityRoleResource) => {
                         const indexSearch =
                             securityRoleResourceFiltered.findIndex(
@@ -99,7 +67,7 @@ export const Groups = () => {
              * Filter groups down to roles associated with.
              */
             let securityRolesFiltered: SecurityRole[] = [];
-            rolesMasterList.forEach((rml: SecurityRole) => {
+            groups.rolesMasterList.forEach((rml: SecurityRole) => {
                 securityRoleResourceFiltered.forEach(
                     (srrf: SecurityRoleResource) => {
                         if (
@@ -117,35 +85,41 @@ export const Groups = () => {
             let securityResourceFiltered: SecurityResource[] = [];
             securityRoleResourceFiltered.forEach(
                 (srrf: SecurityRoleResource) => {
-                    resourcesMasterList.forEach((rml: SecurityResource) => {
-                        if (
-                            srrf.SECURITY_RESOURCE_UUID ===
-                            rml.SECURITY_RESOURCE_UUID
-                        ) {
-                            securityResourceFiltered.push(rml);
+                    groups.resourcesMasterList.forEach(
+                        (rml: SecurityResource) => {
+                            if (
+                                srrf.SECURITY_RESOURCE_UUID ===
+                                rml.SECURITY_RESOURCE_UUID
+                            ) {
+                                securityResourceFiltered.push(rml);
+                            }
                         }
-                    });
+                    );
                 }
             );
-            dispatch(setFilteredRolesList(securityRolesFiltered));
-            dispatch(setFilteredResourceList(securityResourceFiltered));
-            dispatch(selectedGroupHandler(option));
+            setGroups((state) => ({
+                ...state,
+                rolesFilteredList: securityRolesFiltered,
+                resourcesFilteredList: securityResourceFiltered,
+                selectedGroup: option,
+            }));
         }
     };
 
     const roleHandler = (option: SecurityRole[]) => {
         let securityRoleResourceFiltered: SecurityRoleResource[] = [];
 
-        option.forEach((sgr: SecurityRole) => {
-            securityRoleResourcesMasterList.forEach(
+        console.log(option);
+        option.forEach((sr: SecurityRole) => {
+            groups.securityRoleResourcesMasterList.forEach(
                 (srrml: SecurityRoleResource) => {
                     const indexSearch = securityRoleResourceFiltered.findIndex(
                         (srrf: SecurityRoleResource) =>
-                            srrf.SECURITY_ROLE_UUID === sgr.SECURITY_ROLE_UUID
+                            srrf.SECURITY_ROLE_UUID === sr.SECURITY_ROLE_UUID
                     );
                     if (
                         indexSearch === -1 &&
-                        srrml.SECURITY_ROLE_UUID === sgr.SECURITY_ROLE_UUID
+                        srrml.SECURITY_ROLE_UUID === sr.SECURITY_ROLE_UUID
                     ) {
                         securityRoleResourceFiltered.push(srrml);
                     }
@@ -153,11 +127,11 @@ export const Groups = () => {
             );
         });
 
-        /**
-         * Filter groups down to roles associated with.
-         */
+        // /**
+        //  * Filter groups down to roles associated with.
+        //  */
         let securityRolesFiltered: SecurityRole[] = [];
-        rolesMasterList.forEach((rml: SecurityRole) => {
+        groups.rolesMasterList.forEach((rml: SecurityRole) => {
             securityRoleResourceFiltered.forEach(
                 (srrf: SecurityRoleResource) => {
                     if (rml.SECURITY_ROLE_UUID === srrf.SECURITY_ROLE_UUID) {
@@ -167,12 +141,12 @@ export const Groups = () => {
             );
         });
 
-        /**
-         * Filter from Group -> Role -> Resource
-         */
+        // /**
+        //  * Filter from Group -> Role -> Resource
+        //  */
         let securityResourceFiltered: SecurityResource[] = [];
         securityRoleResourceFiltered.forEach((srrf: SecurityRoleResource) => {
-            resourcesMasterList.forEach((rml: SecurityResource) => {
+            groups.resourcesMasterList.forEach((rml: SecurityResource) => {
                 if (
                     srrf.SECURITY_RESOURCE_UUID === rml.SECURITY_RESOURCE_UUID
                 ) {
@@ -180,9 +154,13 @@ export const Groups = () => {
                 }
             });
         });
-        dispatch(setFilteredRolesList(securityRolesFiltered));
-        dispatch(setFilteredResourceList(securityResourceFiltered));
-        dispatch(selectedGroupHandler(option));
+
+        setGroups((state) => ({
+            ...state,
+            rolesFilteredList: securityRolesFiltered,
+            resourcesFilteredList: securityResourceFiltered,
+            rolesSelected: option,
+        }));
     };
 
     const updateGroupName = () => {};
@@ -201,7 +179,7 @@ export const Groups = () => {
                 <Autocomplete
                     size="small"
                     sx={{ width: 300 }}
-                    options={groupsMasterList}
+                    options={groups.groupsMasterList}
                     getOptionLabel={(option: any) => option.GROUP_NAME}
                     renderInput={(params) => (
                         <TextField {...params} label="Groups" margin="normal" />
@@ -228,7 +206,7 @@ export const Groups = () => {
                 style={{ marginTop: 20, marginBottom: 20 }}
             />
             <Box style={{ width: "100%", display: "flex", height: 200 }}>
-                {selectedGroup ? (
+                {groups.selectedGroup ? (
                     <>
                         <Box style={{ width: "40%" }}>
                             <Stack spacing={2}>
@@ -239,7 +217,9 @@ export const Groups = () => {
                                         shrink: true,
                                     }}
                                     style={{ maxWidth: "80%" }}
-                                    value={selectedGroup.GROUP_NAME ?? ""}
+                                    value={
+                                        groups.selectedGroup.GROUP_NAME ?? ""
+                                    }
                                     onChange={updateGroupName}
                                 />
                             </Stack>
@@ -254,8 +234,8 @@ export const Groups = () => {
                                     maxWidth: 570,
                                     overflow: "auto",
                                 }}
-                                value={rolesFilteredList}
-                                options={rolesMasterList}
+                                value={groups.rolesFilteredList}
+                                options={groups.rolesMasterList}
                                 getOptionLabel={(option: any) =>
                                     option.ROLE_NAME
                                 }
@@ -307,10 +287,12 @@ export const Groups = () => {
                     <></>
                 )}
             </Box>
-            <Divider orientation="horizontal" />
+            <Box sx={{ padding: "10px" }}>
+                <Divider orientation="horizontal" />
+            </Box>
             <SecurityTable
-                dataList={resourcesMasterList}
-                tableData={resourcesFilteredList}
+                dataList={groups.resourcesMasterList}
+                tableData={groups.resourcesFilteredList}
                 name={"RESOURCE_NAME"}
                 value={"ACTION_NAME"}
                 headerKey={"Resource"}

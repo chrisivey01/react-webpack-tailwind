@@ -1,6 +1,6 @@
-import { SecurityResource } from './../../../types/SecurityResource';
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SecurityRole } from "../../../types/SecurityRole";
+import { createSlice } from "@reduxjs/toolkit";
+import { SecurityRole } from "../../types/SecurityRole";
+import { SecurityResource } from '../../types/SecurityResource';
 
 interface RolesState {
     rolesSelected: SecurityRole[];

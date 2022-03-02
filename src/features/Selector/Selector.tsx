@@ -1,8 +1,11 @@
 import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { actionSelectorCreate } from "../Create/creator-slice";
-import { updateResourceAction } from "../Roles/roles-slice";
+import { actionSelectorCreate } from "../../deprecated/creator-slice";
+import { updateResourceAction } from "../../deprecated/roles-slice";
+import { useCreator } from "../../recoil/atoms/creator";
+import { rolesState, useRoles } from "../../recoil/atoms/roles";
 
 const SelectAction = styled(Select)`
     font-size: 12px;
@@ -24,14 +27,9 @@ interface Props {
 }
 
 export const Selector = ({ rowData, table, index }: Props) => {
-    const dispatch = useDispatch();
-    const actionSelected = useSelector(
-        (state: any) => state.creator.actionSelected
-    );
-    const filteredResourceList = useSelector(
-        (state: any) => state.roles.filteredResourceList
-    );
-
+    const roles = useRecoilValue(rolesState);
+    const setRoles = useRoles();
+    const setCreator = useCreator();
     const actionOptions: any = [
         {
             name: "VIEW",
@@ -43,15 +41,20 @@ export const Selector = ({ rowData, table, index }: Props) => {
         },
     ];
     const actionSelectorHandler = (option: any) => {
-        if (table) {
-            let filteredResourceListCopy: any[] = [...filteredResourceList];
+        if (table && index) {
+            let filteredResourceListCopy: any[] = [
+                ...roles.filteredResourceList,
+            ];
             let copyObj = Object.assign({}, filteredResourceListCopy[index]);
             copyObj.ACTION_NAME = option.target.value;
             copyObj.COLOR = "yellow";
             filteredResourceListCopy[index] = copyObj;
-            dispatch(updateResourceAction(filteredResourceListCopy));
+            setRoles((state) => ({
+                ...state,
+                filteredResourceList: filteredResourceListCopy,
+            }));
         } else {
-            dispatch(actionSelectorCreate(option.target.value));
+            setCreator((state) => ({ ...state, action: option.target.value }));
         }
     };
     return (
@@ -78,7 +81,7 @@ export const Selector = ({ rowData, table, index }: Props) => {
                 ) : (
                     <SelectAction
                         onChange={actionSelectorHandler}
-                        value={actionSelected}
+                        value={roles.actionSelected}
                     >
                         {actionOptions.map((option: any, index: number) => (
                             <MenuItem

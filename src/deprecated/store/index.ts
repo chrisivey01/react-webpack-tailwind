@@ -1,8 +1,8 @@
-import { groupsReducer } from './../features/Groups/groups-slice';
+import { groupsReducer } from '../groups-slice';
 import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import logger from "redux-logger";
-import { creatorReducer } from "../features/Create/creator-slice";
-import { rolesReducer } from "../features/Roles/roles-slice";
+import { creatorReducer } from "../creator-slice";
+import { rolesReducer } from "../roles-slice";
 
 export const store = configureStore({
     reducer: {

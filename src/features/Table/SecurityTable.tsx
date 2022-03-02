@@ -1,9 +1,4 @@
-import {
-    Paper,
-    SelectChangeEvent,
-    Table,
-    TableBody, TableContainer
-} from "@mui/material";
+import { Paper, Table, TableBody, TableContainer } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { RolesRow } from "./Roles/RolesRow";
 import { TableHead } from "./Roles/TableHead";

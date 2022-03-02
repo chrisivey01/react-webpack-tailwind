@@ -1,11 +1,11 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { SecurityGroup } from "../../../../types/SecurityGroup";
-import { SecurityGroupRole } from "../../../../types/SecurityGroupRole";
-import { SecurityRole } from "../../../../types/SecurityRole";
-import { RootState } from "../../../store";
-import { addSingleRoleHandler, setRoleFiltered } from "../creator-slice";
-import { CreateRoleFields } from "../styles";
+import { SecurityGroup } from "../../types/SecurityGroup";
+import { SecurityGroupRole } from "../../types/SecurityGroupRole";
+import { SecurityRole } from "../../types/SecurityRole";
+import { RootState } from "./store";
+import { addSingleRoleHandler, setRoleFiltered } from "./creator-slice";
+import { CreateRoleFields } from "../features/Create/styles";
 
 export const GroupCreator = () => {
     const dispatch = useDispatch();
@@ -22,35 +22,35 @@ export const GroupCreator = () => {
         (state: RootState) => state.creator.rolesFiltered
     );
 
-    const groupSelectHandler = (option: any, value: any) => {
-        let securityGroupRoleSelected: SecurityGroupRole[] = [];
+    // const groupSelectHandler = (option: any, value: any) => {
+    //     let securityGroupRoleSelected: SecurityGroupRole[] = [];
 
-        value.forEach((sg: SecurityGroup) => {
-            console.log(sg);
-            groupsRoleMasterList.forEach((grml: SecurityGroupRole) => {
-                if (sg.SECURITY_GROUP_UUID === grml.SECURITY_GROUP_UUID) {
-                    securityGroupRoleSelected.push(grml);
-                }
-            });
-        });
+    //     value.forEach((sg: SecurityGroup) => {
+    //         console.log(sg);
+    //         groupsRoleMasterList.forEach((grml: SecurityGroupRole) => {
+    //             if (sg.SECURITY_GROUP_UUID === grml.SECURITY_GROUP_UUID) {
+    //                 securityGroupRoleSelected.push(grml);
+    //             }
+    //         });
+    //     });
 
-        let filteredRoles: SecurityRole[] = [];
-        securityGroupRoleSelected.forEach((sgrs: SecurityGroupRole) => {
-            rolesMasterList.forEach((rml: SecurityRole) => {
-                if (sgrs.SECURITY_ROLE_UUID === rml.SECURITY_ROLE_UUID) {
-                    filteredRoles.push(rml);
-                }
-            });
-        });
+    //     let filteredRoles: SecurityRole[] = [];
+    //     securityGroupRoleSelected.forEach((sgrs: SecurityGroupRole) => {
+    //         rolesMasterList.forEach((rml: SecurityRole) => {
+    //             if (sgrs.SECURITY_ROLE_UUID === rml.SECURITY_ROLE_UUID) {
+    //                 filteredRoles.push(rml);
+    //             }
+    //         });
+    //     });
 
-        dispatch(setRoleFiltered(filteredRoles));
-    };
+    //     dispatch(setRoleFiltered(filteredRoles));
+    // };
 
-    const roleSelectHandler = (option: any, rolesList: any) => {
-        let resourceObj = Object.assign({}, rolesList[rolesList.length - 1]);
-        rolesList[rolesList.length - 1] = resourceObj;
-        dispatch(addSingleRoleHandler(rolesList));
-    };
+    // const roleSelectHandler = (option: any, rolesList: any) => {
+    //     let resourceObj = Object.assign({}, rolesList[rolesList.length - 1]);
+    //     rolesList[rolesList.length - 1] = resourceObj;
+    //     dispatch(addSingleRoleHandler(rolesList));
+    // };
 
     return (
         <Grid>

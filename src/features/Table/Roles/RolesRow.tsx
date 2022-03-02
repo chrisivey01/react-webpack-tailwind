@@ -1,18 +1,10 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-    Box,
-    IconButton,
-    SelectChangeEvent,
-    TableCell,
-    TableRow,
-} from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { Box, IconButton, TableCell, TableRow } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { SecurityRole } from "../../../../types/SecurityRole";
-import {
-    addNewResourceToList,
-    updateResourceAction,
-} from "../../Roles/roles-slice";
+import { updateResourceAction } from "../../../deprecated/roles-slice";
+import { rolesState, useRoles } from "../../../recoil/atoms/roles";
 import { Selector } from "../../Selector/Selector";
 import { RolesAutocomplete } from "./RolesAutocomplete";
 
@@ -23,10 +15,9 @@ interface Props {
 }
 
 export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
-    const dispatch = useDispatch();
-    const filteredResourceList = useSelector(
-        (state: any) => state.roles.filteredResourceList
-    );
+    const setRoles = useRoles();
+    const roles = useRecoilValue(rolesState);
+
     const showHideDelete = (show: boolean, index: number) => {
         if (show) {
             return (
@@ -49,20 +40,26 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
     // };
 
     const deleteHandler = (index: number) => {
-        let copySelectedRows = [...filteredResourceList];
+        let copySelectedRows = [...roles.filteredResourceList];
         let copyRow = Object.assign({}, copySelectedRows[index]);
         copyRow.COLOR = "red";
         copyRow.OPERATION_CODE = "D";
         copySelectedRows[index] = copyRow;
-        dispatch(updateResourceAction(copySelectedRows));
+        setRoles((state) => ({
+            ...state,
+            filteredResourceList: copySelectedRows,
+        }));
     };
 
     const newResourceDropdownHandler = (option: SecurityResource) => {
-        let copySelectedRows = [...filteredResourceList];
+        let copySelectedRows = [...roles.filteredResourceList];
         let copyRow = Object.assign({}, option);
         copyRow.COLOR = "yellow";
         copySelectedRows[index] = copyRow;
-        dispatch(updateResourceAction(copySelectedRows));
+        setRoles((state) => ({
+            ...state,
+            filteredResourceList: copySelectedRows,
+        }));
     };
 
     return (

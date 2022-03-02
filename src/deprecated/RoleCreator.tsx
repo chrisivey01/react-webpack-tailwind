@@ -1,15 +1,15 @@
 import { Box, Chip, Divider, Grid, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { SecurityAction } from "../../../../types/SecurityAction";
-import { SecurityResource } from "../../../../types/SecurityResource";
-import { SecurityRoleResource } from "../../../../types/SecurityRoleResource";
-import * as JSON from "../../../assets/json";
-import { Selector } from "../../Selector/Selector";
+import { SecurityAction } from "../../types/SecurityAction";
+import { SecurityResource } from "../../types/SecurityResource";
+import { SecurityRoleResource } from "../../types/SecurityRoleResource";
+import * as JSON from "../assets/json";
+import { Selector } from "../features/Selector/Selector";
 import {
     rolesSelectedHandler,
     rolesSingleSelectHandler,
-} from "../creator-slice";
-import { Autocomplete, CreateRoleFields } from "../styles";
+} from "./creator-slice";
+import { Autocomplete, CreateRoleFields } from "../features/Create/styles";
 
 export const RoleCreator = () => {
     const dispatch = useDispatch();
@@ -26,58 +26,58 @@ export const RoleCreator = () => {
         (state: any) => state.creator.actionSelected
     );
 
-    const roleSelectHandler = (option: any, value: any) => {
-        const roleList = value.reverse();
-        const securityUuid = roleList[0].SECURITY_ROLE_UUID;
-        let securityRoleResourceList: SecurityRoleResource[] =
-            JSON.securityRoleResourceJson;
+    // const roleSelectHandler = (option: any, value: any) => {
+    //     const roleList = value.reverse();
+    //     const securityUuid = roleList[0].SECURITY_ROLE_UUID;
+    //     let securityRoleResourceList: SecurityRoleResource[] =
+    //         JSON.securityRoleResourceJson;
 
-        let filteredSecurityRoleResourceList = securityRoleResourceList.filter(
-            (securityRoleResource: SecurityRoleResource) => {
-                return securityRoleResource.SECURITY_ROLE_UUID === securityUuid;
-            }
-        );
+    //     let filteredSecurityRoleResourceList = securityRoleResourceList.filter(
+    //         (securityRoleResource: SecurityRoleResource) => {
+    //             return securityRoleResource.SECURITY_ROLE_UUID === securityUuid;
+    //         }
+    //     );
 
-        let securityResourceFilteredList: SecurityResource[] = [];
-        /**
-         * Compares the two lists off the SECURITY_RESOURCE_UUID which
-         * will return the SECURITY_ACTION_UUID which needs to be filtered off
-         * SECURITY_ACTION.json
-         */
+    //     let securityResourceFilteredList: SecurityResource[] = [];
+    //     /**
+    //      * Compares the two lists off the SECURITY_RESOURCE_UUID which
+    //      * will return the SECURITY_ACTION_UUID which needs to be filtered off
+    //      * SECURITY_ACTION.json
+    //      */
 
-        filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
-            resourcesMasterList.map((srl: SecurityResource) => {
-                if (
-                    srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
-                ) {
-                    let srlCopy = Object.assign({}, srl);
-                    srlCopy.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
-                    securityResourceFilteredList.push(srlCopy);
-                }
-            });
-        });
+    //     filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
+    //         resourcesMasterList.map((srl: SecurityResource) => {
+    //             if (
+    //                 srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
+    //             ) {
+    //                 let srlCopy = Object.assign({}, srl);
+    //                 srlCopy.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
+    //                 securityResourceFilteredList.push(srlCopy);
+    //             }
+    //         });
+    //     });
 
-        securityResourceFilteredList.map((srr: SecurityResource) => {
-            const saIndex = JSON.securityActionJson.findIndex(
-                (sa: SecurityAction) =>
-                    srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
-            );
-            srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
-            return srr;
-        });
+    //     securityResourceFilteredList.map((srr: SecurityResource) => {
+    //         const saIndex = JSON.securityActionJson.findIndex(
+    //             (sa: SecurityAction) =>
+    //                 srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
+    //         );
+    //         srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
+    //         return srr;
+    //     });
 
-        dispatch(rolesSelectedHandler(securityResourceFilteredList));
-    };
+    //     dispatch(rolesSelectedHandler(securityResourceFilteredList));
+    // };
 
-    const resourceSelectHandler = (option: any, resourceList: any) => {
-        let resourceObj = Object.assign(
-            {},
-            resourceList[resourceList.length - 1]
-        );
-        resourceObj.ACTION_NAME = actionSelected;
-        resourceList[resourceList.length - 1] = resourceObj;
-        dispatch(rolesSingleSelectHandler(resourceList));
-    };
+    // const resourceSelectHandler = (option: any, resourceList: any) => {
+    //     let resourceObj = Object.assign(
+    //         {},
+    //         resourceList[resourceList.length - 1]
+    //     );
+    //     resourceObj.ACTION_NAME = actionSelected;
+    //     resourceList[resourceList.length - 1] = resourceObj;
+    //     dispatch(rolesSingleSelectHandler(resourceList));
+    // };
 
     return (
         <Grid>
@@ -129,9 +129,9 @@ export const RoleCreator = () => {
                     fullWidth
                     id="tags-outlined"
                     options={resourcesMasterList}
+                    value={resourcesFiltered}
                     getOptionLabel={(option: any) => option.RESOURCE_NAME}
                     filterSelectedOptions
-                    value={resourcesFiltered}
                     onChange={resourceSelectHandler}
                     isOptionEqualToValue={(option: any, value: any) =>
                         option.RESOURCE_NAME === value.RESOURCE_NAME

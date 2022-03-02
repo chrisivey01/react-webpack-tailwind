@@ -2,35 +2,27 @@ import { Autocomplete, Box, Divider } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useRecoilValue } from "recoil";
 import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityResource } from "../../../types/SecurityResource";
 import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
 import * as JSON from "../../assets/json";
-import { SecurityTable } from "../Table/SecurityTable";
+import { rolesState, useRoles } from "../../recoil/atoms/roles";
 import { PageContainer, PageWrapper } from "../styles";
-import {
-    setFilteredResourceList,
-    setResourcesMasterList,
-    setRolesMasterList,
-    setSelectedRole,
-} from "./roles-slice";
+import { SecurityTable } from "../Table/SecurityTable";
 import { RoleDescField, RoleField } from "./styles";
 
 export const Roles = () => {
-    const dispatch = useDispatch();
-    const rolesSelected = useSelector((state: any) => state.roles.rolesSelected);
-    const filteredResourceList = useSelector(
-        (state: any) => state.roles.filteredResourceList
-    );
-    const rolesMasterList = useSelector(
-        (state: any) => state.roles.rolesMasterList
-    );
+    const roles = useRecoilValue(rolesState);
+    const setRoles = useRoles();
 
     useEffect(() => {
-        dispatch(setRolesMasterList(JSON.securityRoleJson));
-        dispatch(setResourcesMasterList(JSON.securityResourceJson));
+        setRoles((state) => ({
+            ...state,
+            rolesMasterList: JSON.securityRoleJson,
+            resourcesMasterList: JSON.securityResourceJson,
+        }));
     }, []);
 
     const handleChange = () => {};
@@ -47,18 +39,14 @@ export const Roles = () => {
         );
 
         let securityResourceFilteredList: SecurityResource[] = [];
-        /**
-         * Compares the two lists off the SECURITY_RESOURCE_UUID which
-         * will return the SECURITY_ACTION_UUID which needs to be filtered off
-         * SECURITY_ACTION.json
-         */
+
         let copySecurityResourceList = JSON.securityResourceJson;
         filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
             copySecurityResourceList.map((srl: SecurityResource) => {
                 if (
                     srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
                 ) {
-                    let copySrl = Object.assign({}, srl)
+                    let copySrl = Object.assign({}, srl);
                     copySrl.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
                     securityResourceFilteredList.push(copySrl);
                 }
@@ -71,11 +59,14 @@ export const Roles = () => {
                     srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
             );
             srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
-            srr.COLOR = "white";
+            srr.COLOR = "black";
             return srr;
         });
-        dispatch(setFilteredResourceList(securityResourceFilteredList));
-        dispatch(setSelectedRole(option));
+        setRoles((state) => ({
+            ...state,
+            filteredResourceList: securityResourceFilteredList,
+            rolesSelected: [option],
+        }));
     };
 
     return (
@@ -85,7 +76,7 @@ export const Roles = () => {
                     <Autocomplete
                         size="small"
                         fullWidth
-                        options={rolesMasterList}
+                        options={roles.rolesMasterList}
                         getOptionLabel={(option: any) => option.ROLE_NAME}
                         renderInput={(params) => (
                             <RoleField
@@ -116,10 +107,11 @@ export const Roles = () => {
                         }}
                     />
                 </Box>
-                <Divider orientation="vertical" flexItem light />
+                <Divider orientation="vertical" flexItem />
 
                 <Box style={{ width: "50%", padding: 10 }}>
-                    {rolesSelected.ROLE_NAME !== "" ? (
+                    {roles.roleSelected &&
+                    roles.roleSelected.ROLE_NAME !== "" ? (
                         <>
                             <RoleField
                                 label="Role Name"
@@ -127,7 +119,7 @@ export const Roles = () => {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={rolesSelected.ROLE_NAME ?? ""}
+                                value={roles.roleSelected.ROLE_NAME ?? ""}
                                 onChange={handleChange}
                             />
                             <RoleDescField
@@ -136,7 +128,7 @@ export const Roles = () => {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                value={rolesSelected.ROLE_DESC ?? ""}
+                                value={roles.roleSelected.ROLE_DESC ?? ""}
                                 onChange={handleChange}
                                 style={{ width: "90%" }}
                             />
@@ -154,7 +146,7 @@ export const Roles = () => {
             />
             <SecurityTable
                 dataList={JSON.securityResourceJson}
-                tableData={filteredResourceList}
+                tableData={roles.filteredResourceList}
                 name={"RESOURCE_NAME"}
                 value={"ACTION_NAME"}
                 headerKey={"Resource"}
