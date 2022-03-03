@@ -122,6 +122,106 @@ export const Users = () => {
         }
     };
 
+    const handleChangeGroups = (element: any, option: SecurityGroup[]) => {
+        console.log(option);
+        let securityGroupRoleList: SecurityGroupRole[] = [];
+        option.forEach((sg: SecurityGroup) => {
+            user.securityGroupRoleMasterList.forEach(
+                (sgr: SecurityGroupRole) => {
+                    if (sgr.SECURITY_GROUP_UUID === sg.SECURITY_GROUP_UUID) {
+                        securityGroupRoleList.push(sgr);
+                    }
+                }
+            );
+        });
+
+        let filteredRoleList: SecurityRole[] = [];
+        securityGroupRoleList.forEach((sgrl: SecurityGroupRole) => {
+            user.rolesMasterList.forEach((rml: SecurityRole) => {
+                if (rml.SECURITY_ROLE_UUID === sgrl.SECURITY_ROLE_UUID) {
+                    filteredRoleList.push(rml);
+                }
+            });
+        });
+
+        let filteredResources: SecurityResource[] = [];
+        let selectedRoleResources: SecurityRoleResource[] = [];
+        user.securityRoleResourceMasterList.forEach(
+            (sr: SecurityRoleResource) => {
+                filteredRoleList.forEach((frl: SecurityRole) => {
+                    if (sr.SECURITY_ROLE_UUID === frl.SECURITY_ROLE_UUID) {
+                        selectedRoleResources.push(sr);
+                    }
+                });
+            }
+        );
+
+        selectedRoleResources.forEach((srr: SecurityRoleResource) => {
+            user.resourcesMasterList.forEach((sr: SecurityResource) => {
+                if (sr.SECURITY_RESOURCE_UUID === srr.SECURITY_RESOURCE_UUID) {
+                    filteredResources.push(sr);
+                }
+            });
+        });
+
+        setUser((state) => ({
+            ...state,
+            groups: securityGroupRoleList,
+            roles: filteredRoleList,
+            resources: filteredResources,
+        }));
+    };
+
+    const handleChangeRoles = (element: any, option: SecurityRole[]) => {
+         console.log(option);
+        let securityGroupRoleList: SecurityGroupRole[] = [];
+        option.forEach((sg: SecurityGroup) => {
+            user.securityGroupRoleMasterList.forEach(
+                (sgr: SecurityGroupRole) => {
+                    if (sgr.SECURITY_GROUP_UUID === sg.SECURITY_GROUP_UUID) {
+                        securityGroupRoleList.push(sgr);
+                    }
+                }
+            );
+        });
+
+        let filteredRoleList: SecurityRole[] = [];
+        securityGroupRoleList.forEach((sgrl: SecurityGroupRole) => {
+            user.rolesMasterList.forEach((rml: SecurityRole) => {
+                if (rml.SECURITY_ROLE_UUID === sgrl.SECURITY_ROLE_UUID) {
+                    filteredRoleList.push(rml);
+                }
+            });
+        });
+
+        let filteredResources: SecurityResource[] = [];
+        let selectedRoleResources: SecurityRoleResource[] = [];
+        user.securityRoleResourceMasterList.forEach(
+            (sr: SecurityRoleResource) => {
+                filteredRoleList.forEach((frl: SecurityRole) => {
+                    if (sr.SECURITY_ROLE_UUID === frl.SECURITY_ROLE_UUID) {
+                        selectedRoleResources.push(sr);
+                    }
+                });
+            }
+        );
+
+        selectedRoleResources.forEach((srr: SecurityRoleResource) => {
+            user.resourcesMasterList.forEach((sr: SecurityResource) => {
+                if (sr.SECURITY_RESOURCE_UUID === srr.SECURITY_RESOURCE_UUID) {
+                    filteredResources.push(sr);
+                }
+            });
+        });
+
+        setUser((state) => ({
+            ...state,
+            groups: securityGroupRoleList,
+            roles: filteredRoleList,
+            resources: filteredResources,
+        }));
+    };
+
     if (
         user.employeeMasterList &&
         user.employeeMasterList.length > 0 &&
@@ -131,7 +231,12 @@ export const Users = () => {
         return (
             <PageWrapper>
                 <PageContainer>
-                    <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                        }}
+                    >
                         <Autocomplete
                             size="small"
                             sx={{ width: 300 }}
@@ -214,6 +319,7 @@ export const Users = () => {
                             options={user.securityGroupMasterList}
                             getOptionLabel={(option: any) => option.GROUP_NAME}
                             filterSelectedOptions
+                            onChange={handleChangeGroups}
                             value={user.groups ?? []}
                             renderInput={(params) => (
                                 <TextField
@@ -232,6 +338,7 @@ export const Users = () => {
                             options={user.rolesMasterList}
                             getOptionLabel={(option) => option.ROLE_NAME}
                             filterSelectedOptions
+                            onChange={handleChangeRoles}
                             value={user.roles ?? []}
                             renderInput={(params) => (
                                 <TextField

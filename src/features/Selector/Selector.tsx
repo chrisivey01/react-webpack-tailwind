@@ -1,10 +1,7 @@
 import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { actionSelectorCreate } from "../../deprecated/creator-slice";
-import { updateResourceAction } from "../../deprecated/roles-slice";
-import { useCreator } from "../../recoil/atoms/creator";
+import { creatorState, useCreator } from "../../recoil/atoms/creator";
 import { rolesState, useRoles } from "../../recoil/atoms/roles";
 
 const SelectAction = styled(Select)`
@@ -28,9 +25,10 @@ interface Props {
 
 export const Selector = ({ rowData, table, index }: Props) => {
     const roles = useRecoilValue(rolesState);
+    const creator = useRecoilValue(creatorState);
     const setRoles = useRoles();
     const setCreator = useCreator();
-    const actionOptions: any = [
+    const actionOptionsTable: any = [
         {
             name: "VIEW",
             value: "view",
@@ -39,7 +37,26 @@ export const Selector = ({ rowData, table, index }: Props) => {
             name: "EDIT",
             value: "edit",
         },
+        {
+            name: "HAVE",
+            value: "have",
+        },
+        {
+            name: "ACCESS",
+            value: "access",
+        },
     ];
+
+    const actionOptionsCreate: any = [
+        {
+            name: "VIEW",
+            value: "view",
+        },
+        {
+            name: "EDIT",
+            value: "edit",
+        },
+    ]
     const actionSelectorHandler = (option: any) => {
         if (table && index) {
             let filteredResourceListCopy: any[] = [
@@ -47,7 +64,8 @@ export const Selector = ({ rowData, table, index }: Props) => {
             ];
             let copyObj = Object.assign({}, filteredResourceListCopy[index]);
             copyObj.ACTION_NAME = option.target.value;
-            copyObj.COLOR = "yellow";
+            copyObj.FONT_STYLE = "italic";
+            copyObj.FONT_SIZE = 600;
             filteredResourceListCopy[index] = copyObj;
             setRoles((state) => ({
                 ...state,
@@ -57,18 +75,28 @@ export const Selector = ({ rowData, table, index }: Props) => {
             setCreator((state) => ({ ...state, action: option.target.value }));
         }
     };
+
+    // const resourceSelectHandler = (option: any, value: any) => {
+    //     console.log(option)
+    //     console.log(value)
+    //     // let resourceObj = Object.assign(
+    //     //     {},
+    //     //     resourceList[resourceList.length - 1]
+    //     // );
+    //     // resourceObj.ACTION_NAME = actionSelected;
+    //     // resourceList[resourceList.length - 1] = resourceObj;
+    //     // dispatch(rolesSingleSelectHandler(resourceList));
+    // };
+
     return (
         <FormControl>
             <Box style={{ display: "flex", alignItems: "center", margin: 8 }}>
-                <Typography style={{ fontSize: 12 }}>
-                    Action Selected:
-                </Typography>
                 {rowData && rowData.ACTION_NAME ? (
                     <SelectAction
                         onChange={actionSelectorHandler}
                         value={rowData.ACTION_NAME.toLowerCase()}
                     >
-                        {actionOptions.map((option: any, index: number) => (
+                        {actionOptionsTable.map((option: any, index: number) => (
                             <MenuItem
                                 key={index}
                                 value={option.value}
@@ -81,9 +109,9 @@ export const Selector = ({ rowData, table, index }: Props) => {
                 ) : (
                     <SelectAction
                         onChange={actionSelectorHandler}
-                        value={roles.actionSelected}
+                        value={creator.action ?? ''}
                     >
-                        {actionOptions.map((option: any, index: number) => (
+                        {actionOptionsCreate.map((option: any, index: number) => (
                             <MenuItem
                                 key={index}
                                 value={option.value}

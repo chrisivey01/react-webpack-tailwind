@@ -1,6 +1,8 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { creatorState } from "../../../recoil/atoms/creator";
+import { Selector } from "../../Selector/Selector";
 import { CreateRoleFields } from "../styles";
 
 interface Props {
@@ -9,9 +11,12 @@ interface Props {
     filteredList: any;
     firstClickHandler: any;
     secondClickHandler: any;
+    createdTextName: any;
+    createdTextDescription?: any;
     firstText: string;
     secondText: string;
     firstPropDisplay: string;
+    secondPropLabel?: string;
     secondPropDisplay: string;
 }
 
@@ -21,24 +26,27 @@ export const Creator = ({
     filteredList,
     firstClickHandler,
     secondClickHandler,
+    createdTextName,
+    createdTextDescription,
     firstText,
     secondText,
     firstPropDisplay,
+    secondPropLabel,
     secondPropDisplay,
 }: Props) => {
-
+    const location = useLocation();
     return (
         <Grid>
             <Box>
                 <CreateRoleFields
-                    label="Group Name"
+                    label={createdTextName}
                     size="small"
                     InputLabelProps={{
                         shrink: true,
                     }}
                 />
                 <CreateRoleFields
-                    label="Description"
+                    label={createdTextDescription}
                     size="small"
                     InputLabelProps={{
                         shrink: true,
@@ -46,6 +54,7 @@ export const Creator = ({
                 />
             </Box>
             <Divider style={{ margin: 10 }} />
+            <Selector />
             <Box>
                 <Autocomplete
                     size="small"
@@ -53,6 +62,9 @@ export const Creator = ({
                     id="tags-outlined"
                     options={firstMasterList}
                     onChange={firstClickHandler}
+                    isOptionEqualToValue={(option: any, value: any) =>
+                        option[firstPropDisplay] === value[firstPropDisplay]
+                    }
                     getOptionLabel={(option: any) => option[firstPropDisplay]}
                     filterSelectedOptions
                     sx={{ maxHeight: 120, maxWidth: 570, overflow: "auto" }}
@@ -73,16 +85,16 @@ export const Creator = ({
                     multiple
                     id="tags-outlined"
                     options={secondMasterList}
-                    value={filteredList ?? []}
+                    value={filteredList}
                     getOptionLabel={(option) => option[secondPropDisplay]}
                     filterSelectedOptions
                     onChange={secondClickHandler}
                     isOptionEqualToValue={(option: any, value: any) =>
-                        option[secondPropDisplay] === value[secondPropDisplay]
+                        option[secondPropLabel] === value[secondPropLabel]
                     }
                     sx={{
                         height: 305,
-                        maxHeight: 305,
+                        maxHeight: location.pathname !== "/roles" ? 305 : 220,
                         overflow: "auto",
                     }}
                     renderInput={(params) => (

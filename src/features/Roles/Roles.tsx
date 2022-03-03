@@ -28,6 +28,7 @@ export const Roles = () => {
     const handleChange = () => {};
 
     const changeRole = (option: SecurityRole) => {
+        if (option === null) return;
         const securityUuid = option.SECURITY_ROLE_UUID;
         let securityRoleResourceList: SecurityRoleResource[] =
             JSON.securityRoleResourceJson;

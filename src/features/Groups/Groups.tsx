@@ -3,6 +3,7 @@ import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
+import { SecurityAction } from "../../../types/SecurityAction";
 import { SecurityGroup } from "../../../types/SecurityGroup";
 import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
 import { SecurityResource } from "../../../types/SecurityResource";
@@ -91,12 +92,25 @@ export const Groups = () => {
                                 srrf.SECURITY_RESOURCE_UUID ===
                                 rml.SECURITY_RESOURCE_UUID
                             ) {
-                                securityResourceFiltered.push(rml);
+                                let rmlCopy = Object.assign({}, rml);
+                                rmlCopy.SECURITY_ACTION_UUID = srrf.SECURITY_ACTION_UUID;
+                                securityResourceFiltered.push(rmlCopy);
                             }
                         }
                     );
                 }
             );
+
+            securityResourceFiltered.map((srr: SecurityResource) => {
+                const saIndex = JSON.securityActionJson.findIndex(
+                    (sa: SecurityAction) =>
+                        srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
+                );
+                srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
+                srr.COLOR = "black";
+                return srr;
+            });
+            
             setGroups((state) => ({
                 ...state,
                 rolesFilteredList: securityRolesFiltered,

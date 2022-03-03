@@ -66,7 +66,10 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
                     <SaveButton>Modify</SaveButton>
                 ) : (
                     <>
-                        <SaveButton onClick={() => clickHandler("create")}>
+                        <SaveButton
+                            disabled={roles.filteredResourceList === undefined}
+                            onClick={() => clickHandler("create")}
+                        >
                             Add Resource
                         </SaveButton>
                         <SaveButton onClick={() => newRoleHandler()}>
@@ -89,8 +92,10 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
                     right: 0,
                 }}
             >
+                <SaveButton onClick={() => newGroupHandler()}>
+                    New Group
+                </SaveButton>
                 <SaveButton>Save</SaveButton>
-                <SaveButton onClick={() => newGroupHandler()}>New</SaveButton>
             </Box>
         );
     } else if (location.pathname !== "/roles") {

@@ -1,9 +1,14 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box, IconButton, TableCell, TableRow } from "@mui/material";
-import { useSelector } from "react-redux";
+import {
+    Box,
+    IconButton,
+    TableCell,
+    TableRow,
+    Typography,
+} from "@mui/material";
+import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { updateResourceAction } from "../../../deprecated/roles-slice";
 import { rolesState, useRoles } from "../../../recoil/atoms/roles";
 import { Selector } from "../../Selector/Selector";
 import { RolesAutocomplete } from "./RolesAutocomplete";
@@ -17,6 +22,7 @@ interface Props {
 export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
     const setRoles = useRoles();
     const roles = useRecoilValue(rolesState);
+    const location = useLocation();
 
     const showHideDelete = (show: boolean, index: number) => {
         if (show) {
@@ -42,8 +48,13 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
     const deleteHandler = (index: number) => {
         let copySelectedRows = [...roles.filteredResourceList];
         let copyRow = Object.assign({}, copySelectedRows[index]);
-        copyRow.COLOR = "red";
-        copyRow.OPERATION_CODE = "D";
+        if (copyRow.COLOR === "red") {
+            copyRow.COLOR = "black";
+            copyRow.OPERATION_CODE = "VIEW";
+        } else {
+            copyRow.COLOR = "red";
+            copyRow.OPERATION_CODE = "D";
+        }
         copySelectedRows[index] = copyRow;
         setRoles((state) => ({
             ...state,
@@ -54,7 +65,9 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
     const newResourceDropdownHandler = (option: SecurityResource) => {
         let copySelectedRows = [...roles.filteredResourceList];
         let copyRow = Object.assign({}, option);
-        copyRow.COLOR = "yellow";
+        copyRow.COLOR = "black";
+        copyRow.FONT_STYLE = "italic";
+        copyRow.FONT_SIZE = 600;
         copySelectedRows[index] = copyRow;
         setRoles((state) => ({
             ...state,
@@ -62,34 +75,88 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
         }));
     };
 
-    return (
-        <TableRow tabIndex={-1} key={index}>
-            <TableCell
-                align={"left"}
-                style={{
-                    fontSize: "12px",
-                    color: rowData.COLOR,
-                    width: "770px",
-                }}
-            >
-                <Box style={{ display: "flex", alignItems: "center" }}>
-                    {showHideDelete(true, index)}
-                    <RolesAutocomplete
-                        rowData={rowData}
-                        autocompleteData={autocompleteData}
-                        newResourceDropdownHandler={newResourceDropdownHandler}
-                    />
-                </Box>
-            </TableCell>
-            <TableCell
-                align={"left"}
-                style={{
-                    fontSize: "12px",
-                    color: rowData.COLOR,
-                }}
-            >
-                <Selector table={true} index={index} rowData={rowData} />
-            </TableCell>
-        </TableRow>
-    );
+    console.log(location.pathname);
+    if (location.pathname === "/roles") {
+        return (
+            <TableRow tabIndex={-1} key={index}>
+                <TableCell
+                    align={"left"}
+                    style={{
+                        fontSize: "12px",
+                        width: "770px",
+                        color: rowData.COLOR,
+                        fontStyle: rowData.FONT_STYLE,
+                        fontWeight: rowData.FONT_SIZE,
+                    }}
+                >
+                    <Box style={{ display: "flex", alignItems: "center" }}>
+                        {showHideDelete(true, index)}
+                        <RolesAutocomplete
+                            rowData={rowData}
+                            autocompleteData={autocompleteData}
+                            newResourceDropdownHandler={
+                                newResourceDropdownHandler
+                            }
+                        />
+                    </Box>
+                </TableCell>
+                <TableCell
+                    align={"left"}
+                    style={{
+                        fontSize: "12px",
+                        color: rowData.COLOR,
+                        fontStyle: rowData.FONT_STYLE,
+                        fontWeight: rowData.FONT_SIZE,
+                    }}
+                >
+                    {rowData.ACTION_NAME === "Access" ||
+                    rowData.ACTION_NAME === "Have" ? (
+                        <Box>{rowData.ACTION_NAME}</Box>
+                    ) : (
+                        <Selector
+                            table={true}
+                            index={index}
+                            rowData={rowData}
+                        />
+                    )}
+                </TableCell>
+            </TableRow>
+        );
+    } else {
+        return (
+            <TableRow tabIndex={-1} key={index}>
+                <TableCell
+                    align={"left"}
+                    style={{
+                        fontSize: "12px",
+                        width: "770px",
+                        color: rowData.COLOR,
+                        fontStyle: rowData.FONT_STYLE,
+                        fontWeight: rowData.FONT_SIZE,
+                    }}
+                >
+                    <Box style={{ display: "flex", alignItems: "center" }}>
+                        <RolesAutocomplete
+                            rowData={rowData}
+                            autocompleteData={autocompleteData}
+                            newResourceDropdownHandler={
+                                newResourceDropdownHandler
+                            }
+                        />
+                    </Box>
+                </TableCell>
+                <TableCell
+                    align={"left"}
+                    style={{
+                        fontSize: "12px",
+                        color: rowData.COLOR,
+                        fontStyle: rowData.FONT_STYLE,
+                        fontWeight: rowData.FONT_SIZE,
+                    }}
+                >
+                    <Box>{rowData.ACTION_NAME}</Box>
+                </TableCell>
+            </TableRow>
+        );
+    }
 };

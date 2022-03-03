@@ -1,4 +1,6 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { createAction } from "@reduxjs/toolkit";
+import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityGroup } from "../../../types/SecurityGroup";
 import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
@@ -18,6 +20,7 @@ interface Props {
 }
 
 export const Create = ({ setOpen, windowType }: Props) => {
+    const location = useLocation();
     const roles = useRecoilValue(rolesState);
     const groups = useRecoilValue(groupState);
     const creator = useRecoilValue(creatorState);
@@ -81,19 +84,49 @@ export const Create = ({ setOpen, windowType }: Props) => {
 
         console.log(filteredSecurityRoleResourceList);
 
-        let securityResourceFilteredList: SecurityResource[] = [];
+        let securityResourceFilteredList: SecurityResource[] = [
+            ...creator.resourcesFiltered,
+        ];
 
         filteredSecurityRoleResourceList.map((fsrrl: SecurityRoleResource) => {
             roles.resourcesMasterList.map((srl: SecurityResource) => {
                 if (
                     srl.SECURITY_RESOURCE_UUID === fsrrl.SECURITY_RESOURCE_UUID
                 ) {
-                    let srlCopy = Object.assign({}, srl);
-                    srlCopy.SECURITY_ACTION_UUID = fsrrl.SECURITY_ACTION_UUID;
-                    securityResourceFilteredList.push(srlCopy);
-                    console.log(securityResourceFilteredList);
+                    if (securityResourceFilteredList.length === undefined) {
+                        let srlCopy = Object.assign({}, srl);
+                        srlCopy.SECURITY_ACTION_UUID =
+                            fsrrl.SECURITY_ACTION_UUID;
+                        securityResourceFilteredList.push(srlCopy);
+                    } else {
+                        let srflIndex = securityResourceFilteredList.findIndex(
+                            (srlIndx: SecurityResource) =>
+                                srlIndx.SECURITY_RESOURCE_UUID ===
+                                srl.SECURITY_RESOURCE_UUID
+                        );
+                        if (srflIndex === -1) {
+                            let srlCopy = Object.assign({}, srl);
+                            srlCopy.SECURITY_ACTION_UUID =
+                                fsrrl.SECURITY_ACTION_UUID;
+                            securityResourceFilteredList.push(srlCopy);
+                        }
+                    }
                 }
             });
+        });
+
+        securityResourceFilteredList.map((srl: SecurityResource) => {
+            if (!srl.ACTION_NAME) {
+                let srlCopy = Object.assign(srl, {});
+                srlCopy.ACTION_NAME = creator.action;
+                srlCopy.RESOURCE_NAME =
+                    srlCopy.RESOURCE_NAME +
+                    " - " +
+                    creator.action.toUpperCase();
+                return srlCopy;
+            } else {
+                return srl;
+            }
         });
 
         setCreator((state) => ({
@@ -108,13 +141,19 @@ export const Create = ({ setOpen, windowType }: Props) => {
             {},
             resourceList[resourceList.length - 1]
         );
-        resourceObj.ACTION_NAME = creator.actionSelected;
+        resourceObj.ACTION_NAME = creator.action;
         resourceList[resourceList.length - 1] = resourceObj;
         setCreator((state) => ({ ...state, resourcesFiltered: resourceList }));
     };
 
     return (
         <CreateRoleContainer>
+            {location.pathname === "/roles" ? (
+                <Typography sx={{ fontWeight: 600 }}>New Role</Typography>
+            ) : (
+                <Typography sx={{ fontWeight: 600 }}>New Group</Typography>
+            )}
+
             {windowType === "role" ? (
                 <Creator
                     firstMasterList={roles.rolesMasterList}
@@ -122,9 +161,12 @@ export const Create = ({ setOpen, windowType }: Props) => {
                     filteredList={creator.resourcesFiltered}
                     firstClickHandler={roleSelectHandler}
                     secondClickHandler={resourceSelectHandler}
+                    createdTextName={"Role Name"}
+                    createdTextDescription={"Role Description"}
                     firstText={"Select Role to Copy"}
                     secondText={"Select Resources"}
                     firstPropDisplay={"ROLE_NAME"}
+                    secondPropLabel={"SECURITY_RESOURCE_UUID"}
                     secondPropDisplay={"RESOURCE_NAME"}
                 />
             ) : (
@@ -138,6 +180,8 @@ export const Create = ({ setOpen, windowType }: Props) => {
                     filteredList={creator.rolesFiltered}
                     firstClickHandler={groupSelectHandler}
                     secondClickHandler={groupRoleSelectHandler}
+                    createdTextName={"Group Name"}
+                    createdTextDescription={"Role Description"}
                     firstText={"Select Group to Copy"}
                     secondText={"Select Roles"}
                     firstPropDisplay={"GROUP_NAME"}

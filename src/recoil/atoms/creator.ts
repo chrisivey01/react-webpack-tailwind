@@ -6,14 +6,19 @@ import { SecurityRole } from "../../../types/SecurityRole";
 interface CreatorState {
     rolesSelected: SecurityRole[];
     resourcesFiltered: SecurityResource[];
-    actionSelected: string;
+    action: string;
     groupGroupSelected?: SecurityGroup;
     rolesFiltered: SecurityRole[];
 }
 
 export const creatorState = atom({
     key: "creator",
-    default: {} as CreatorState
+    default: {
+        rolesSelected: [],
+        resourcesFiltered: [],
+        action: 'edit',
+        rolesFiltered: []
+    } as CreatorState
 });
 
 export const useCreator = () => useSetRecoilState(creatorState);

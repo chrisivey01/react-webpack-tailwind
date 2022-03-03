@@ -1,7 +1,19 @@
-import { Paper, Table, TableBody, TableContainer } from "@mui/material";
+import {
+    Paper,
+    styled,
+    Table as MuiTable,
+    TableBody,
+    TableContainer,
+} from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { RolesRow } from "./Roles/RolesRow";
 import { TableHead } from "./Roles/TableHead";
+
+const Table = styled(MuiTable)`
+    .MuiTableCell-head {
+        background-color: rgba(255, 255, 255) !important;
+    }
+`;
 
 interface Props {
     tableData?: any[];
@@ -18,14 +30,12 @@ export const SecurityTable = ({
     headerValue,
     dataList,
 }: Props) => {
-    const location = useLocation();
-
     return (
         <TableContainer
             sx={{ maxHeight: 440, marginTop: "10px" }}
             component={Paper}
         >
-            <Table size="small">
+            <Table stickyHeader size="small">
                 <TableHead tableKey={headerKey} tableValue={headerValue} />
                 <TableBody>
                     {tableData &&
