@@ -17,9 +17,15 @@ interface Props {
     index: number;
     autocompleteData: any;
     rowData: any;
+    scrollRef?: any;
 }
 
-export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
+export const RolesRow = ({
+    index,
+    autocompleteData,
+    rowData,
+    scrollRef,
+}: Props) => {
     const setRoles = useRoles();
     const roles = useRecoilValue(rolesState);
     const location = useLocation();
@@ -75,10 +81,9 @@ export const RolesRow = ({ index, autocompleteData, rowData }: Props) => {
         }));
     };
 
-    console.log(location.pathname);
     if (location.pathname === "/roles") {
         return (
-            <TableRow tabIndex={-1} key={index}>
+            <TableRow tabIndex={-1} key={index} ref={scrollRef}>
                 <TableCell
                     align={"left"}
                     style={{

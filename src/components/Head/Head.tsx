@@ -1,6 +1,5 @@
 import { AppBar, Box, Button, TextField, Toolbar } from "@mui/material";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { Nav } from "../../../types/Nav";
 import fedexImg from "../../assets/fedex.png";
@@ -16,32 +15,40 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
     const setUser = useApp();
 
     useEffect(() => {
-        setUser((state) => ({ ...state, appId: "5907" }));
+        const copyAppState = { ...app };
+        copyAppState.appId = "5907";
+        copyAppState.employee = {
+            employeeId: "5252960",
+            name: "Chris Ivey",
+        };
+        setUser(copyAppState);
     }, []);
 
     return (
-        <AppBar position="static" sx={{ background: "#4D148C" }}>
+        <AppBar
+            position="static"
+            sx={{ background: "#4D148C", minWidth: "700px" }}
+        >
             <Toolbar>
-                <Box sx={{ width: 80, height: 80 }}>
+                <Box sx={{ height: 80, width: "200px" }}>
                     <img
                         src={fedexImg}
                         alt="Workflow"
                         style={{ height: "100%" }}
                     />
                 </Box>
-                <Box sx={{ position: "absolute", left: "10%" }}>
+                <Box sx={{ position: "absolute", left: "200px" }}>
                     <TextField
-                        value={app.appId}
+                        value={app.appId ?? ""}
                         sx={{
-
                             "& .MuiInputLabel-root.Mui-disabled": {
                                 color: "#fff",
-                                "-webkit-text-fill-color": "#fff",
+                                WebkitTextFillColor: "#fff",
                             },
                             "& .MuiOutlinedInput-input.Mui-disabled": {
                                 color: "#fff",
-                                "-webkit-text-fill-color": "#fff",
-                                background: "rgba(0,0,0,.3)"
+                                WebkitTextFillColor: "#fff",
+                                background: "rgba(0,0,0,.3)",
                             },
                         }}
                         label="Application ID"
@@ -49,27 +56,37 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
                         disabled
                     />
                 </Box>
-                <Box style={{ width: "100%" }}>
-                    <Box
-                        style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                        {navigation.map((nav: Nav, index: number) => (
-                            <Button
-                                key={index}
-                                onClick={() => navigateHandler(nav.to)}
-                                style={{
-                                    color: "#fff",
-                                    display: "inline",
-                                    borderRadius: 0,
-                                    borderBottom: nav.current
-                                        ? "3px solid #fff"
-                                        : "",
-                                }}
-                            >
-                                {nav.name}
-                            </Button>
-                        ))}
-                    </Box>
+                <Box
+                    style={{
+                        width: "85%",
+                        minWidth: "700px",
+                        display: "flex",
+                        justifyContent: "end",
+                    }}
+                >
+                    {navigation.map((nav: Nav, index: number) => (
+                        <Button
+                            key={index}
+                            onClick={() => navigateHandler(nav.to)}
+                            style={{
+                                color: "#fff",
+                                display: "inline",
+                                borderRadius: 0,
+                                borderBottom: nav.current
+                                    ? "3px solid #fff"
+                                    : "",
+                            }}
+                        >
+                            {nav.name}
+                        </Button>
+                    ))}
+                    {app.employee ? (
+                        <Box sx={{ position: "absolute", right: 10, top: 5 }}>
+                            {app.employee.name}
+                        </Box>
+                    ) : (
+                        <></>
+                    )}
                 </Box>
             </Toolbar>
         </AppBar>

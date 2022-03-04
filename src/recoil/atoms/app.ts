@@ -1,7 +1,9 @@
+import { LoggedInUser } from './../../../types/LoggedInUser';
 import { atom, useSetRecoilState } from "recoil";
 
 interface AppState {
     appId: string;
+    employee: LoggedInUser;
 }
 
 export const appState = atom({

@@ -37,7 +37,7 @@ export const Users = () => {
 
     const changeUser = (option: PhxUser | null) => {
         if (option) {
-            const empId = option.USER_ID;
+            const emp: PhxUser = option;
 
             /**
              * User Groups
@@ -45,7 +45,7 @@ export const Users = () => {
 
             let filteredSecurityUserGroupList =
                 user.securityUserGroupMasterList.filter(
-                    (sec: SecurityUserGroup) => sec.USER_ID === empId
+                    (sec: SecurityUserGroup) => sec.USER_ID === emp.USER_ID
                 );
 
             /**
@@ -173,7 +173,7 @@ export const Users = () => {
     };
 
     const handleChangeRoles = (element: any, option: SecurityRole[]) => {
-         console.log(option);
+        console.log(option);
         let securityGroupRoleList: SecurityGroupRole[] = [];
         option.forEach((sg: SecurityGroup) => {
             user.securityGroupRoleMasterList.forEach(
@@ -235,120 +235,187 @@ export const Users = () => {
                         sx={{
                             display: "flex",
                             justifyContent: "space-between",
+                            paddingBottom: "10px",
                         }}
                     >
-                        <Autocomplete
-                            size="small"
-                            sx={{ width: 300 }}
-                            options={user.employeeMasterList}
-                            getOptionLabel={(option) => option.USER_ID}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Employee Numbers"
-                                    margin="normal"
-                                />
-                            )}
-                            onChange={(e, option) => changeUser(option)}
-                            renderOption={(props, option, { inputValue }) => {
-                                const matches = match(
-                                    option.USER_ID,
-                                    inputValue
-                                );
-                                const parts = parse(option.USER_ID, matches);
+                        <Box sx={{ padding: "10px" }}>
+                            <Autocomplete
+                                size="small"
+                                sx={{
+                                    maxHeight: 120,
+                                    width: 300,
+                                    maxWidth: 570,
+                                    overflow: "auto",
+                                }}
+                                options={user.employeeMasterList}
+                                getOptionLabel={(option) =>
+                                    [
+                                        option.USER_ID,
+                                        " - ",
+                                        option.FIRST_NAME,
+                                        option.LAST_NAME,
+                                    ].join(" ")
+                                }
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Employee Numbers"
+                                        margin="normal"
+                                    />
+                                )}
+                                onChange={(e, option) => changeUser(option)}
+                                renderOption={(
+                                    props,
+                                    option,
+                                    { inputValue }
+                                ) => {
+                                    const matches = match(
+                                        [
+                                            option.USER_ID,
+                                            " - ",
+                                            option.FIRST_NAME,
+                                            option.LAST_NAME,
+                                        ].join(" "),
+                                        inputValue
+                                    );
+                                    const parts = parse(
+                                        [
+                                            option.USER_ID,
+                                            " - ",
+                                            option.FIRST_NAME,
+                                            option.LAST_NAME,
+                                        ].join(" "),
+                                        matches
+                                    );
 
-                                return (
-                                    <li {...props}>
-                                        <div>
-                                            {parts.map(
-                                                (part: any, index: number) => (
-                                                    <span key={index}>
-                                                        {part.text}
-                                                    </span>
-                                                )
-                                            )}
-                                        </div>
-                                    </li>
-                                );
-                            }}
-                        />
+                                    return (
+                                        <li {...props}>
+                                            <div>
+                                                {parts.map(
+                                                    (
+                                                        part: any,
+                                                        index: number
+                                                    ) => (
+                                                        <span key={index}>
+                                                            {part.text}
+                                                        </span>
+                                                    )
+                                                )}
+                                            </div>
+                                        </li>
+                                    );
+                                }}
+                            />
+                        </Box>
+                        <Box sx={{ padding: "10px" }}>
+                            <Autocomplete
+                                size="small"
+                                sx={{
+                                    maxHeight: 120,
+                                    width: 300,
+                                    maxWidth: 570,
+                                    overflow: "auto",
+                                }}
+                                options={user.employeeMasterList}
+                                getOptionLabel={(option) => option.USER_ID}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Copy Access From"
+                                        margin="normal"
+                                    />
+                                )}
+                                onChange={(e, option) => changeUser(option)}
+                                renderOption={(
+                                    props,
+                                    option,
+                                    { inputValue }
+                                ) => {
+                                    const matches = match(
+                                        option.USER_ID,
+                                        inputValue
+                                    );
+                                    const parts = parse(
+                                        option.USER_ID,
+                                        matches
+                                    );
 
-                        <Autocomplete
-                            size="small"
-                            sx={{ width: 300 }}
-                            options={user.employeeMasterList}
-                            getOptionLabel={(option) => option.USER_ID}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Copy Access From"
-                                    margin="normal"
-                                />
-                            )}
-                            onChange={(e, option) => changeUser(option)}
-                            renderOption={(props, option, { inputValue }) => {
-                                const matches = match(
-                                    option.USER_ID,
-                                    inputValue
-                                );
-                                const parts = parse(option.USER_ID, matches);
-
-                                return (
-                                    <li {...props}>
-                                        <div>
-                                            {parts.map(
-                                                (part: any, index: number) => (
-                                                    <span key={index}>
-                                                        {part.text}
-                                                    </span>
-                                                )
-                                            )}
-                                        </div>
-                                    </li>
-                                );
-                            }}
-                        />
+                                    return (
+                                        <li {...props}>
+                                            <div>
+                                                {parts.map(
+                                                    (
+                                                        part: any,
+                                                        index: number
+                                                    ) => (
+                                                        <span key={index}>
+                                                            {part.text}
+                                                        </span>
+                                                    )
+                                                )}
+                                            </div>
+                                        </li>
+                                    );
+                                }}
+                            />
+                        </Box>
                     </Box>
 
                     <OptionsWrapper>
-                        <Autocomplete
-                            size="small"
-                            sx={{ width: 500 }}
-                            multiple
-                            id="tags-outlined"
-                            options={user.securityGroupMasterList}
-                            getOptionLabel={(option: any) => option.GROUP_NAME}
-                            filterSelectedOptions
-                            onChange={handleChangeGroups}
-                            value={user.groups ?? []}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Groups"
-                                    style={{ fontSize: 12 }}
-                                    margin="normal"
-                                />
-                            )}
-                        />{" "}
-                        <Autocomplete
-                            size="small"
-                            sx={{ width: 500 }}
-                            multiple
-                            id="tags-outlined"
-                            options={user.rolesMasterList}
-                            getOptionLabel={(option) => option.ROLE_NAME}
-                            filterSelectedOptions
-                            onChange={handleChangeRoles}
-                            value={user.roles ?? []}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="User Roles"
-                                    style={{ fontSize: 12 }}
-                                    margin="normal"
-                                />
-                            )}
-                        />
+                        <Box sx={{ padding: "10px" }}>
+                            <Autocomplete
+                                size="small"
+                                sx={{
+                                    maxHeight: 120,
+                                    width: 570,
+                                    maxWidth: 570,
+                                    overflow: "auto",
+                                }}
+                                multiple
+                                id="tags-outlined"
+                                options={user.securityGroupMasterList}
+                                getOptionLabel={(option: any) =>
+                                    option.GROUP_NAME
+                                }
+                                filterSelectedOptions
+                                onChange={handleChangeGroups}
+                                value={user.groups ?? []}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Groups"
+                                        style={{ fontSize: 12 }}
+                                        margin="normal"
+                                    />
+                                )}
+                            />{" "}
+                        </Box>
+                        <Box sx={{ padding: "10px" }}>
+                            <Autocomplete
+                                size="small"
+                                sx={{
+                                    maxHeight: 220,
+                                    width: 570,
+                                    maxWidth: 570,
+                                    overflow: "auto",
+                                }}
+                                multiple
+                                id="tags-outlined"
+                                options={user.rolesMasterList}
+                                getOptionLabel={(option) => option.ROLE_NAME}
+                                filterSelectedOptions
+                                onChange={handleChangeRoles}
+                                value={user.roles ?? []}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="User Roles"
+                                        style={{ fontSize: 12 }}
+                                        margin="normal"
+                                    />
+                                )}
+                            />
+                        </Box>
                     </OptionsWrapper>
                 </PageContainer>
                 <Divider orientation="horizontal" flexItem />

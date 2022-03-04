@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import { createAction } from "@reduxjs/toolkit";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityGroup } from "../../../types/SecurityGroup";
@@ -19,7 +18,7 @@ interface Props {
     windowType: string;
 }
 
-export const Create = ({ setOpen, windowType }: Props) => {
+export const Create = ({setOpen, windowType}: Props) => {
     const location = useLocation();
     const roles = useRecoilValue(rolesState);
     const groups = useRecoilValue(groupState);
@@ -47,17 +46,18 @@ export const Create = ({ setOpen, windowType }: Props) => {
         });
         setCreator((state) => ({
             ...state,
-            rolesFiltered: filteredRoles,
+            rolesFiltered:filteredRoles,
         }));
     };
 
     const groupRoleSelectHandler = (option: any, rolesList: any) => {
-        let resourceObj = Object.assign({}, rolesList[rolesList.length - 1]);
+        let resourceObj = Object.assign(
+            {},
+            rolesList[rolesList.length - 1]
+        );
+        resourceObj.ACTION_NAME = creator.action;
         rolesList[rolesList.length - 1] = resourceObj;
-        setCreator((state) => ({
-            ...state,
-            rolesFiltered: [...state.rolesFiltered, rolesList],
-        }));
+        setCreator((state) => ({...state, rolesFiltered:rolesList}));
     };
 
     const roleSelectHandler = (option: any, value: any) => {
@@ -131,8 +131,8 @@ export const Create = ({ setOpen, windowType }: Props) => {
 
         setCreator((state) => ({
             ...state,
-            resourcesFiltered: securityResourceFilteredList,
-            rolesSelected: roleList,
+            resourcesFiltered:securityResourceFilteredList,
+            rolesSelected:roleList,
         }));
     };
 
@@ -143,15 +143,15 @@ export const Create = ({ setOpen, windowType }: Props) => {
         );
         resourceObj.ACTION_NAME = creator.action;
         resourceList[resourceList.length - 1] = resourceObj;
-        setCreator((state) => ({ ...state, resourcesFiltered: resourceList }));
+        setCreator((state) => ({...state, resourcesFiltered:resourceList}));
     };
 
     return (
         <CreateRoleContainer>
             {location.pathname === "/roles" ? (
-                <Typography sx={{ fontWeight: 600 }}>New Role</Typography>
+                <Typography sx={{fontWeight:600}}>New Role</Typography>
             ) : (
-                <Typography sx={{ fontWeight: 600 }}>New Group</Typography>
+                <Typography sx={{fontWeight:600}}>New Group</Typography>
             )}
 
             {windowType === "role" ? (
@@ -185,6 +185,7 @@ export const Create = ({ setOpen, windowType }: Props) => {
                     firstText={"Select Group to Copy"}
                     secondText={"Select Roles"}
                     firstPropDisplay={"GROUP_NAME"}
+                    secondPropLabel={"SECURITY_ROLE_UUID"}
                     secondPropDisplay={"ROLE_NAME"}
                 />
             ) : (
@@ -192,9 +193,9 @@ export const Create = ({ setOpen, windowType }: Props) => {
             )}
             <Box
                 style={{
-                    bottom: 10,
-                    right: 10,
-                    position: "absolute",
+                    bottom:10,
+                    right:10,
+                    position:"absolute",
                 }}
             >
                 <CreateRoleButton onClick={() => setOpen(false)}>

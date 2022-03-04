@@ -1,4 +1,11 @@
-import { Autocomplete, Box, Divider, Stack, TextField } from "@mui/material";
+import {
+    Autocomplete,
+    Box,
+    Chip,
+    Divider,
+    Stack,
+    TextField,
+} from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
@@ -93,7 +100,8 @@ export const Groups = () => {
                                 rml.SECURITY_RESOURCE_UUID
                             ) {
                                 let rmlCopy = Object.assign({}, rml);
-                                rmlCopy.SECURITY_ACTION_UUID = srrf.SECURITY_ACTION_UUID;
+                                rmlCopy.SECURITY_ACTION_UUID =
+                                    srrf.SECURITY_ACTION_UUID;
                                 securityResourceFiltered.push(rmlCopy);
                             }
                         }
@@ -110,7 +118,7 @@ export const Groups = () => {
                 srr.COLOR = "black";
                 return srr;
             });
-            
+
             setGroups((state) => ({
                 ...state,
                 rolesFilteredList: securityRolesFiltered,
@@ -123,7 +131,6 @@ export const Groups = () => {
     const roleHandler = (option: SecurityRole[]) => {
         let securityRoleResourceFiltered: SecurityRoleResource[] = [];
 
-        console.log(option);
         option.forEach((sr: SecurityRole) => {
             groups.securityRoleResourcesMasterList.forEach(
                 (srrml: SecurityRoleResource) => {
@@ -149,6 +156,11 @@ export const Groups = () => {
             securityRoleResourceFiltered.forEach(
                 (srrf: SecurityRoleResource) => {
                     if (rml.SECURITY_ROLE_UUID === srrf.SECURITY_ROLE_UUID) {
+                        if(groups.rolesFilteredList.length > 0){
+                            let objRml = Object.assign({}, rml);
+                            objRml.ADDED = true;
+                            securityRolesFiltered.push(objRml);
+                        } 
                         securityRolesFiltered.push(rml);
                     }
                 }
@@ -158,12 +170,15 @@ export const Groups = () => {
         // /**
         //  * Filter from Group -> Role -> Resource
         //  */
+
+
         let securityResourceFiltered: SecurityResource[] = [];
         securityRoleResourceFiltered.forEach((srrf: SecurityRoleResource) => {
             groups.resourcesMasterList.forEach((rml: SecurityResource) => {
                 if (
                     srrf.SECURITY_RESOURCE_UUID === rml.SECURITY_RESOURCE_UUID
                 ) {
+
                     securityResourceFiltered.push(rml);
                 }
             });
@@ -219,7 +234,7 @@ export const Groups = () => {
                 orientation="horizontal"
                 style={{ marginTop: 20, marginBottom: 20 }}
             />
-            <Box style={{ width: "100%", display: "flex", height: 200 }}>
+            <Box style={{ width: "100%", display: "flex", height: 225 }}>
                 {groups.selectedGroup ? (
                     <>
                         <Box style={{ width: "40%" }}>
@@ -230,7 +245,7 @@ export const Groups = () => {
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
-                                    style={{ maxWidth: "80%" }}
+                                    style={{ maxWidth: "80%", marginTop: 16 }}
                                     value={
                                         groups.selectedGroup.GROUP_NAME ?? ""
                                     }
@@ -244,7 +259,7 @@ export const Groups = () => {
                                 fullWidth
                                 multiple
                                 sx={{
-                                    maxHeight: 180,
+                                    maxHeight: 220,
                                     maxWidth: 570,
                                     overflow: "auto",
                                 }}
@@ -255,6 +270,24 @@ export const Groups = () => {
                                 }
                                 onChange={(e, option: any) =>
                                     roleHandler(option)
+                                }
+                                renderTags={(value: any, getTagProps: any) =>
+                                    value.map(
+                                        (option: SecurityRole, index: any) => (
+                                            <Chip
+                                                variant="outlined"
+                                                label={option.ROLE_NAME}
+                                                style={{
+                                                    fontStyle: option.ADDED
+                                                        ? "italic"
+                                                        : "normal",
+                                                    fontWeight: option.ADDED
+                                                        ? 600
+                                                        : 100,
+                                                }}
+                                            />
+                                        )
+                                    )
                                 }
                                 renderInput={(params) => (
                                     <TextField
@@ -273,10 +306,9 @@ export const Groups = () => {
                                         inputValue
                                     );
                                     const parts = parse(
-                                        option.ROLE_DESC,
+                                        option.ROLE_NAME,
                                         matches
                                     );
-
                                     return (
                                         <li {...props}>
                                             <div>
