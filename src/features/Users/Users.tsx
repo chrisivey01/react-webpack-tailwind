@@ -123,7 +123,6 @@ export const Users = () => {
     };
 
     const handleChangeGroups = (element: any, option: SecurityGroup[]) => {
-        console.log(option);
         let securityGroupRoleList: SecurityGroupRole[] = [];
         option.forEach((sg: SecurityGroup) => {
             user.securityGroupRoleMasterList.forEach(
@@ -166,39 +165,18 @@ export const Users = () => {
 
         setUser((state) => ({
             ...state,
-            groups: securityGroupRoleList,
+            groups: option,
             roles: filteredRoleList,
             resources: filteredResources,
         }));
     };
 
     const handleChangeRoles = (element: any, option: SecurityRole[]) => {
-        console.log(option);
-        let securityGroupRoleList: SecurityGroupRole[] = [];
-        option.forEach((sg: SecurityGroup) => {
-            user.securityGroupRoleMasterList.forEach(
-                (sgr: SecurityGroupRole) => {
-                    if (sgr.SECURITY_GROUP_UUID === sg.SECURITY_GROUP_UUID) {
-                        securityGroupRoleList.push(sgr);
-                    }
-                }
-            );
-        });
-
-        let filteredRoleList: SecurityRole[] = [];
-        securityGroupRoleList.forEach((sgrl: SecurityGroupRole) => {
-            user.rolesMasterList.forEach((rml: SecurityRole) => {
-                if (rml.SECURITY_ROLE_UUID === sgrl.SECURITY_ROLE_UUID) {
-                    filteredRoleList.push(rml);
-                }
-            });
-        });
-
         let filteredResources: SecurityResource[] = [];
         let selectedRoleResources: SecurityRoleResource[] = [];
         user.securityRoleResourceMasterList.forEach(
             (sr: SecurityRoleResource) => {
-                filteredRoleList.forEach((frl: SecurityRole) => {
+                user.roles.forEach((frl: SecurityRole) => {
                     if (sr.SECURITY_ROLE_UUID === frl.SECURITY_ROLE_UUID) {
                         selectedRoleResources.push(sr);
                     }
@@ -216,8 +194,7 @@ export const Users = () => {
 
         setUser((state) => ({
             ...state,
-            groups: securityGroupRoleList,
-            roles: filteredRoleList,
+            roles: option,
             resources: filteredResources,
         }));
     };
