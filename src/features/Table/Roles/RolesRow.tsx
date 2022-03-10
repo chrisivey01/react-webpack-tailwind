@@ -9,9 +9,9 @@ import {
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { rolesState, useRoles } from "../../../recoil/atoms/roles";
+import { rolesState, useRoles } from "../../Roles/atom/roles";
 import { Selector } from "../../Selector/Selector";
-import { RolesAutocomplete } from "./RolesAutocomplete";
+import { RolesAutocomplete } from "../../Roles/Table/RolesAutocomplete";
 
 interface Props {
     index: number;
@@ -41,15 +41,6 @@ export const RolesRow = ({
             return <></>;
         }
     };
-
-    // const actionSelectorHandler = (event: SelectChangeEvent) => {
-    //     let copySelectedRows = JSON.parse(JSON.stringify(filteredResourceList));
-    //     let copyRow = Object.assign({}, copySelectedRows[index]);
-    //     copyRow.ACTION_NAME = event.target.value;
-    //     copyRow.COLOR = "yellow";
-    //     copySelectedRows[index] = copyRow;
-    //     dispatch(updateResourceAction(copySelectedRows));
-    // };
 
     const deleteHandler = (index: number) => {
         let copySelectedRows = [...roles.filteredResourceList];
@@ -81,87 +72,54 @@ export const RolesRow = ({
         }));
     };
 
-    if (location.pathname === "/roles") {
-        return (
-            <TableRow tabIndex={-1} key={index} ref={scrollRef}>
-                <TableCell
-                    align={"left"}
-                    style={{
-                        fontSize: "12px",
-                        width: "770px",
-                        color: rowData.COLOR,
-                        fontStyle: rowData.FONT_STYLE,
-                        fontWeight: rowData.FONT_SIZE,
-                    }}
-                >
-                    <Box style={{ display: "flex", alignItems: "center" }}>
-                        {showHideDelete(true, index)}
-                        <RolesAutocomplete
-                            rowData={rowData}
-                            autocompleteData={autocompleteData}
-                            newResourceDropdownHandler={
-                                newResourceDropdownHandler
-                            }
-                        />
-                    </Box>
-                </TableCell>
-                <TableCell
-                    align={"left"}
-                    style={{
-                        fontSize: "12px",
-                        color: rowData.COLOR,
-                        fontStyle: rowData.FONT_STYLE,
-                        fontWeight: rowData.FONT_SIZE,
-                    }}
-                >
-                    {rowData.securityAction.actionName === "Access" ||
-                    rowData.securityAction.actionName === "Have" ? (
-                        <Box>{rowData.securityAction.actionName}</Box>
-                    ) : (
-                        <Selector
-                            table={true}
-                            index={index}
-                            rowData={rowData}
-                        />
-                    )}
-                </TableCell>
-            </TableRow>
-        );
-    } else {
-        return (
-            <TableRow tabIndex={-1} key={index}>
-                <TableCell
-                    align={"left"}
-                    style={{
-                        fontSize: "12px",
-                        width: "770px",
-                        color: rowData.COLOR,
-                        fontStyle: rowData.FONT_STYLE,
-                        fontWeight: rowData.FONT_SIZE,
-                    }}
-                >
-                    <Box style={{ display: "flex", alignItems: "center" }}>
-                        <RolesAutocomplete
-                            rowData={rowData}
-                            autocompleteData={autocompleteData}
-                            newResourceDropdownHandler={
-                                newResourceDropdownHandler
-                            }
-                        />
-                    </Box>
-                </TableCell>
-                <TableCell
-                    align={"left"}
-                    style={{
-                        fontSize: "12px",
-                        color: rowData.COLOR,
-                        fontStyle: rowData.FONT_STYLE,
-                        fontWeight: rowData.FONT_SIZE,
-                    }}
-                >
-                    <Box>{rowData.securityAction.actionName}</Box>
-                </TableCell>
-            </TableRow>
-        );
-    }
+    const renderSelectOrText = (rowData: any, index: number) => {
+        if (rowData.securityAction) {
+            if (
+                rowData.securityAction.actionName === "Access" ||
+                rowData.securityAction.actionName === "Have"
+            ) {
+                return <Box>{rowData.securityAction.actionName}</Box>;
+            } else {
+                return (
+                    <Selector table={true} index={index} rowData={rowData} />
+                );
+            }
+        } else {
+            return <Selector table={true} index={index} rowData={rowData} />;
+        }
+    };
+
+    return (
+        <TableRow tabIndex={-1} key={index}>
+            <TableCell
+                align={"left"}
+                style={{
+                    fontSize: "12px",
+                    width: "770px",
+                    color: rowData.COLOR,
+                    fontStyle: rowData.FONT_STYLE,
+                    fontWeight: rowData.FONT_SIZE,
+                }}
+            >
+                <Box style={{ display: "flex", alignItems: "center" }}>
+                    <RolesAutocomplete
+                        rowData={rowData}
+                        autocompleteData={autocompleteData}
+                        newResourceDropdownHandler={newResourceDropdownHandler}
+                    />
+                </Box>
+            </TableCell>
+            <TableCell
+                align={"left"}
+                style={{
+                    fontSize: "12px",
+                    color: rowData.COLOR,
+                    fontStyle: rowData.FONT_STYLE,
+                    fontWeight: rowData.FONT_SIZE,
+                }}
+            >
+                <Box>{rowData.securityAction.actionName}</Box>
+            </TableCell>
+        </TableRow>
+    );
 };

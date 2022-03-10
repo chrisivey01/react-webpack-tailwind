@@ -1,19 +1,46 @@
 import { Autocomplete, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
+import { useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { SecurityResource } from "../../../../types/SecurityRoleList";
+import { rolesState, useRoles } from "../atom/roles";
 
 interface Props {
-    autocompleteData: any[];
     rowData: any;
     newResourceDropdownHandler: any;
 }
 
 export const RolesAutocomplete = ({
-    autocompleteData,
     rowData,
     newResourceDropdownHandler,
 }: Props) => {
-    if (rowData.resourceName === "") {
+    const roles = useRecoilValue(rolesState);
+    const setRoles = useRoles();
+
+    useEffect(() => {
+        if (roles.filteredResourceList.length > 0) {
+            let remainingSelects: SecurityResource[] = [];
+            let copyResourceMasterList = [...roles.resourcesMasterList];
+            let test: any[] = [];
+            roles.filteredResourceList.map((frr: SecurityResource) => {
+                let foundIndex = copyResourceMasterList.findIndex(
+                    (res: SecurityResource) =>
+                        res.resourceName === frr.resourceName
+                );
+                if (foundIndex !== -1) {
+                    copyResourceMasterList.splice(foundIndex, 1);
+                }
+            });
+
+            setRoles((state) => ({
+                ...state,
+                resourcesLeft: copyResourceMasterList,
+            }));
+        }
+    }, [roles.filteredResourceList]);
+
+    if (rowData.securityResource.resourceName === "") {
         return (
             <Autocomplete
                 size="small"
@@ -21,8 +48,11 @@ export const RolesAutocomplete = ({
                     width: 500,
                 }}
                 id="tags-outlined"
-                options={autocompleteData}
-                getOptionLabel={(option) => option.resourceName}
+                options={roles.resourcesLeft}
+                isOptionEqualToValue={(option: any, value: any) =>
+                    option["resourceName"] === value["resourceName"]
+                }
+                getOptionLabel={(option: any) => option.resourceName}
                 filterSelectedOptions
                 onChange={(e, option: any) =>
                     newResourceDropdownHandler(option)
@@ -53,6 +83,6 @@ export const RolesAutocomplete = ({
             />
         );
     } else {
-        return <>{rowData.resourceName}</>;
+        return <>{rowData.securityResource.resourceName}</>;
     }
 };

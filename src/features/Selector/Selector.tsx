@@ -2,7 +2,7 @@ import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { creatorState, useCreator } from "../../recoil/atoms/creator";
-import { rolesState, useRoles } from "../../recoil/atoms/roles";
+import { rolesState, useRoles } from "../Roles/atom/roles";
 import { appState } from "../../recoil/atoms/app";
 import { Action } from "../../../types/ActionList";
 
@@ -43,21 +43,21 @@ export const Selector = ({ rowData, table, index }: Props) => {
     });
 
     const actionSelectorHandler = (option: any) => {
-        if (table) {
-            let filteredResourceListCopy: any[] = [
-                ...roles.filteredResourceList,
-            ];
-            let copyObj = { ...filteredResourceListCopy[index] };
-            const action = app.actionList.filter(
+        if (table && index !== undefined) {
+            let rolesCopy = JSON.parse(JSON.stringify(roles.roleSelected));
+
+            let action = app.actionList.filter(
                 (act: Action) => act.actionName === option.target.value
             )[0];
-            copyObj.securityAction = action;
-            copyObj.FONT_STYLE = "italic";
-            copyObj.FONT_SIZE = 600;
-            filteredResourceListCopy[index] = copyObj;
+            rolesCopy.operationCd = "M";
+            rolesCopy.securityRoleResourceList[index].securityAction = action;
+            rolesCopy.fontStyle = "italic";
+            rolesCopy.fontSize = 600;
+            rolesCopy.lastUpdDtTm = new Date().toISOString();
+            rolesCopy.lastUpdUser = app.employee.employeeId;
             setRoles((state) => ({
                 ...state,
-                filteredResourceList: filteredResourceListCopy,
+                roleSelected: rolesCopy,
             }));
         } else {
             const action = app.actionList.filter(
@@ -88,7 +88,14 @@ export const Selector = ({ rowData, table, index }: Props) => {
                         )}
                     </SelectAction>
                 ) : (
-                    <SelectAction onChange={actionSelectorHandler} value={creator.actionSelected ? creator.actionSelected.actionName : ""}>
+                    <SelectAction
+                        onChange={actionSelectorHandler}
+                        value={
+                            creator.actionSelected
+                                ? creator.actionSelected.actionName
+                                : ""
+                        }
+                    >
                         {actionOptionsCreate.map(
                             (option: any, index: number) => (
                                 <MenuItem

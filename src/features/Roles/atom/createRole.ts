@@ -1,13 +1,13 @@
 import { atom, useSetRecoilState } from "recoil";
-import { SecurityRoleList, SecurityRole, SecurityRoleResourceList, SecurityRoleResource, SecurityResourceList, SecurityResource, SecurityRoleListSave, SecurityRoleListSaveList } from "../../../types/SecurityRoleList";
-import { Action } from "../../../types/ActionList";
+import { Action } from "../../../../types/ActionList";
+import { SecurityResource, SecurityRole, SecurityRoleListSaveList } from "../../../../types/SecurityRoleList";
 
-
-interface CreatorState {
+interface CreateRoleState {
     rolesSelected: string[];
     resourcesFiltered: SecurityResource[];
     securityRoleList?: SecurityRoleListSaveList;
     show: boolean;
+    createdPending: boolean;
     role?: {
         changeFlag?: string | undefined;
         roleName?: string | undefined;
@@ -18,19 +18,19 @@ interface CreatorState {
     };
     actionList: Action[];
     actionSelected?: Action;
-    groupGroupSelected?: SecurityGroup;
     rolesFiltered: SecurityRole[];
 }
 
-export const creatorState = atom({
-    key: "creator",
+export const createRoleState = atom({
+    key: "createRole",
     default: {
         rolesSelected: [],
         resourcesFiltered: [],
         actionList: [],
         rolesFiltered: [],
         show: false,
-    } as CreatorState
+        createdPending: false,
+    } as CreateRoleState
 });
 
-export const useCreator = () => useSetRecoilState(creatorState);
+export const useCreateRole = () => useSetRecoilState(createRoleState);

@@ -20,10 +20,10 @@ import {
 } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../recoil/atoms/app";
-import { rolesState, useRoles } from "../../recoil/atoms/roles";
+import { rolesState, useRoles } from "./atom/roles";
 import { PageContainer, PageWrapper } from "../styles";
-import { SecurityTable } from "../Table/SecurityTable";
 import { RoleDescField, RoleField } from "./styles";
+import { RoleTable } from "./Table/RoleTable";
 
 export const Roles = () => {
     const roles = useRecoilValue(rolesState);
@@ -87,10 +87,10 @@ export const Roles = () => {
             params
         );
 
-        let roleSelectedResponse: SecurityRole[] = results.securityRoleList;
+        let roleSelectedResponse: SecurityRole = results.securityRoleList[0];
 
         let resourcesFromRole =
-            roleSelectedResponse[0].securityRoleResourceList;
+            roleSelectedResponse.securityRoleResourceList;
 
         let tableView: any[] = [];
 
@@ -112,7 +112,7 @@ export const Roles = () => {
         setRoles((state) => ({
             ...state,
             filteredResourceList: tableView,
-            rolesSelected: [option],
+            roleSelected: roleSelectedResponse,
         }));
     };
 
@@ -190,14 +190,7 @@ export const Roles = () => {
                 flexItem
                 style={{ paddingBottom: "5px" }}
             />
-            <SecurityTable
-                dataList={roles.resourcesMasterList}
-                tableData={roles.filteredResourceList}
-                name={"resourceName"}
-                value={"ACTION_NAME"}
-                headerKey={"Resource"}
-                headerValue={"Action"}
-            />
+            {roles.roleSelected ? <RoleTable /> : <></>}
         </PageWrapper>
     );
 };

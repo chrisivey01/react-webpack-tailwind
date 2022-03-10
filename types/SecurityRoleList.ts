@@ -36,16 +36,7 @@ type SecurityResourceList = {
 
 type SecurityResource = {
     changeFlag?: string,
-    lastUpdDtTm?: {
-        date?: number,
-        hours?: number,
-        minutes?: number,
-        month?: number,
-        nanos?: number,
-        seconds?: number,
-        time?: number,
-        year?: number;
-    },
+    lastUpdDtTm?: Date,
     lastUpdUser?: string,
     operationCd?: string,
     resourceName?: string,
@@ -53,22 +44,16 @@ type SecurityResource = {
     securityResourceUuid?: string;
     securityResource: SecurityRoleResource;
     securityAction?: SecurityAction;
+    color?: string;
+    fontSize?: string:
+    fontStyle?: string;
 };
 
 type SecurityAction = {
     actionDesc?: string,
     actionName?: string,
     changeFlag?: string,
-    lastUpdDtTm?: {
-        date?: number,
-        hours?: number,
-        minutes?: number,
-        month?: number,
-        nanos?: number,
-        seconds?: number,
-        time?: number,
-        year?: number;
-    },
+    lastUpdDtTm?: Date,
     lastUpdUser?: string,
     operationCd?: string,
     priorityNbr?: number,
@@ -76,4 +61,68 @@ type SecurityAction = {
     securityAppEaiNbr?: number;
 };
 
-export type { SecurityRoleList, SecurityRole, SecurityRoleResource, SecurityRoleResourceList, SecurityResource, SecurityResourceList, SecurityAction };
+type SecurityRoleListSaveList = {
+    securityRoleList: SecurityRoleListSave[]
+}
+type SecurityRoleListSave = {
+    "changeFlag"?: string,
+    "lastUpdDtTm"?: string,
+    "lastUpdUser"?: string,
+    "operationCd"?: string,
+    "roleDesc"?: string,
+    "roleName"?: string,
+    "securityAppEaiNbr"?: number,
+    "securityRoleResourceList"?: [
+        {
+            "changeFlag"?: string,
+            "lastUpdDtTm"?: string,
+            "lastUpdUser"?: string,
+            "operationCd"?: string,
+            "securityAction"?: {
+                "actionDesc"?: string,
+                "actionName"?: string,
+                "changeFlag"?: string,
+                "lastUpdDtTm"?: {
+                    "date"?: number,
+                    "hours"?: number,
+                    "minutes"?: number,
+                    "month"?: number,
+                    "nanos"?: number,
+                    "seconds"?: number,
+                    "time"?: number,
+                    "year"?: number;
+                },
+                "lastUpdUser"?: string,
+                "operationCd"?: string,
+                "priorityNbr"?: number,
+                "securityActionUuid"?: string,
+                "securityAppEaiNbr"?: number;
+            },
+            "securityAppEaiNbr"?: number,
+            "securityResource"?: {
+                "changeFlag"?: string,
+                "lastUpdDtTm"?: {
+                    "date"?: number,
+                    "hours"?: number,
+                    "minutes"?: number,
+                    "month"?: number,
+                    "nanos"?: number,
+                    "seconds"?: number,
+                    "time"?: number,
+                    "year"?: number;
+                },
+                "lastUpdUser"?: string,
+                "operationCd"?: string,
+                "resourceName"?: string,
+                "securityAppEaiNbr"?: number,
+                "securityResourceUuid"?: string;
+            },
+            "securityRoleResourceUuid"?: string;
+        }
+    ],
+    "securityRoleUuid"?: string;
+
+};
+
+
+export type { SecurityRoleList, SecurityRole, SecurityRoleResource, SecurityRoleResourceList, SecurityResource, SecurityResourceList, SecurityAction, SecurityRoleListSave, SecurityRoleListSaveList };

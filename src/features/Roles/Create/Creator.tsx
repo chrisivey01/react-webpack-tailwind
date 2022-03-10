@@ -1,11 +1,11 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { Selector } from "../../Selector/Selector";
-import { CreateRoleFields } from "../styles";
-import { creatorState, useCreator } from "../../../recoil/atoms/creator";
-import { useRecoilValue } from "recoil";
+import { CreateRoleFields } from "../../Create/styles";
 
 interface Props {
+    nameHandler: any;
+    descHandler: any;
     firstMasterList: any;
     secondMasterList: any;
     filteredList: any;
@@ -21,6 +21,8 @@ interface Props {
 }
 
 export const Creator = ({
+    nameHandler,
+    descHandler,
     firstMasterList,
     secondMasterList,
     filteredList,
@@ -35,19 +37,6 @@ export const Creator = ({
     secondPropDisplay,
 }: Props) => {
     const location = useLocation();
-    const setCreator = useCreator();
-    const creator = useRecoilValue(creatorState);
-    const roleNameHandler = (event: any) => {
-        let roleFields = { ...creator.role };
-        roleFields.name = event.target.value;
-        setCreator((state) => ({ ...state, role: roleFields }));
-    };
-
-    const roleDescHandler = (event: any) => {
-        let roleFields = { ...creator.role };
-        roleFields.desc = event.target.value;
-        setCreator((state) => ({ ...state, role: roleFields }));
-    };
 
     return (
         <Grid>
@@ -58,7 +47,7 @@ export const Creator = ({
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    onChange={roleNameHandler}
+                    onChange={nameHandler}
                 />
                 <CreateRoleFields
                     label={createdTextDescription}
@@ -66,7 +55,7 @@ export const Creator = ({
                     InputLabelProps={{
                         shrink: true,
                     }}
-                    onChange={roleDescHandler}
+                    onChange={descHandler}
                 />
             </Box>
             <Divider style={{ margin: 10 }} />

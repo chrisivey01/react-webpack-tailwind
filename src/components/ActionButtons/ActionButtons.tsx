@@ -2,43 +2,57 @@ import { Box } from "@mui/material";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRoleList } from "../../../types/SecurityRoleList";
+import {
+    SecurityResource,
+    SecurityRoleList,
+} from "../../../types/SecurityRoleList";
+import { SECURITY_ROLE_SAVE_REQUEST } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
+import {
+    createRoleState,
+    useCreateRole,
+} from "../../features/Roles/atom/createRole";
+import { rolesState, useRoles } from "../../features/Roles/atom/roles";
 import { appState } from "../../recoil/atoms/app";
-import { rolesState, useRoles } from "../../recoil/atoms/roles";
 import { SaveButton } from "./styles";
 
-interface Props {
-    setWindowType: any;
-    setOpen: any;
-}
-
-export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
+export const ActionButtons = () => {
     const location = useLocation();
     const roles = useRecoilValue(rolesState);
     const setRoles = useRoles();
     const [checkedState, setCheckedState] = useState<any>(false);
-    const create = useRecoilValue(creatorState);
-    
+    const createRole = useRecoilValue(createRoleState);
+    const setCreate = useCreateRole();
+    const app = useRecoilValue(appState);
+
     const clickHandler = (type: string) => {
         if (type === "create") {
-            let resourceCopy = [...roles.filteredResourceList];
+            let rolesCopy = JSON.parse(JSON.stringify(roles.roleSelected));
+
             let securityObj: SecurityResource = {
-                ACTION_NAME: "Access",
-                CHANGE_FLAG: "I",
-                LAST_UPD_DT_TM: new Date().toLocaleString(),
-                LAST_UPD_USER: "BATCH",
-                RESOURCE_DESC: "",
-                RESOURCE_NAME: "",
-                SECURITY_ACTION_UUID: "",
-                SECURITY_APP_EAI_NBR: 5907,
-                SECURITY_RESOURCE_UUID: "",
+                securityAction: {},
+                changeFlg: "I",
+                lastUpdDtTm: new Date().toISOString(),
+                lastUpdUser: app.employee.employeeId,
+                resourceDesc: "",
+                resourceName: "",
+                securityResourceUuid: "",
+                securityAppEaiNbr: 5907,
+                securityResource: {
+                    changeFlag: "I",
+                    lastUpdDtTm: new Date().toISOString(),
+                    lastUpdUser: app.employee.employeeId,
+                    resourceName: "",
+                    securityAppEaiNbr: 0,
+                    securityResourceUuid: "",
+                },
             };
-            resourceCopy.push(securityObj);
+
+            rolesCopy.securityRoleResourceList.push(securityObj);
+
             setRoles((state) => ({
                 ...state,
-                filteredResourceList: resourceCopy,
+                roleSelected: rolesCopy,
             }));
         }
     };
@@ -46,21 +60,43 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
     const closeHandler = () => {};
 
     const newRoleHandler = () => {
-        setOpen(true);
-        setWindowType("role");
+        setCreate((state) => ({
+            ...state,
+            show: true,
+        }));
     };
 
     const newGroupHandler = () => {
-        setOpen(true);
-        setWindowType("group");
+        setCreate((state) => ({
+            ...state,
+            show: true,
+        }));
     };
 
     const saveHandler = async () => {
         if (location.pathname === "/roles") {
-            const results: SecurityRoleList = await httpRequestList(
-                SECURITY_ROLE_SAVE_REQUEST,
-                create.role
-            );
+            if (createRole.createdPending) {
+                const results: SecurityRoleList = await httpRequestList(
+                    SECURITY_ROLE_SAVE_REQUEST,
+                    createRole.securityRoleList
+                );
+                console.log(results);
+                setCreate((state) => ({
+                    ...state,
+                    createdPending: false,
+                }));
+            } else {
+                let params: any = {
+                    userId: app.employee.employeeId,
+                    securityRoleList: [],
+                };
+                params.securityRoleList.push(roles.roleSelected);
+                const results: SecurityRoleList = await httpRequestList(
+                    SECURITY_ROLE_SAVE_REQUEST,
+                    params
+                );
+                console.log(results);
+            }
         }
     };
 
@@ -75,19 +111,30 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
                 }}
             >
                 {checkedState ? (
-                    <SaveButton>Modify</SaveButton>
+                    <SaveButton sx ={{backgroundColor: "#0063cc"}}>Modify</SaveButton>
                 ) : (
                     <>
                         <SaveButton
+                            sx={{ backgroundColor: "#0063cc" }}
                             disabled={roles.filteredResourceList === undefined}
                             onClick={() => clickHandler("create")}
                         >
                             Add Resource
                         </SaveButton>
-                        <SaveButton onClick={() => newRoleHandler()}>
+                        <SaveButton
+                            sx={{ backgroundColor: "#0063cc" }}
+                            onClick={() => newRoleHandler()}
+                        >
                             New Role
                         </SaveButton>
-                        <SaveButton onClick={() => clickHandler("update")}>
+                        <SaveButton
+                            sx={{
+                                backgroundColor: createRole.createdPending
+                                    ? "#00FF00"
+                                    : "#0063cc",
+                            }}
+                            onClick={() => saveHandler()}
+                        >
                             Save
                         </SaveButton>
                     </>
@@ -127,7 +174,3 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
         return <></>;
     }
 };
-function createState(createState: any) {
-    throw new Error("Function not implemented.");
-}
-

@@ -5,4 +5,4 @@ export const SECURITY_ROLE_LIST_REQUEST = "securityrolelistrequest";
 export const SECURITY_RESOURCE_LIST_REQUEST = "securityresourcelistrequest";
 export const SECURITY_ROLE_REQUEST = "securityrolerequest";
 export const SECURITY_RESOURCE_REQUEST = "securityresourcerequest";
-export const SECURITY_ROLE_SAVE_REQUEST = "securityrolesaverequest"
+export const SECURITY_ROLE_SAVE_REQUEST = "securityrolesaverequest";

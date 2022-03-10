@@ -10,7 +10,7 @@ export const SaveButton = styled(Button)`
     font-size: 12px;
     padding: 6px 12px;
     line-height: 1.5;
-    background-color: #0063cc;
+
     border: 1px solid #0063cc;
     &:hover {
         background-color: #0069d9;
