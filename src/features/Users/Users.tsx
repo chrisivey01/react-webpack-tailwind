@@ -14,25 +14,49 @@ import * as JSON from "../../assets/json";
 import { userState, useUser } from "../../recoil/atoms/users";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
 import { SecurityTable } from "../Table/SecurityTable";
-
 export const Users = () => {
     const setUser = useUser();
     const user = useRecoilValue(userState);
 
+    // useEffect(() => {
+    //     if (app.employee) {
+    //         const fetchEai = async () => {
+    //             const results: EAIList = await httpRequestList(
+    //                 APP_EAI_LIST_REQUEST,
+    //                 app.employee.employeeId
+    //             );
+    //             if (results) {
+    //                 setUser((state) => ({
+    //                     ...state,
+    //                     appEaiList: results.appEaiList,
+    //                 }));
+    //             }
+    //         };
+    //         fetchEai();
+    //     }
+    // }, [app.employee]);
+
     useEffect(() => {
-        setUser((state) => ({
-            ...state,
-            employeeMasterList: JSON.phxUserFilteredJson,
-            securityGroupMasterList: JSON.securityGroupJson,
-            securityGroupRoleMasterList: JSON.securityGroupRoleJson,
-            securityUserGroupMasterList: JSON.securityUserGroupJson,
-            securityRolesMasterList: JSON.securityRoleJson,
-            securityUserRoleMasterList: JSON.securityUserRoleJson,
-            rolesMasterList: JSON.securityRoleJson,
-            resourcesMasterList: JSON.securityResourceJson,
-            securityActionMasterList: JSON.securityActionJson,
-            securityRoleResourceMasterList: JSON.securityRoleResourceJson,
-        }));
+        if (
+            process.env.NODE_ENV === "fedex" ||
+            process.env.NODE_ENV === "production"
+        ) {
+            console.log(45);
+        } else {
+            setUser((state) => ({
+                ...state,
+                employeeMasterList: JSON.phxUserFilteredJson,
+                securityGroupMasterList: JSON.securityGroupJson,
+                securityGroupRoleMasterList: JSON.securityGroupRoleJson,
+                securityUserGroupMasterList: JSON.securityUserGroupJson,
+                securityRolesMasterList: JSON.securityRoleJson,
+                securityUserRoleMasterList: JSON.securityUserRoleJson,
+                rolesMasterList: JSON.securityRoleJson,
+                resourcesMasterList: JSON.securityResourceJson,
+                securityActionMasterList: JSON.securityActionJson,
+                securityRoleResourceMasterList: JSON.securityRoleResourceJson,
+            }));
+        }
     }, []);
 
     const changeUser = (option: PhxUser | null) => {

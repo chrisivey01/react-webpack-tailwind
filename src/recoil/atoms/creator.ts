@@ -1,12 +1,21 @@
 import { atom, useSetRecoilState } from "recoil";
-import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRole } from "../../../types/SecurityRole";
+import { SecurityRoleList, SecurityRole, SecurityRoleResourceList, SecurityRoleResource, SecurityResourceList, SecurityResource } from "../../../types/SecurityRoleList";
+import { Action } from "../../../types/ActionList";
+
 
 interface CreatorState {
-    rolesSelected: SecurityRole[];
+    rolesSelected: string[];
     resourcesFiltered: SecurityResource[];
-    action: string;
+    role?: {
+        changeFlag?: string | undefined;
+        name?: string | undefined;
+        desc?: string | undefined;
+        operationCd?: string | undefined;
+        securityAppEaiNbr?: number;
+        securityRoleResourceList?: SecurityRoleResource[]
+    };
+    actionList: Action[];
+    actionSelected?: Action;
     groupGroupSelected?: SecurityGroup;
     rolesFiltered: SecurityRole[];
 }
@@ -16,8 +25,8 @@ export const creatorState = atom({
     default: {
         rolesSelected: [],
         resourcesFiltered: [],
-        action: 'edit',
-        rolesFiltered: []
+        actionList: [],
+        rolesFiltered: [],
     } as CreatorState
 });
 

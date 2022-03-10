@@ -13,7 +13,7 @@ export const RolesAutocomplete = ({
     rowData,
     newResourceDropdownHandler,
 }: Props) => {
-    if (rowData.RESOURCE_NAME === "") {
+    if (rowData.resourceName === "") {
         return (
             <Autocomplete
                 size="small"
@@ -22,14 +22,14 @@ export const RolesAutocomplete = ({
                 }}
                 id="tags-outlined"
                 options={autocompleteData}
-                getOptionLabel={(option) => option.RESOURCE_NAME}
+                getOptionLabel={(option) => option.resourceName}
                 filterSelectedOptions
                 onChange={(e, option: any) =>
                     newResourceDropdownHandler(option)
                 }
                 renderOption={(props, option, { inputValue }) => {
-                    const matches = match(option.RESOURCE_NAME, inputValue);
-                    const parts = parse(option.RESOURCE_NAME, matches);
+                    const matches = match(option.resourceName, inputValue);
+                    const parts = parse(option.resourceName, matches);
 
                     return (
                         <li {...props}>
@@ -53,6 +53,6 @@ export const RolesAutocomplete = ({
             />
         );
     } else {
-        return <>{rowData.RESOURCE_NAME}</>;
+        return <>{rowData.resourceName}</>;
     }
 };

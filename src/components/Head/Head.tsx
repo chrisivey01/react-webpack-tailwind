@@ -1,7 +1,21 @@
-import { AppBar, Box, Button, TextField, Toolbar } from "@mui/material";
+import {
+    AppBar,
+    Box,
+    Button,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Toolbar,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
+import { ActionList } from "../../../types/ActionList";
+import { EAI } from "../../../types/EAI";
+import { EAIList } from "../../../types/EAIList";
 import { Nav } from "../../../types/Nav";
+import { APP_EAI_LIST_REQUEST, SECURITY_ACTION_REQUEST } from "../../apis";
+import { httpRequestList } from "../../apis/requests";
 import fedexImg from "../../assets/fedex.png";
 import { appState, useApp } from "../../recoil/atoms/app";
 
@@ -12,17 +26,61 @@ type Props = {
 
 export const Head = ({ navigateHandler, navigation }: Props) => {
     const app = useRecoilValue(appState);
-    const setUser = useApp();
+    const setApp = useApp();
 
     useEffect(() => {
         const copyAppState = { ...app };
-        copyAppState.appId = "5907";
+        copyAppState.appId = 5907;
         copyAppState.employee = {
             employeeId: "5252960",
             name: "Chris Ivey",
         };
-        setUser(copyAppState);
+        setApp(copyAppState);
     }, []);
+
+    useEffect(() => {
+        if (app.employee) {
+            fetchEaiList();
+            fetchActionList();
+        }
+    }, [app.employee]);
+
+    const fetchActionList = async () => {
+        const params = {
+            securityAppEaiNbr: app.appId
+        }
+        const results: ActionList = await httpRequestList(
+            SECURITY_ACTION_REQUEST,
+            params
+        )
+        if(results){
+            setApp((state) => ({
+                ...state,
+                actionList: results.actionList
+            }))
+        }
+    }
+
+    const fetchEaiList = async () => {
+        const params = {
+            userId: app.employee.employeeId,
+        };
+        const results: EAIList = await httpRequestList(
+            APP_EAI_LIST_REQUEST,
+            params
+        );
+        if (results) {
+            setApp((state) => ({
+                ...state,
+                appEaiList: results.appEaiList,
+            }));
+        }
+    };
+
+
+    const handleChange = () => {
+        console.log("do nothing");
+    };
 
     return (
         <AppBar
@@ -38,23 +96,33 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
                     />
                 </Box>
                 <Box sx={{ position: "absolute", left: "200px" }}>
-                    <TextField
-                        value={app.appId ?? ""}
-                        sx={{
-                            "& .MuiInputLabel-root.Mui-disabled": {
-                                color: "#fff",
-                                WebkitTextFillColor: "#fff",
-                            },
-                            "& .MuiOutlinedInput-input.Mui-disabled": {
-                                color: "#fff",
-                                WebkitTextFillColor: "#fff",
-                                background: "rgba(0,0,0,.3)",
-                            },
-                        }}
-                        label="Application ID"
-                        margin="normal"
-                        disabled
-                    />
+                    <FormControl variant="filled" sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel sx={{ color: "white" }}>
+                            EAI List
+                        </InputLabel>
+                        {app.appEaiList ? (
+                            <Select
+                                value={app.appEaiList[0].securityAppEaiNbr}
+                                onChange={handleChange}
+                                sx={{
+                                    ".MuiInputLabel-root": {
+                                        color: "white !important",
+                                    },
+                                    color: "white",
+                                }}
+                            >
+                                {app.appEaiList.map((app: EAI) => {
+                                    return (
+                                        <MenuItem value={app.securityAppEaiNbr}>
+                                            {app.securityAppEaiNbr}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        ) : (
+                            <></>
+                        )}
+                    </FormControl>
                 </Box>
                 <Box
                     style={{

@@ -1,19 +1,30 @@
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { CssBaseline } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { APP_EAI_LIST_REQUEST } from "./apis";
+import { httpRequestList } from "./apis/requests";
 import { Body } from "./components/Body";
 import { Head } from "./components/Head";
 import { GlobalStyle } from "./GlobalStyle";
+import { appState, useApp } from "./recoil/atoms/app";
 
 const App = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const app = useRecoilValue(appState);
+    const setApp = useApp();
 
     const [navigation, setNavigation]: any[] = useState([
         { name: "Users", to: "/", current: true },
         { name: "Groups", to: "/groups", current: false },
         { name: "Roles", to: "/roles", current: false },
     ]);
+
+    /**
+     * Obtain EAI List on load
+     */
+
 
     const navigateHandler = (to: string) => {
         navigation.map((nav: any) => {
@@ -30,16 +41,6 @@ const App = () => {
         navigate(to);
         setNavigation(navigation);
     };
-
-    const theme = useMemo(
-        () =>
-            createTheme({
-                palette: {
-                    mode: "dark",
-                },
-            }),
-        []
-    );
 
     useEffect(() => {
         let copyNavigate = [...navigation];

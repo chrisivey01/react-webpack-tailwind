@@ -3,6 +3,8 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { creatorState, useCreator } from "../../recoil/atoms/creator";
 import { rolesState, useRoles } from "../../recoil/atoms/roles";
+import { appState } from "../../recoil/atoms/app";
+import { Action } from "../../../types/ActionList";
 
 const SelectAction = styled(Select)`
     font-size: 12px;
@@ -28,42 +30,28 @@ export const Selector = ({ rowData, table, index }: Props) => {
     const creator = useRecoilValue(creatorState);
     const setRoles = useRoles();
     const setCreator = useCreator();
-    const actionOptionsTable: any = [
-        {
-            name: "VIEW",
-            value: "view",
-        },
-        {
-            name: "EDIT",
-            value: "edit",
-        },
-        {
-            name: "HAVE",
-            value: "have",
-        },
-        {
-            name: "ACCESS",
-            value: "access",
-        },
-    ];
 
-    const actionOptionsCreate: any = [
-        {
-            name: "VIEW",
-            value: "view",
-        },
-        {
-            name: "EDIT",
-            value: "edit",
-        },
-    ]
+    const app = useRecoilValue(appState);
+
+    const actionOptionsTable: Action[] = app.actionList;
+
+    let actionOptionsCreate: Action[] = [];
+    app.actionList.map((act: Action) => {
+        if (act.actionName === "View" || act.actionName === "Edit") {
+            actionOptionsCreate.push(act);
+        }
+    });
+
     const actionSelectorHandler = (option: any) => {
-        if (table && index) {
+        if (table) {
             let filteredResourceListCopy: any[] = [
                 ...roles.filteredResourceList,
             ];
-            let copyObj = Object.assign({}, filteredResourceListCopy[index]);
-            copyObj.ACTION_NAME = option.target.value;
+            let copyObj = { ...filteredResourceListCopy[index] };
+            const action = app.actionList.filter(
+                (act: Action) => act.actionName === option.target.value
+            )[0];
+            copyObj.securityAction = action;
             copyObj.FONT_STYLE = "italic";
             copyObj.FONT_SIZE = 600;
             filteredResourceListCopy[index] = copyObj;
@@ -72,54 +60,51 @@ export const Selector = ({ rowData, table, index }: Props) => {
                 filteredResourceList: filteredResourceListCopy,
             }));
         } else {
-            setCreator((state) => ({ ...state, action: option.target.value }));
+            const action = app.actionList.filter(
+                (act: Action) => act.actionName === option.target.value
+            )[0];
+            setCreator((state) => ({ ...state, actionSelected: action }));
         }
     };
-
-    // const resourceSelectHandler = (option: any, value: any) => {
-    //     console.log(option)
-    //     console.log(value)
-    //     // let resourceObj = Object.assign(
-    //     //     {},
-    //     //     resourceList[resourceList.length - 1]
-    //     // );
-    //     // resourceObj.ACTION_NAME = actionSelected;
-    //     // resourceList[resourceList.length - 1] = resourceObj;
-    //     // dispatch(rolesSingleSelectHandler(resourceList));
-    // };
 
     return (
         <FormControl>
             <Box style={{ display: "flex", alignItems: "center", margin: 8 }}>
-                {rowData && rowData.ACTION_NAME ? (
+                {rowData && rowData.securityAction ? (
                     <SelectAction
                         onChange={actionSelectorHandler}
-                        value={rowData.ACTION_NAME.toLowerCase()}
+                        value={rowData.securityAction.actionName ?? {}}
                     >
-                        {actionOptionsTable.map((option: any, index: number) => (
-                            <MenuItem
-                                key={index}
-                                value={option.value}
-                                style={{ fontSize: 12 }}
-                            >
-                                {option.name}
-                            </MenuItem>
-                        ))}
+                        {actionOptionsTable.map(
+                            (option: any, index: number) => (
+                                <MenuItem
+                                    key={index}
+                                    value={option.actionName}
+                                    style={{ fontSize: 12 }}
+                                >
+                                    {option.actionName}
+                                </MenuItem>
+                            )
+                        )}
                     </SelectAction>
                 ) : (
-                    <SelectAction
-                        onChange={actionSelectorHandler}
-                        value={creator.action ?? ''}
-                    >
-                        {actionOptionsCreate.map((option: any, index: number) => (
-                            <MenuItem
-                                key={index}
-                                value={option.value}
-                                style={{ fontSize: 12 }}
-                            >
-                                {option.name}
-                            </MenuItem>
-                        ))}
+                    <SelectAction onChange={actionSelectorHandler} value={creator.actionSelected ? creator.actionSelected.actionName : ""}>
+                        {actionOptionsCreate.map(
+                            (option: any, index: number) => (
+                                <MenuItem
+                                    key={index}
+                                    value={
+                                        option.actionName
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                        option.actionName.slice(1)
+                                    }
+                                    style={{ fontSize: 12 }}
+                                >
+                                    {option.actionName}
+                                </MenuItem>
+                            )
+                        )}
                     </SelectAction>
                 )}
             </Box>

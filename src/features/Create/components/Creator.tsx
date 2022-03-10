@@ -2,6 +2,8 @@ import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { Selector } from "../../Selector/Selector";
 import { CreateRoleFields } from "../styles";
+import { creatorState, useCreator } from "../../../recoil/atoms/creator";
+import { useRecoilValue } from "recoil";
 
 interface Props {
     firstMasterList: any;
@@ -33,6 +35,20 @@ export const Creator = ({
     secondPropDisplay,
 }: Props) => {
     const location = useLocation();
+    const setCreator = useCreator();
+    const creator = useRecoilValue(creatorState);
+    const roleNameHandler = (event: any) => {
+        let roleFields = { ...creator.role };
+        roleFields.name = event.target.value;
+        setCreator((state) => ({ ...state, role: roleFields }));
+    };
+
+    const roleDescHandler = (event: any) => {
+        let roleFields = { ...creator.role };
+        roleFields.desc = event.target.value;
+        setCreator((state) => ({ ...state, role: roleFields }));
+    };
+
     return (
         <Grid>
             <Box>
@@ -42,6 +58,7 @@ export const Creator = ({
                     InputLabelProps={{
                         shrink: true,
                     }}
+                    onChange={roleNameHandler}
                 />
                 <CreateRoleFields
                     label={createdTextDescription}
@@ -49,6 +66,7 @@ export const Creator = ({
                     InputLabelProps={{
                         shrink: true,
                     }}
+                    onChange={roleDescHandler}
                 />
             </Box>
             <Divider style={{ margin: 10 }} />
@@ -86,7 +104,7 @@ export const Creator = ({
                     value={filteredList ?? []}
                     getOptionLabel={(option) => option[secondPropDisplay]}
                     isOptionEqualToValue={(option: any, value: any) =>
-                        option[secondPropDisplay] === value[secondPropDisplay]
+                        option[secondPropLabel] === value[secondPropLabel]
                     }
                     filterSelectedOptions
                     onChange={secondClickHandler}

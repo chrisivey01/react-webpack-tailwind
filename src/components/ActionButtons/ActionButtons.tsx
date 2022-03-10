@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../types/SecurityResource";
+import { SecurityRoleList } from "../../../types/SecurityRoleList";
+import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../recoil/atoms/app";
 import { rolesState, useRoles } from "../../recoil/atoms/roles";
 import { SaveButton } from "./styles";
@@ -17,7 +19,8 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
     const roles = useRecoilValue(rolesState);
     const setRoles = useRoles();
     const [checkedState, setCheckedState] = useState<any>(false);
-
+    const create = useRecoilValue(creatorState);
+    
     const clickHandler = (type: string) => {
         if (type === "create") {
             let resourceCopy = [...roles.filteredResourceList];
@@ -50,6 +53,15 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
     const newGroupHandler = () => {
         setOpen(true);
         setWindowType("group");
+    };
+
+    const saveHandler = async () => {
+        if (location.pathname === "/roles") {
+            const results: SecurityRoleList = await httpRequestList(
+                SECURITY_ROLE_SAVE_REQUEST,
+                create.role
+            );
+        }
     };
 
     if (location.pathname === "/roles") {
@@ -108,10 +120,14 @@ export const ActionButtons = ({ setWindowType, setOpen }: Props) => {
                     right: 0,
                 }}
             >
-                <SaveButton>Save</SaveButton>
+                <SaveButton onClick={() => saveHandler()}>Save</SaveButton>
             </Box>
         );
     } else {
         return <></>;
     }
 };
+function createState(createState: any) {
+    throw new Error("Function not implemented.");
+}
+

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --mode development ",
+    "start": "webpack serve --mode development",
+    "fedex": "webpack serve --mode development --node-env=fedex",
     "watch": "webpack --mode development --watch --node-env=development",
     "build": "webpack --mode production --node-env=production"
   },
@@ -35,6 +36,7 @@
     "@types/styled-components": "^5.1.23",
     "autosuggest-highlight": "^3.2.1",
     "css-loader": "^6.6.0",
+    "dotenv": "^16.0.0",
     "esbuild-loader": "^2.18.0",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.5.3",

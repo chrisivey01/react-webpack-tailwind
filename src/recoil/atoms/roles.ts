@@ -1,10 +1,9 @@
 import { atom, useSetRecoilState } from "recoil";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRole } from "../../../types/SecurityRole";
+import { SecurityRoleList, SecurityRole, SecurityRoleResourceList, SecurityRoleResource, SecurityResourceList, SecurityResource } from "../../../types/SecurityRoleList";
 
 interface RolesState {
     roleSelected: SecurityRole;
-    filteredResourceList: SecurityResource[];
+    filteredResourceList: any;
     rolesMasterList: SecurityRole[];
     resourcesMasterList: SecurityResource[];
     actionSelected: any;

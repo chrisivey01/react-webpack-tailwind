@@ -114,9 +114,9 @@ export const RolesRow = ({
                         fontWeight: rowData.FONT_SIZE,
                     }}
                 >
-                    {rowData.ACTION_NAME === "Access" ||
-                    rowData.ACTION_NAME === "Have" ? (
-                        <Box>{rowData.ACTION_NAME}</Box>
+                    {rowData.securityAction.actionName === "Access" ||
+                    rowData.securityAction.actionName === "Have" ? (
+                        <Box>{rowData.securityAction.actionName}</Box>
                     ) : (
                         <Selector
                             table={true}
@@ -159,7 +159,7 @@ export const RolesRow = ({
                         fontWeight: rowData.FONT_SIZE,
                     }}
                 >
-                    <Box>{rowData.ACTION_NAME}</Box>
+                    <Box>{rowData.securityAction.actionName}</Box>
                 </TableCell>
             </TableRow>
         );
