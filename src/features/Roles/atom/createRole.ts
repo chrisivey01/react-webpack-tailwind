@@ -1,24 +1,25 @@
 import { atom, useSetRecoilState } from "recoil";
 import { Action } from "../../../../types/ActionList";
-import { SecurityResource, SecurityRole, SecurityRoleListSaveList } from "../../../../types/SecurityRoleList";
+import { SecurityResource, SecurityRole, SecurityRoleListSaveList, SecurityRoleResource } from "../../../../types/SecurityRoleList";
 
 interface CreateRoleState {
     rolesSelected: string[];
     resourcesFiltered: SecurityResource[];
-    securityRoleList?: SecurityRoleListSaveList;
+    securityRoleList?: SecurityRole[];
     show: boolean;
     createdPending: boolean;
     role?: {
-        changeFlag?: string | undefined;
-        roleName?: string | undefined;
-        roleDesc?: string | undefined;
-        operationCd?: string | undefined;
+        changeFlag?: string;
+        roleName?: string;
+        roleDesc?: string;
+        operationCd?: string;
         securityAppEaiNbr?: number;
         securityRoleResourceList?: SecurityResource[];
     };
     actionList: Action[];
     actionSelected?: Action;
     rolesFiltered: SecurityRole[];
+    securityRoleResourceList: SecurityRoleResource[];
 }
 
 export const createRoleState = atom({
@@ -30,6 +31,7 @@ export const createRoleState = atom({
         rolesFiltered: [],
         show: false,
         createdPending: false,
+        securityRoleResourceList: []
     } as CreateRoleState
 });
 

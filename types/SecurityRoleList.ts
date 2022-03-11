@@ -4,14 +4,13 @@ type SecurityRoleList = {
 };
 
 type SecurityRole = {
-    roleDesc: string;
-    roleName: string;
-    securityAppEaiNbr: number;
+    roleDesc?: string;
+    roleName?: string;
     lastUpdDtTm?: Date;
     operationCd?: string;
     changeFlag?: string;
-    securityAppEarNbr: number;
-    securityRoleResourceList: SecurityRoleResource[];
+    securityAppEaiNbr?: number;
+    securityRoleResourceList?: any[];
 };
 
 type SecurityRoleResourceList = {
@@ -62,65 +61,65 @@ type SecurityAction = {
 };
 
 type SecurityRoleListSaveList = {
-    securityRoleList: SecurityRoleListSave[]
+    securityRoleList: SecurityRole[]
 }
 type SecurityRoleListSave = {
-    "changeFlag"?: string,
-    "lastUpdDtTm"?: string,
-    "lastUpdUser"?: string,
-    "operationCd"?: string,
-    "roleDesc"?: string,
-    "roleName"?: string,
-    "securityAppEaiNbr"?: number,
-    "securityRoleResourceList"?: [
+    changeFlag?: string,
+    lastUpdDtTm?: string,
+    lastUpdUser?: string,
+    operationCd?: string,
+    roleDesc?: string,
+    roleName?: string,
+    securityAppEaiNbr?: number,
+    securityRoleResourceList?: [
         {
-            "changeFlag"?: string,
-            "lastUpdDtTm"?: string,
-            "lastUpdUser"?: string,
-            "operationCd"?: string,
-            "securityAction"?: {
-                "actionDesc"?: string,
-                "actionName"?: string,
-                "changeFlag"?: string,
-                "lastUpdDtTm"?: {
-                    "date"?: number,
-                    "hours"?: number,
-                    "minutes"?: number,
-                    "month"?: number,
-                    "nanos"?: number,
-                    "seconds"?: number,
-                    "time"?: number,
-                    "year"?: number;
+            changeFlag?: string,
+            lastUpdDtTm?: string,
+            lastUpdUser?: string,
+            operationCd?: string,
+            securityAction?: {
+                actionDesc?: string,
+                actionName?: string,
+                changeFlag?: string,
+                lastUpdDtTm?: {
+                    date?: number,
+                    hours?: number,
+                    minutes?: number,
+                    month?: number,
+                    nanos?: number,
+                    seconds?: number,
+                    time?: number,
+                    year?: number;
                 },
-                "lastUpdUser"?: string,
-                "operationCd"?: string,
-                "priorityNbr"?: number,
-                "securityActionUuid"?: string,
-                "securityAppEaiNbr"?: number;
+                lastUpdUser?: string,
+                operationCd?: string,
+                priorityNbr?: number,
+                securityActionUuid?: string,
+                securityAppEaiNbr?: number;
             },
-            "securityAppEaiNbr"?: number,
-            "securityResource"?: {
-                "changeFlag"?: string,
-                "lastUpdDtTm"?: {
-                    "date"?: number,
-                    "hours"?: number,
-                    "minutes"?: number,
-                    "month"?: number,
-                    "nanos"?: number,
-                    "seconds"?: number,
-                    "time"?: number,
-                    "year"?: number;
+            securityAppEaiNbr?: number,
+            securityResource?: {
+                changeFlag?: string,
+                lastUpdDtTm?: {
+                    date?: number,
+                    hours?: number,
+                    minutes?: number,
+                    month?: number,
+                    nanos?: number,
+                    seconds?: number,
+                    time?: number,
+                    year?: number;
                 },
-                "lastUpdUser"?: string,
-                "operationCd"?: string,
-                "resourceName"?: string,
-                "securityAppEaiNbr"?: number,
-                "securityResourceUuid"?: string;
+                lastUpdUser?: string,
+                operationCd?: string,
+                resourceName?: string,
+                securityAppEaiNbr?: number,
+                securityResourceUuid?: string;
             },
-            "securityRoleResourceUuid"?: string;
+            securityRoleResourceUuid?: string;
         }
     ],
-    "securityRoleUuid"?: string;
+    securityRoleUuid?: string;
 
 };
 

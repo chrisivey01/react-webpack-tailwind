@@ -4,6 +4,7 @@ import {
     SecurityResource,
     SecurityRole,
     SecurityRoleList,
+    SecurityRoleListSave,
     SecurityRoleListSaveList,
     SecurityRoleResource,
 } from "../../../../types/SecurityRoleList";
@@ -35,20 +36,31 @@ export const RoleWrapper = () => {
         );
         let securityRoleList: SecurityRole[] = results.securityRoleList;
         let resourcesSelected: SecurityResource[] = [];
+        let securityRoleResourceList: any[] = [];
         if (securityRoleList) {
             securityRoleList.map((sr: SecurityRole) => {
-                sr.securityRoleResourceList.map(
-                    (srrl: SecurityRoleResource) => {
-                        if (srrl.securityResource) {
-                            resourcesSelected.push(srrl.securityResource);
+                if (sr.securityRoleResourceList) {
+                    sr.securityRoleResourceList.map(
+                        (srrl: SecurityRoleResource) => {
+                            if (srrl.securityResource) {
+                                let obj = {
+                                    securityAppEaiNbr: app.appId,
+                                    operationCd: "I",
+                                    securityResource: srrl.securityResource,
+                                    securityAction: srrl.securityAction,
+                                };
+                                resourcesSelected.push(srrl.securityResource);
+                                securityRoleResourceList.push(obj);
+                            }
                         }
-                    }
-                );
+                    );
+                }
             });
         }
 
         setCreateRole((state) => ({
             ...state,
+            securityRoleResourceList: securityRoleResourceList,
             resourcesFiltered: resourcesSelected,
             rolesFiltered: securityRoleList,
             rolesSelected: roleList,
@@ -69,24 +81,29 @@ export const RoleWrapper = () => {
         }
         resourceList[resourceList.length - 1] = resourceObj;
 
-        setCreateRole((state) => ({ ...state, resourcesFiltered: resourceList }));
+        setCreateRole((state) => ({
+            ...state,
+            resourcesFiltered: resourceList,
+        }));
     };
 
     const roleCreateHandler = () => {
-        let saveList: SecurityRoleListSaveList;
-        saveList = {
-            securityRoleList: []
+        let saveList: SecurityRole[] = [];
+        let newRoleCopy: SecurityRole = { ...createRole.role };
+        if (createRole.role) {
+            newRoleCopy.securityAppEaiNbr = app.appId;
+            newRoleCopy.securityRoleResourceList = createRole.securityRoleResourceList;
+            newRoleCopy.operationCd = "I";
+            newRoleCopy.roleName = createRole.role?.roleName;
+            newRoleCopy.roleDesc = createRole.role?.roleDesc;
+            saveList.push(newRoleCopy);
+            setCreateRole((state) => ({
+                ...state,
+                createdPending: true,
+                securityRoleList: saveList,
+                show: false,
+            }));
         }
-        let newRoleCopy = { ...createRole.role };
-        newRoleCopy.securityAppEaiNbr = app.appId;
-        newRoleCopy.securityRoleResourceList = createRole.resourcesFiltered;
-        saveList.securityRoleList.push(newRoleCopy);
-        setCreateRole((state) => ({
-            ...state,
-            createdPending: true,
-            securityRoleList: saveList,
-            show: false,
-        }));
     };
 
     const roleNameHandler = (event: any) => {

@@ -8,7 +8,7 @@ import { Body } from "./components/Body";
 import { Head } from "./components/Head";
 import { GlobalStyle } from "./GlobalStyle";
 import { appState, useApp } from "./recoil/atoms/app";
-
+import { Notification } from "./features/Notification/Notification";
 const App = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,7 +24,6 @@ const App = () => {
     /**
      * Obtain EAI List on load
      */
-
 
     const navigateHandler = (to: string) => {
         navigation.map((nav: any) => {
@@ -59,6 +58,7 @@ const App = () => {
         <>
             <CssBaseline />
             <GlobalStyle />
+            <Notification />
             <Head navigateHandler={navigateHandler} navigation={navigation} />
             <Body />
         </>

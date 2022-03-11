@@ -9,6 +9,11 @@ import {
 import { SECURITY_ROLE_SAVE_REQUEST } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
 import {
+    NotificationState,
+    Severity,
+    useNotification,
+} from "../../features/Notification/atom";
+import {
     createRoleState,
     useCreateRole,
 } from "../../features/Roles/atom/createRole";
@@ -24,6 +29,7 @@ export const ActionButtons = () => {
     const createRole = useRecoilValue(createRoleState);
     const setCreate = useCreateRole();
     const app = useRecoilValue(appState);
+    const setNotification = useNotification();
 
     const clickHandler = (type: string) => {
         if (type === "create") {
@@ -32,7 +38,7 @@ export const ActionButtons = () => {
             let securityObj: SecurityResource = {
                 securityAction: {},
                 changeFlg: "I",
-                lastUpdDtTm: new Date().toISOString(),
+                lastUpdDtTm: "",
                 lastUpdUser: app.employee.employeeId,
                 resourceDesc: "",
                 resourceName: "",
@@ -40,7 +46,7 @@ export const ActionButtons = () => {
                 securityAppEaiNbr: 5907,
                 securityResource: {
                     changeFlag: "I",
-                    lastUpdDtTm: new Date().toISOString(),
+                    lastUpdDtTm: "",
                     lastUpdUser: app.employee.employeeId,
                     resourceName: "",
                     securityAppEaiNbr: 0,
@@ -75,27 +81,57 @@ export const ActionButtons = () => {
 
     const saveHandler = async () => {
         if (location.pathname === "/roles") {
+            let params: any = {};
             if (createRole.createdPending) {
-                const results: SecurityRoleList = await httpRequestList(
-                    SECURITY_ROLE_SAVE_REQUEST,
-                    createRole.securityRoleList
-                );
-                console.log(results);
+                params = {
+                    userId: app.employee.employeeId,
+                    securityRoleList: createRole.securityRoleList,
+                };
+
+                try {
+                    await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: "Success!",
+                        severity: Severity.success,
+                    }));
+                } catch (err: any) {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: err,
+                        severity: Severity.error,
+                    }));
+                }
+
                 setCreate((state) => ({
                     ...state,
                     createdPending: false,
                 }));
             } else {
-                let params: any = {
+                params = {
                     userId: app.employee.employeeId,
                     securityRoleList: [],
                 };
                 params.securityRoleList.push(roles.roleSelected);
-                const results: SecurityRoleList = await httpRequestList(
-                    SECURITY_ROLE_SAVE_REQUEST,
-                    params
-                );
-                console.log(results);
+
+                try {
+                    await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: "Save Success!",
+                        severity: Severity.success,
+                    }));
+                } catch (err: any) {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: err,
+                        severity: Severity.error,
+                    }));
+                }
             }
         }
     };
@@ -111,7 +147,9 @@ export const ActionButtons = () => {
                 }}
             >
                 {checkedState ? (
-                    <SaveButton sx ={{backgroundColor: "#0063cc"}}>Modify</SaveButton>
+                    <SaveButton sx={{ backgroundColor: "#0063cc" }}>
+                        Modify
+                    </SaveButton>
                 ) : (
                     <>
                         <SaveButton

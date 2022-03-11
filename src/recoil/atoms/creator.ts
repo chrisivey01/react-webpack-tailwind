@@ -9,10 +9,10 @@ interface CreatorState {
     securityRoleList?: SecurityRoleListSaveList;
     show: boolean;
     role?: {
-        changeFlag?: string | undefined;
-        roleName?: string | undefined;
-        roleDesc?: string | undefined;
-        operationCd?: string | undefined;
+        changeFlag?: string;
+        roleName?: string;
+        roleDesc?: string;
+        operationCd?: string;
         securityAppEaiNbr?: number;
         securityRoleResourceList?: SecurityResource[];
     };
