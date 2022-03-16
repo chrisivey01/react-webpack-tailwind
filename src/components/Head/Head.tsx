@@ -17,7 +17,7 @@ import { Nav } from "../../../types/Nav";
 import { APP_EAI_LIST_REQUEST, SECURITY_ACTION_REQUEST } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
 import fedexImg from "../../assets/fedex.png";
-import { appState, useApp } from "../../recoil/atoms/app";
+import { appState, useApp } from "../../atom/app";
 
 type Props = {
     navigation: any;
@@ -111,9 +111,9 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
                                     color: "white",
                                 }}
                             >
-                                {app.appEaiList.map((app: EAI) => {
+                                {app.appEaiList.map((app: EAI, index: number) => {
                                     return (
-                                        <MenuItem value={app.securityAppEaiNbr}>
+                                        <MenuItem value={app.securityAppEaiNbr} key={index}>
                                             {app.securityAppEaiNbr}
                                         </MenuItem>
                                     );

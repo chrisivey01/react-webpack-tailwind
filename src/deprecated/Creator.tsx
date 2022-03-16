@@ -1,9 +1,10 @@
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { Selector } from "../../Selector/Selector";
-import { CreateRoleFields } from "../../Create/styles";
+import { Selector } from "../features/Selector/Selector";
+import { CreateRoleFields } from "../features/Create/styles";
 import { useRecoilValue } from "recoil";
 import { createRoleState } from "../atoms/createRole";
+import { groupState } from "../features/Groups/atoms/groups";
 
 interface Props {
     nameHandler: any;
@@ -40,6 +41,7 @@ export const Creator = ({
 }: Props) => {
     const location = useLocation();
     const createRole = useRecoilValue(createRoleState);
+    const group = useRecoilValue(groupState);
     return (
         <Grid>
             <Box>
@@ -66,13 +68,13 @@ export const Creator = ({
                     size="small"
                     multiple
                     id="tags-outlined"
-                    value={createRole.rolesSelected ?? []}
-                    options={firstMasterList}
+                    value={group.groupsMasterList ?? []}
+                    options={group.groupsMasterList ?? []}
                     onChange={firstClickHandler}
-                    getOptionLabel={(option: any) => option[firstPropDisplay] ?? option}
-                    isOptionEqualToValue={(option: any, value: any) =>
-                        option[firstPropDisplay] === value
-                    }
+                    // getOptionLabel={(option: any) => option[firstPropDisplay] ?? option}
+                    // isOptionEqualToValue={(option: any, value: any) =>
+                    //     option[firstPropDisplay] === value
+                    // }
                     filterSelectedOptions
                     autoHighlight
                     autoSelect
@@ -89,13 +91,6 @@ export const Creator = ({
                         />
                     )}
                 />
-                {location.pathname === "/roles" ? (
-                    <Box sx={{ fontSize: 12, display: "flex", alignItems: "center", paddingLeft:"5px" }}>
-                        Action Selected <Selector />{" "}
-                    </Box>
-                ) : (
-                    <></>
-                )}
                 <Autocomplete
                     size="small"
                     multiple

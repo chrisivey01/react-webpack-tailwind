@@ -1,7 +1,7 @@
-import { EAI } from './../../../types/EAI';
-import { LoggedInUser } from './../../../types/LoggedInUser';
+import { EAI } from '../../types/EAI';
+import { LoggedInUser } from '../../types/LoggedInUser';
 import { atom, useSetRecoilState } from "recoil";
-import { Action } from "../../../types/ActionList";
+import { Action } from "../../types/ActionList";
 
 interface AppState {
     appEaiList: EAI[];

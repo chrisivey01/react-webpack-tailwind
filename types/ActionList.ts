@@ -6,16 +6,7 @@ type Action = {
     actionDesc: string,
     actionName: string,
     changeFlag: string,
-    lastUpdDtTm: {
-        date: number,
-        hours: number,
-        minutes: number,
-        month: number,
-        nanos: number,
-        seconds: number,
-        time: number,
-        year: number;
-    },
+    lastUpdDtTm: string,
     lastUpdUser: string,
     operationCd: string,
     priorityNbr: number,

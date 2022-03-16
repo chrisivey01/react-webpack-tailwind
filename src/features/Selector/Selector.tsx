@@ -1,10 +1,10 @@
-import { Box, FormControl, MenuItem, Select, Typography } from "@mui/material";
+import { Box, FormControl, MenuItem, Select } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { creatorState, useCreator } from "../../recoil/atoms/creator";
-import { rolesState, useRoles } from "../Roles/atom/roles";
-import { appState } from "../../recoil/atoms/app";
 import { Action } from "../../../types/ActionList";
+import { appState } from "../../atom/app";
+import { createRoleState, useCreateRole } from "../Roles/atoms/createRole";
+import { rolesState, useRoles } from "../Roles/atoms/roles";
 
 const SelectAction = styled(Select)`
     font-size: 12px;
@@ -27,9 +27,9 @@ interface Props {
 
 export const Selector = ({ rowData, table, index }: Props) => {
     const roles = useRecoilValue(rolesState);
-    const creator = useRecoilValue(creatorState);
     const setRoles = useRoles();
-    const setCreator = useCreator();
+    const createRole = useRecoilValue(createRoleState);
+    const setCreateRole = useCreateRole();
 
     const app = useRecoilValue(appState);
 
@@ -63,7 +63,7 @@ export const Selector = ({ rowData, table, index }: Props) => {
             const action = app.actionList.filter(
                 (act: Action) => act.actionName === option.target.value
             )[0];
-            setCreator((state) => ({ ...state, actionSelected: action }));
+            setCreateRole((state) => ({ ...state, actionSelected: action }));
         }
     };
 
@@ -91,8 +91,8 @@ export const Selector = ({ rowData, table, index }: Props) => {
                     <SelectAction
                         onChange={actionSelectorHandler}
                         value={
-                            creator.actionSelected
-                                ? creator.actionSelected.actionName
+                            createRole.actionSelected
+                                ? createRole.actionSelected.actionName
                                 : ""
                         }
                     >

@@ -9,7 +9,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { SecurityResource } from "../../../../types/SecurityResource";
-import { rolesState, useRoles } from "../../Roles/atom/roles";
+import { rolesState, useRoles } from "../../Roles/atoms/roles";
 import { Selector } from "../../Selector/Selector";
 import { RolesAutocomplete } from "../../Roles/Table/RolesAutocomplete";
 

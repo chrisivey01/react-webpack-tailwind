@@ -1,13 +1,13 @@
-import { SecurityGroupRole } from './../../../types/SecurityGroupRole';
-import { SecurityUserGroup } from './../../../types/SecurityUserGroup';
-import { SecurityRole } from './../../../types/SecurityRole';
-import { PhxUser } from "../../../types/PhxUser";
-import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityResource } from '../../../types/SecurityResource';
+import { SecurityGroupRole } from '../../../../types/SecurityGroupRole';
+import { SecurityUserGroup } from '../../../../types/SecurityUserGroup';
+import { SecurityRole } from '../../../../types/SecurityRole';
+import { PhxUser } from "../../../../types/PhxUser";
+import { SecurityGroup } from "../../../../types/SecurityGroup";
+import { SecurityResource } from '../../../../types/SecurityResource';
 import { atom, useSetRecoilState } from 'recoil';
-import { SecurityUserRole } from '../../../types/SecurityUserRole';
-import { SecurityAction } from '../../../types/SecurityAction';
-import { SecurityRoleResource } from '../../../types/SecurityRoleResource';
+import { SecurityUserRole } from '../../../../types/SecurityUserRole';
+import { SecurityAction } from '../../../../types/SecurityAction';
+import { SecurityRoleResource } from '../../../../types/SecurityRoleResource';
 
 interface UsersState {
     employeeMasterList: PhxUser[];

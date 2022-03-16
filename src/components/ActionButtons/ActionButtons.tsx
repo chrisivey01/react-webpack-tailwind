@@ -3,67 +3,92 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import {
-    SecurityResource,
-    SecurityRoleList,
-} from "../../../types/SecurityRoleList";
-import { SECURITY_ROLE_SAVE_REQUEST } from "../../apis";
+    SecurityResource
+} from "../../../types/SecurityRole";
+import { SECURITY_GROUP_SAVE_REQUEST, SECURITY_ROLE_SAVE_REQUEST } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
+import { appState } from "../../atom/app";
+import { createGroupState, useCreateGroup } from "../../features/Groups/atoms/createGroup";
+import { groupState, useGroups } from "../../features/Groups/atoms/groups";
 import {
-    NotificationState,
     Severity,
-    useNotification,
+    useNotification
 } from "../../features/Notification/atom";
 import {
     createRoleState,
-    useCreateRole,
-} from "../../features/Roles/atom/createRole";
-import { rolesState, useRoles } from "../../features/Roles/atom/roles";
-import { appState } from "../../recoil/atoms/app";
+    useCreateRole
+} from "../../features/Roles/atoms/createRole";
+import { rolesState, useRoles } from "../../features/Roles/atoms/roles";
 import { SaveButton } from "./styles";
 
 export const ActionButtons = () => {
     const location = useLocation();
-    const roles = useRecoilValue(rolesState);
-    const setRoles = useRoles();
     const [checkedState, setCheckedState] = useState<any>(false);
-    const createRole = useRecoilValue(createRoleState);
-    const setCreate = useCreateRole();
     const app = useRecoilValue(appState);
     const setNotification = useNotification();
+    /**
+     * create role state
+     */
+    const createRole = useRecoilValue(createRoleState);
+    const setCreate = useCreateRole();
+
+    /**
+     * role state
+     */
+    const role = useRecoilValue(rolesState);
+    const setRoles = useRoles();
+
+
+    /**
+     * group state
+     */
+    const group = useRecoilValue(groupState);
+    const createGroup = useRecoilValue(createGroupState);
+    const setCreateGroup = useCreateGroup();
 
     const clickHandler = (type: string) => {
         if (type === "create") {
-            let rolesCopy = JSON.parse(JSON.stringify(roles.roleSelected));
+            if (role.roleSelected) {
+                let rolesCopy = JSON.parse(JSON.stringify(role.roleSelected));
 
-            let securityObj: SecurityResource = {
-                securityAction: {},
-                changeFlg: "I",
-                lastUpdDtTm: "",
-                lastUpdUser: app.employee.employeeId,
-                resourceDesc: "",
-                resourceName: "",
-                securityResourceUuid: "",
-                securityAppEaiNbr: 5907,
-                securityResource: {
-                    changeFlag: "I",
+                let securityObj: SecurityResource = {
+                    securityAction: {},
+                    changeFlg: "I",
                     lastUpdDtTm: "",
                     lastUpdUser: app.employee.employeeId,
+                    resourceDesc: "",
                     resourceName: "",
-                    securityAppEaiNbr: 0,
                     securityResourceUuid: "",
-                },
-            };
+                    securityAppEaiNbr: 5907,
+                    securityResource: {
+                        changeFlag: "I",
+                        lastUpdDtTm: "",
+                        lastUpdUser: app.employee.employeeId,
+                        resourceName: "",
+                        securityAppEaiNbr: 0,
+                        securityResourceUuid: "",
+                    },
+                };
 
-            rolesCopy.securityRoleResourceList.push(securityObj);
+                rolesCopy.securityRoleResourceList.push(securityObj);
 
-            setRoles((state) => ({
-                ...state,
-                roleSelected: rolesCopy,
-            }));
+                setRoles((state) => ({
+                    ...state,
+                    roleSelected: rolesCopy,
+                }));
+            } else {
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message:
+                        "You cannot add a resource until a role is selected.",
+                    severity: Severity.error,
+                }));
+            }
         }
     };
 
-    const closeHandler = () => {};
+    const closeHandler = () => { };
 
     const newRoleHandler = () => {
         setCreate((state) => ({
@@ -73,15 +98,15 @@ export const ActionButtons = () => {
     };
 
     const newGroupHandler = () => {
-        setCreate((state) => ({
+        setCreateGroup((state) => ({
             ...state,
             show: true,
         }));
     };
 
     const saveHandler = async () => {
+        let params: any = {};
         if (location.pathname === "/roles") {
-            let params: any = {};
             if (createRole.createdPending) {
                 params = {
                     userId: app.employee.employeeId,
@@ -114,7 +139,7 @@ export const ActionButtons = () => {
                     userId: app.employee.employeeId,
                     securityRoleList: [],
                 };
-                params.securityRoleList.push(roles.roleSelected);
+                params.securityRoleList.push(role.roleSelected);
 
                 try {
                     await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
@@ -134,6 +159,61 @@ export const ActionButtons = () => {
                 }
             }
         }
+
+        if (location.pathname === "/groups") {
+
+            if (createGroup.createdPending) {
+                params = createGroup.newGroup;
+                try {
+                    await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: "Success!",
+                        severity: Severity.success,
+                    }));
+                } catch (err: any) {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: err,
+                        severity: Severity.error,
+                    }));
+                }
+
+                setCreateGroup((state) => ({
+                    ...state,
+                    createdPending: false,
+                }));
+
+            } else {
+
+                params = {
+                    userId: app.employee.employeeId,
+                    securityGroupList: [],
+                };
+
+                params.securityGroupList.push(group.selectedGroup);
+
+                try {
+                    await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: "Save Success!",
+                        severity: Severity.success,
+                    }));
+                } catch (err: any) {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message: err,
+                        severity: Severity.error,
+                    }));
+                }
+            }
+
+        };
     };
 
     if (location.pathname === "/roles") {
@@ -153,8 +233,13 @@ export const ActionButtons = () => {
                 ) : (
                     <>
                         <SaveButton
-                            sx={{ backgroundColor: "#0063cc" }}
-                            disabled={roles.filteredResourceList === undefined}
+                            sx={{
+                                visibility:
+                                    role.roleSelected === undefined
+                                        ? "hidden"
+                                        : "visible",
+                                backgroundColor: "#0063cc",
+                            }}
                             onClick={() => clickHandler("create")}
                         >
                             Add Resource
@@ -189,13 +274,17 @@ export const ActionButtons = () => {
                     right: 0,
                 }}
             >
-                <SaveButton onClick={() => newGroupHandler()}>
+                <SaveButton sx={{ backgroundColor: "#0063cc" }} onClick={() => newGroupHandler()}>
                     New Group
                 </SaveButton>
-                <SaveButton>Save</SaveButton>
+                <SaveButton sx={{
+                    backgroundColor: createGroup.createdPending
+                        ? "#00FF00"
+                        : "#0063cc",
+                }} onClick={() => saveHandler()}>Save</SaveButton>
             </Box>
         );
-    } else if (location.pathname !== "/roles") {
+    } else if (location.pathname !== "/roles" && location.pathname !== "/groups") {
         return (
             <Box
                 style={{
@@ -205,7 +294,7 @@ export const ActionButtons = () => {
                     right: 0,
                 }}
             >
-                <SaveButton onClick={() => saveHandler()}>Save</SaveButton>
+                <SaveButton sx={{ backgroundColor: "#0063cc" }} onClick={() => saveHandler()}>Save</SaveButton>
             </Box>
         );
     } else {

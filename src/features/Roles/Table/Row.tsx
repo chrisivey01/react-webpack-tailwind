@@ -2,9 +2,9 @@ import { Box, IconButton, TableCell, TableRow } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import { RolesAutocomplete } from "./RolesAutocomplete";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { rolesState, useRoles } from "../atom/roles";
+import { rolesState, useRoles } from "../atoms/roles";
 import { Selector } from "../../Selector/Selector";
-import { SecurityResource } from "../../../../types/SecurityRoleList";
+import { SecurityResource } from "../../../../types/SecurityRole";
 
 type Props = {
     index: number;

@@ -4,197 +4,187 @@ import {
     Chip,
     Divider,
     Stack,
-    TextField,
+    TextField
 } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { SecurityAction } from "../../../types/SecurityAction";
-import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRole } from "../../../types/SecurityRole";
-import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
-import * as JSON from "../../assets/json";
-import { groupState, useGroups } from "../../recoil/atoms/groups";
+import {
+    SecurityGroup,
+    SecurityGroupList,
+    SecurityGroupRole
+} from "../../../types/SecurityGroup";
+import { SecurityRole, SecurityRoleList } from "../../../types/SecurityRole";
+import {
+    RESOURCE_BY_PRIORITY_REQUEST,
+    SECURITY_GROUP_LIST_REQUEST,
+    SECURITY_GROUP_REQUEST,
+    SECURITY_ROLE_REQUEST
+} from "../../apis";
+import { httpRequestList } from "../../apis/requests";
+import { appState } from "../../atom/app";
 import { PageWrapper } from "../styles";
-import { SecurityTable } from "../Table/SecurityTable";
+import { groupState, useGroups } from "./atoms/groups";
+import GroupTable from "./Table/GroupTable";
 
 export const Groups = () => {
+    const app = useRecoilValue(appState);
     const groups = useRecoilValue(groupState);
     const setGroups = useGroups();
 
     useEffect(() => {
-        setGroups((state) => ({
-            ...state,
-            groupsRoleMasterList: JSON.securityGroupRoleJson,
-            groupsMasterList: JSON.securityGroupJson,
-            rolesMasterList: JSON.securityRoleJson,
-            resourcesMasterList: JSON.securityResourceJson,
-            securityRoleResourcesMasterList: JSON.securityRoleResourceJson,
-        }));
-    }, []);
+        fetchGroupMasterList();
+        fetchRolesMasterList();
+    }, [app.appId]);
 
-    const changeGroup = (option: SecurityGroup) => {
-        if (option) {
-            let securityGroupRoleSelected: SecurityGroupRole[] = [];
+    const fetchGroupMasterList = async () => {
+        const params = {
+            securityAppEaiNbr: app.appId,
+        };
 
-            /**
-             * Off selected group, filter from master group list to get be prepared
-             * to filter off all of the resources.
-             */
-            groups.groupsRoleMasterList.forEach((sgr: SecurityGroupRole) => {
-                if (sgr.SECURITY_GROUP_UUID === option.SECURITY_GROUP_UUID) {
-                    securityGroupRoleSelected.push(sgr);
-                }
-            });
+        const results: SecurityGroupList = await httpRequestList(
+            SECURITY_GROUP_LIST_REQUEST,
+            params
+        );
 
-            let securityRoleResourceFiltered: SecurityRoleResource[] = [];
-
-            securityGroupRoleSelected.forEach((sgr: SecurityGroupRole) => {
-                groups.securityRoleResourcesMasterList.forEach(
-                    (srrml: SecurityRoleResource) => {
-                        const indexSearch =
-                            securityRoleResourceFiltered.findIndex(
-                                (srrf: SecurityRoleResource) =>
-                                    srrf.SECURITY_ROLE_UUID ===
-                                    sgr.SECURITY_ROLE_UUID
-                            );
-                        if (
-                            indexSearch === -1 &&
-                            srrml.SECURITY_ROLE_UUID === sgr.SECURITY_ROLE_UUID
-                        ) {
-                            securityRoleResourceFiltered.push(srrml);
-                        }
-                    }
-                );
-            });
-
-            /**
-             * Filter groups down to roles associated with.
-             */
-            let securityRolesFiltered: SecurityRole[] = [];
-            groups.rolesMasterList.forEach((rml: SecurityRole) => {
-                securityRoleResourceFiltered.forEach(
-                    (srrf: SecurityRoleResource) => {
-                        if (
-                            rml.SECURITY_ROLE_UUID === srrf.SECURITY_ROLE_UUID
-                        ) {
-                            securityRolesFiltered.push(rml);
-                        }
-                    }
-                );
-            });
-
-            /**
-             * Filter from Group -> Role -> Resource
-             */
-            let securityResourceFiltered: SecurityResource[] = [];
-            securityRoleResourceFiltered.forEach(
-                (srrf: SecurityRoleResource) => {
-                    groups.resourcesMasterList.forEach(
-                        (rml: SecurityResource) => {
-                            if (
-                                srrf.SECURITY_RESOURCE_UUID ===
-                                rml.SECURITY_RESOURCE_UUID
-                            ) {
-                                let rmlCopy = Object.assign({}, rml);
-                                rmlCopy.SECURITY_ACTION_UUID =
-                                    srrf.SECURITY_ACTION_UUID;
-                                securityResourceFiltered.push(rmlCopy);
-                            }
-                        }
-                    );
-                }
-            );
-
-            securityResourceFiltered.map((srr: SecurityResource) => {
-                const saIndex = JSON.securityActionJson.findIndex(
-                    (sa: SecurityAction) =>
-                        srr.SECURITY_ACTION_UUID === sa.SECURITY_ACTION_UUID
-                );
-                srr.ACTION_NAME = JSON.securityActionJson[saIndex].ACTION_NAME;
-                srr.COLOR = "black";
-                return srr;
-            });
-
+        if (results) {
             setGroups((state) => ({
                 ...state,
-                rolesFilteredList: securityRolesFiltered,
-                resourcesFilteredList: securityResourceFiltered,
-                selectedGroup: option,
+                groupsMasterList: results.securityGroupList,
+            }));
+        }
+    };
+    const fetchRolesMasterList = async () => {
+        const params = {
+            fetchResources: true,
+            securityAppEaiNbr: app.appId,
+        };
+        const result: SecurityRoleList = await httpRequestList(
+            SECURITY_ROLE_REQUEST,
+            params
+        );
+        if (result) {
+            setGroups((state) => ({
+                ...state,
+                rolesMasterList: result.securityRoleList,
             }));
         }
     };
 
-    const roleHandler = (option: SecurityRole[]) => {
-        let securityRoleResourceFiltered: SecurityRoleResource[] = [];
+    const changeGroup = async (option: SecurityGroup) => {
+        if (option === null) return;
+        const groupName = option.groupName;
+        const params = {
+            fetchResources: true,
+            groupNameList: [groupName],
+            securityAppEaiNbr: app.appId,
+        };
+        const result: SecurityGroupList = await httpRequestList(
+            SECURITY_GROUP_REQUEST,
+            params
+        );
 
-        option.forEach((sr: SecurityRole) => {
-            groups.securityRoleResourcesMasterList.forEach(
-                (srrml: SecurityRoleResource) => {
-                    const indexSearch = securityRoleResourceFiltered.findIndex(
-                        (srrf: SecurityRoleResource) =>
-                            srrf.SECURITY_ROLE_UUID === sr.SECURITY_ROLE_UUID
-                    );
-                    if (
-                        indexSearch === -1 &&
-                        srrml.SECURITY_ROLE_UUID === sr.SECURITY_ROLE_UUID
-                    ) {
-                        securityRoleResourceFiltered.push(srrml);
-                    }
-                }
-            );
-        });
+        if (result) {
+            setGroups((state) => ({
+                ...state,
+                selectedGroup: result.securityGroupList[0],
+            }));
+        }
+    };
 
-        // /**
-        //  * Filter groups down to roles associated with.
-        //  */
-        let securityRolesFiltered: SecurityRole[] = [];
-        groups.rolesMasterList.forEach((rml: SecurityRole) => {
-            securityRoleResourceFiltered.forEach(
-                (srrf: SecurityRoleResource) => {
-                    if (rml.SECURITY_ROLE_UUID === srrf.SECURITY_ROLE_UUID) {
-                        if(groups.rolesFilteredList.length > 0){
-                            let objRml = Object.assign({}, rml);
-                            objRml.ADDED = true;
-                            securityRolesFiltered.push(objRml);
-                        } 
-                        securityRolesFiltered.push(rml);
-                    }
-                }
-            );
-        });
+    const roleHandler = async (option: any) => {
+        let selectedGroupCopy = JSON.parse(JSON.stringify(groups.selectedGroup));
 
-        // /**
-        //  * Filter from Group -> Role -> Resource
-        //  */
+        selectedGroupCopy.userId = app.employee.employeeId;
 
+        /**
+         * Need to filter rolesMasterList that's cached in recoil to get the securityRoleResourceList to
+         * support each role that is being added to the group.
+         */
+        let groupRole = groups.rolesMasterList.filter((sr: SecurityRole) =>
+            sr.securityRoleUuid === option[option.length - 1].securityRoleUuid
+        );
 
-        let securityResourceFiltered: SecurityResource[] = [];
-        securityRoleResourceFiltered.forEach((srrf: SecurityRoleResource) => {
-            groups.resourcesMasterList.forEach((rml: SecurityResource) => {
-                if (
-                    srrf.SECURITY_RESOURCE_UUID === rml.SECURITY_RESOURCE_UUID
-                ) {
+        /**
+         * Update Security Role for display on table.
+         */
+        let obj = {
+            securityAppEaiNbr: app.appId,
+            added: true,
+            operationCd: "I",
+            securityRole: {
+                roleDesc: option[option.length - 1].roleDesc,
+                roleName: option[option.length - 1].roleName,
+                operationCd: "I",
+                securityAppEaiNbr: app.appId,
+                securityRoleUuid: option[option.length - 1].securityRoleUuid,
+                securityRoleResourceList: groupRole[0].securityRoleResourceList,
+            }
+        };
 
-                    securityResourceFiltered.push(rml);
-                }
-            });
-        });
+        selectedGroupCopy.securityGroupRoleList.push(obj);
+        let getResourcePriority = {
+            userId: app.employee.employeeId,
+            operationCd: "I",
+            roleList: selectedGroupCopy.securityGroupRoleList.map((sgr: SecurityGroupRole) => {
+                let obj = {
+                    operationCd: "I",
+                    roleName: sgr.securityRole.roleName,
+                    roleDesc: sgr.securityRole.roleDesc,
+                    securityAppEaiNbr: app.appId,
+                    securityRoleUuid: sgr.securityRole.securityRoleUuid,
+                    changeFlag: sgr.securityRole.changeFlag,
+                    securityRoleResourceList: sgr.securityRole.securityRoleResourceList
+                };
+                return obj;
+            })
+        };
+        const results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
 
+        /**
+         * Update resource list by filtering from service filter.
+         */
+        selectedGroupCopy.operationCd = "M";
+        selectedGroupCopy.resourceByPriorityList = results.resourceByPriorityList;
         setGroups((state) => ({
             ...state,
-            rolesFilteredList: securityRolesFiltered,
-            resourcesFilteredList: securityResourceFiltered,
-            rolesSelected: option,
+            selectedGroup: selectedGroupCopy
         }));
     };
 
-    const updateGroupName = () => {};
+    const handleDelete = async (option: any, index: number) => {
+        let selectedGroupCopy = JSON.parse(JSON.stringify(groups.selectedGroup));
+        selectedGroupCopy.securityGroupRoleList[index].operationCd = "D";
+        selectedGroupCopy.operationCd = "M";
+        let getResourcePriority = {
+            userId: app.employee.employeeId,
+            roleList: selectedGroupCopy.securityGroupRoleList.map((sgr: SecurityGroupRole) => {
+                let obj = {
+                    operationCd: "D",
+                    roleName: sgr.securityRole.roleName,
+                    roleDesc: sgr.securityRole.roleDesc,
+                    securityAppEaiNbr: app.appId,
+                    securityRoleUuid: sgr.securityRole.securityRoleUuid,
+                    changeFlag: sgr.securityRole.changeFlag,
+                    securityRoleResourceList: sgr.securityRole.securityRoleResourceList,
+                };
+                return obj;
+            })
+        };
+        const results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+        // selectedGroupCopy.securityGroupRoleList.splice(index, 1);
 
-    const updateGroupDesc = () => {};
+        /**
+         * Update resource list by filtering from service filter.
+         */
+        selectedGroupCopy.resourceByPriorityList = results.resourceByPriorityList;
+        setGroups((state) => ({
+            ...state,
+            selectedGroup: selectedGroupCopy
+        }));
+    };
+    const updateGroupName = () => { };
 
     return (
         <PageWrapper>
@@ -209,14 +199,14 @@ export const Groups = () => {
                     size="small"
                     sx={{ width: 300 }}
                     options={groups.groupsMasterList}
-                    getOptionLabel={(option: any) => option.GROUP_NAME}
+                    getOptionLabel={(option: any) => option.groupName}
                     renderInput={(params) => (
                         <TextField {...params} label="Groups" margin="normal" />
                     )}
                     onChange={(e, option: any) => changeGroup(option)}
                     renderOption={(props, option, { inputValue }) => {
-                        const matches = match(option.GROUP_NAME, inputValue);
-                        const parts = parse(option.GROUP_NAME, matches);
+                        const matches = match(option.groupName, inputValue);
+                        const parts = parse(option.groupName, matches);
 
                         return (
                             <li {...props}>
@@ -242,13 +232,12 @@ export const Groups = () => {
                                 <TextField
                                     label="Group Name"
                                     size="small"
+                                    margin="normal"
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
                                     style={{ maxWidth: "80%", marginTop: 16 }}
-                                    value={
-                                        groups.selectedGroup.GROUP_NAME ?? ""
-                                    }
+                                    value={groups.selectedGroup.groupName ?? ""}
                                     onChange={updateGroupName}
                                 />
                             </Stack>
@@ -263,25 +252,32 @@ export const Groups = () => {
                                     maxWidth: 570,
                                     overflow: "auto",
                                 }}
-                                value={groups.rolesFilteredList}
+                                value={groups.selectedGroup.securityGroupRoleList.filter((sgr: SecurityGroupRole) => sgr.operationCd !== "D")}
                                 options={groups.rolesMasterList}
                                 getOptionLabel={(option: any) =>
-                                    option.ROLE_NAME
+                                    option.roleName ?? option.securityRole.roleName
+                                }
+                                isOptionEqualToValue={(option: any, value: any) =>
+                                    option.roleName === value.securityRole.roleName
                                 }
                                 onChange={(e, option: any) =>
                                     roleHandler(option)
                                 }
                                 renderTags={(value: any, getTagProps: any) =>
                                     value.map(
-                                        (option: SecurityRole, index: any) => (
+                                        (option: SecurityGroupRole, index: any) => (
                                             <Chip
+                                                key={index}
                                                 variant="outlined"
-                                                label={option.ROLE_NAME}
+                                                clickable
+                                                onDelete={() => handleDelete(option, index)}
+                                                label={option.securityRole.roleName}
                                                 style={{
-                                                    fontStyle: option.ADDED
+                                                    margin: "2px",
+                                                    fontStyle: option.added
                                                         ? "italic"
                                                         : "normal",
-                                                    fontWeight: option.ADDED
+                                                    fontWeight: option.added
                                                         ? 600
                                                         : 100,
                                                 }}
@@ -302,11 +298,11 @@ export const Groups = () => {
                                     { inputValue }
                                 ) => {
                                     const matches = match(
-                                        option.ROLE_NAME,
+                                        option.roleName,
                                         inputValue
                                     );
                                     const parts = parse(
-                                        option.ROLE_NAME,
+                                        option.roleName,
                                         matches
                                     );
                                     return (
@@ -333,17 +329,13 @@ export const Groups = () => {
                     <></>
                 )}
             </Box>
-            <Box sx={{ padding: "10px" }}>
-                <Divider orientation="horizontal" />
-            </Box>
-            <SecurityTable
-                dataList={groups.resourcesMasterList}
-                tableData={groups.resourcesFilteredList}
-                name={"RESOURCE_NAME"}
-                value={"ACTION_NAME"}
-                headerKey={"Resource"}
-                headerValue={"Action"}
+
+            <Divider
+                orientation="horizontal"
+                flexItem
+                style={{ paddingBottom: "5px" }}
             />
+            {groups.selectedGroup ? <GroupTable /> : <></>}
         </PageWrapper>
     );
 };

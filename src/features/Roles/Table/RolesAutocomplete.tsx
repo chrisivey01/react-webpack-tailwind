@@ -3,8 +3,8 @@ import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { SecurityResource } from "../../../../types/SecurityRoleList";
-import { rolesState, useRoles } from "../atom/roles";
+import { SecurityResource } from "../../../../types/SecurityRole";
+import { rolesState, useRoles } from "../atoms/roles";
 
 interface Props {
     rowData: any;
@@ -20,9 +20,7 @@ export const RolesAutocomplete = ({
 
     useEffect(() => {
         if (roles.filteredResourceList.length > 0) {
-            let remainingSelects: SecurityResource[] = [];
             let copyResourceMasterList = [...roles.resourcesMasterList];
-            let test: any[] = [];
             roles.filteredResourceList.map((frr: SecurityResource) => {
                 let foundIndex = copyResourceMasterList.findIndex(
                     (res: SecurityResource) =>

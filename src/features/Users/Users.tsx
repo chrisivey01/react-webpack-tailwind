@@ -11,7 +11,7 @@ import { SecurityRole } from "../../../types/SecurityRole";
 import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
 import { SecurityUserGroup } from "../../../types/SecurityUserGroup";
 import * as JSON from "../../assets/json";
-import { userState, useUser } from "../../recoil/atoms/users";
+import { userState, useUser } from "./atoms/users";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
 import { SecurityTable } from "../Table/SecurityTable";
 export const Users = () => {
@@ -229,207 +229,208 @@ export const Users = () => {
         user.securityGroupMasterList &&
         user.securityGroupMasterList.length > 0
     ) {
-        return (
-            <PageWrapper>
-                <PageContainer>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            paddingBottom: "10px",
-                        }}
-                    >
-                        <Box sx={{ padding: "10px" }}>
-                            <Autocomplete
-                                size="small"
-                                sx={{
-                                    maxHeight: 120,
-                                    width: 300,
-                                    maxWidth: 570,
-                                    overflow: "auto",
-                                }}
-                                options={user.employeeMasterList}
-                                getOptionLabel={(option) =>
-                                    [
-                                        option.USER_ID,
-                                        " - ",
-                                        option.FIRST_NAME,
-                                        option.LAST_NAME,
-                                    ].join(" ")
-                                }
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Employee Numbers"
-                                        margin="normal"
-                                    />
-                                )}
-                                onChange={(e, option) => changeUser(option)}
-                                renderOption={(
-                                    props,
-                                    option,
-                                    { inputValue }
-                                ) => {
-                                    const matches = match(
-                                        [
-                                            option.USER_ID,
-                                            " - ",
-                                            option.FIRST_NAME,
-                                            option.LAST_NAME,
-                                        ].join(" "),
-                                        inputValue
-                                    );
-                                    const parts = parse(
-                                        [
-                                            option.USER_ID,
-                                            " - ",
-                                            option.FIRST_NAME,
-                                            option.LAST_NAME,
-                                        ].join(" "),
-                                        matches
-                                    );
+        return <></>
+        // return (
+        //     <PageWrapper>
+        //         <PageContainer>
+        //             <Box
+        //                 sx={{
+        //                     display: "flex",
+        //                     justifyContent: "space-between",
+        //                     paddingBottom: "10px",
+        //                 }}
+        //             >
+        //                 <Box sx={{ padding: "10px" }}>
+        //                     <Autocomplete
+        //                         size="small"
+        //                         sx={{
+        //                             maxHeight: 120,
+        //                             width: 300,
+        //                             maxWidth: 570,
+        //                             overflow: "auto",
+        //                         }}
+        //                         options={user.employeeMasterList}
+        //                         getOptionLabel={(option) =>
+        //                             [
+        //                                 option.USER_ID,
+        //                                 " - ",
+        //                                 option.FIRST_NAME,
+        //                                 option.LAST_NAME,
+        //                             ].join(" ")
+        //                         }
+        //                         renderInput={(params) => (
+        //                             <TextField
+        //                                 {...params}
+        //                                 label="Employee Numbers"
+        //                                 margin="normal"
+        //                             />
+        //                         )}
+        //                         onChange={(e, option) => changeUser(option)}
+        //                         renderOption={(
+        //                             props,
+        //                             option,
+        //                             { inputValue }
+        //                         ) => {
+        //                             const matches = match(
+        //                                 [
+        //                                     option.USER_ID,
+        //                                     " - ",
+        //                                     option.FIRST_NAME,
+        //                                     option.LAST_NAME,
+        //                                 ].join(" "),
+        //                                 inputValue
+        //                             );
+        //                             const parts = parse(
+        //                                 [
+        //                                     option.USER_ID,
+        //                                     " - ",
+        //                                     option.FIRST_NAME,
+        //                                     option.LAST_NAME,
+        //                                 ].join(" "),
+        //                                 matches
+        //                             );
 
-                                    return (
-                                        <li {...props}>
-                                            <div>
-                                                {parts.map(
-                                                    (
-                                                        part: any,
-                                                        index: number
-                                                    ) => (
-                                                        <span key={index}>
-                                                            {part.text}
-                                                        </span>
-                                                    )
-                                                )}
-                                            </div>
-                                        </li>
-                                    );
-                                }}
-                            />
-                        </Box>
-                        <Box sx={{ padding: "10px" }}>
-                            <Autocomplete
-                                size="small"
-                                sx={{
-                                    maxHeight: 120,
-                                    width: 300,
-                                    maxWidth: 570,
-                                    overflow: "auto",
-                                }}
-                                options={user.employeeMasterList}
-                                getOptionLabel={(option) => option.USER_ID}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Copy Access From"
-                                        margin="normal"
-                                    />
-                                )}
-                                onChange={(e, option) => changeUser(option)}
-                                renderOption={(
-                                    props,
-                                    option,
-                                    { inputValue }
-                                ) => {
-                                    const matches = match(
-                                        option.USER_ID,
-                                        inputValue
-                                    );
-                                    const parts = parse(
-                                        option.USER_ID,
-                                        matches
-                                    );
+        //                             return (
+        //                                 <li {...props}>
+        //                                     <div>
+        //                                         {parts.map(
+        //                                             (
+        //                                                 part: any,
+        //                                                 index: number
+        //                                             ) => (
+        //                                                 <span key={index}>
+        //                                                     {part.text}
+        //                                                 </span>
+        //                                             )
+        //                                         )}
+        //                                     </div>
+        //                                 </li>
+        //                             );
+        //                         }}
+        //                     />
+        //                 </Box>
+        //                 <Box sx={{ padding: "10px" }}>
+        //                     <Autocomplete
+        //                         size="small"
+        //                         sx={{
+        //                             maxHeight: 120,
+        //                             width: 300,
+        //                             maxWidth: 570,
+        //                             overflow: "auto",
+        //                         }}
+        //                         options={user.employeeMasterList}
+        //                         getOptionLabel={(option) => option.USER_ID}
+        //                         renderInput={(params) => (
+        //                             <TextField
+        //                                 {...params}
+        //                                 label="Copy Access From"
+        //                                 margin="normal"
+        //                             />
+        //                         )}
+        //                         onChange={(e, option) => changeUser(option)}
+        //                         renderOption={(
+        //                             props,
+        //                             option,
+        //                             { inputValue }
+        //                         ) => {
+        //                             const matches = match(
+        //                                 option.USER_ID,
+        //                                 inputValue
+        //                             );
+        //                             const parts = parse(
+        //                                 option.USER_ID,
+        //                                 matches
+        //                             );
 
-                                    return (
-                                        <li {...props}>
-                                            <div>
-                                                {parts.map(
-                                                    (
-                                                        part: any,
-                                                        index: number
-                                                    ) => (
-                                                        <span key={index}>
-                                                            {part.text}
-                                                        </span>
-                                                    )
-                                                )}
-                                            </div>
-                                        </li>
-                                    );
-                                }}
-                            />
-                        </Box>
-                    </Box>
+        //                             return (
+        //                                 <li {...props}>
+        //                                     <div>
+        //                                         {parts.map(
+        //                                             (
+        //                                                 part: any,
+        //                                                 index: number
+        //                                             ) => (
+        //                                                 <span key={index}>
+        //                                                     {part.text}
+        //                                                 </span>
+        //                                             )
+        //                                         )}
+        //                                     </div>
+        //                                 </li>
+        //                             );
+        //                         }}
+        //                     />
+        //                 </Box>
+        //             </Box>
 
-                    <OptionsWrapper>
-                        <Box sx={{ padding: "10px" }}>
-                            <Autocomplete
-                                size="small"
-                                sx={{
-                                    maxHeight: 120,
-                                    width: 570,
-                                    maxWidth: 570,
-                                    overflow: "auto",
-                                }}
-                                multiple
-                                id="tags-outlined"
-                                options={user.securityGroupMasterList}
-                                getOptionLabel={(option: any) =>
-                                    option.GROUP_NAME
-                                }
-                                filterSelectedOptions
-                                onChange={handleChangeGroups}
-                                value={user.groups ?? []}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Groups"
-                                        style={{ fontSize: 12 }}
-                                        margin="normal"
-                                    />
-                                )}
-                            />{" "}
-                        </Box>
-                        <Box sx={{ padding: "10px" }}>
-                            <Autocomplete
-                                size="small"
-                                sx={{
-                                    maxHeight: 220,
-                                    width: 570,
-                                    maxWidth: 570,
-                                    overflow: "auto",
-                                }}
-                                multiple
-                                id="tags-outlined"
-                                options={user.rolesMasterList}
-                                getOptionLabel={(option) => option.ROLE_NAME}
-                                filterSelectedOptions
-                                onChange={handleChangeRoles}
-                                value={user.roles ?? []}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="User Roles"
-                                        style={{ fontSize: 12 }}
-                                        margin="normal"
-                                    />
-                                )}
-                            />
-                        </Box>
-                    </OptionsWrapper>
-                </PageContainer>
-                <Divider orientation="horizontal" flexItem />
-                <SecurityTable
-                    dataList={JSON.securityResourceJson}
-                    tableData={user.resources}
-                    name={"RESOURCE_NAME"}
-                    value={"ACTION_NAME"}
-                    headerKey={"Resource"}
-                    headerValue={"Action"}
-                />
-            </PageWrapper>
-        );
+        //             <OptionsWrapper>
+        //                 <Box sx={{ padding: "10px" }}>
+        //                     <Autocomplete
+        //                         size="small"
+        //                         sx={{
+        //                             maxHeight: 120,
+        //                             width: 570,
+        //                             maxWidth: 570,
+        //                             overflow: "auto",
+        //                         }}
+        //                         multiple
+        //                         id="tags-outlined"
+        //                         options={user.securityGroupMasterList}
+        //                         getOptionLabel={(option: any) =>
+        //                             option.GROUP_NAME
+        //                         }
+        //                         filterSelectedOptions
+        //                         onChange={handleChangeGroups}
+        //                         value={user.groups ?? []}
+        //                         renderInput={(params) => (
+        //                             <TextField
+        //                                 {...params}
+        //                                 label="Groups"
+        //                                 style={{ fontSize: 12 }}
+        //                                 margin="normal"
+        //                             />
+        //                         )}
+        //                     />{" "}
+        //                 </Box>
+        //                 <Box sx={{ padding: "10px" }}>
+        //                     <Autocomplete
+        //                         size="small"
+        //                         sx={{
+        //                             maxHeight: 220,
+        //                             width: 570,
+        //                             maxWidth: 570,
+        //                             overflow: "auto",
+        //                         }}
+        //                         multiple
+        //                         id="tags-outlined"
+        //                         options={user.rolesMasterList}
+        //                         getOptionLabel={(option) => option.ROLE_NAME}
+        //                         filterSelectedOptions
+        //                         onChange={handleChangeRoles}
+        //                         value={user.roles ?? []}
+        //                         renderInput={(params) => (
+        //                             <TextField
+        //                                 {...params}
+        //                                 label="User Roles"
+        //                                 style={{ fontSize: 12 }}
+        //                                 margin="normal"
+        //                             />
+        //                         )}
+        //                     />
+        //                 </Box>
+        //             </OptionsWrapper>
+        //         </PageContainer>
+        //         <Divider orientation="horizontal" flexItem />
+        //         <SecurityTable
+        //             dataList={JSON.securityResourceJson}
+        //             tableData={user.resources}
+        //             name={"RESOURCE_NAME"}
+        //             value={"ACTION_NAME"}
+        //             headerKey={"Resource"}
+        //             headerValue={"Action"}
+        //         />
+        //     </PageWrapper>
+        // );
     } else {
         return <></>;
     }

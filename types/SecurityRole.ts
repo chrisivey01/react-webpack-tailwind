@@ -1,11 +1,90 @@
-// export interface SecurityRole {
-//     SECURITY_ROLE_UUID: string;
-//     SECURITY_APP_EAI_NBR: number;
-//     ROLE_NAME: string;
-//     ROLE_DESC: string;
-//     LAST_UPD_DT_TM: string;
-//     LAST_UPD_USER: string;
-//     CHANGE_FLAG: string;
-//     SECURITY_RESOURCE_UUID?: string;
-//     ADDED?: boolean;
-// }
+import { Action } from "./ActionList";
+
+type SecurityRoleList = {
+    securityRoleList: SecurityRole[];
+    securityRoleResourceList?: SecurityRoleResource[];
+};
+
+type SecurityRole = {
+    roleDesc?: string;
+    roleName?: string;
+    lastUpdDtTm?: string;
+    operationCd?: string;
+    changeFlag?: string;
+    securityAppEaiNbr?: number;
+    securityRoleResourceList?: any[];
+    securityRoleUuid?: string;
+};
+
+type SecurityRoleResourceList = {
+    resourceList: SecurityRoleResource[];
+};
+
+type SecurityRoleResource = {
+    changeFlag?: string;
+    lastUpdDtTm?: Date;
+    operationCd?: string,
+    securityAction?: Action;
+    securityAppEaiNbr?: number,
+    securityResource?: SecurityResource,
+    securityRoleResourceUuid?: string;
+    resourceName?: string;
+    securityResourceUuid?: string;
+};
+
+type SecurityResourceList = {
+    resourceList: SecurityResource[];
+};
+
+type SecurityResource = {
+    changeFlag?: string;
+    lastUpdDtTm?: string;
+    lastUpdUser?: string;
+    operationCd?: string;
+    resourceName?: string;
+    securityAppEaiNbr?: number;
+    securityResourceUuid?: string;
+    securityResource: SecurityRoleResource;
+    securityAction?: Action;
+    color?: string;
+    fontSize?: string;
+    fontStyle?: string;
+};
+
+type SecurityRoleListSaveList = {
+    securityRoleList: SecurityRole[];
+};
+type SecurityRoleListSave = {
+    changeFlag?: string,
+    lastUpdDtTm?: string,
+    lastUpdUser?: string,
+    operationCd?: string,
+    roleDesc?: string,
+    roleName?: string,
+    securityAppEaiNbr?: number,
+    securityRoleResourceList?: [
+        {
+            changeFlag?: string,
+            lastUpdDtTm?: string,
+            lastUpdUser?: string,
+            operationCd?: string,
+            securityAction?: Action,
+            securityAppEaiNbr?: number,
+            securityResource?: {
+                changeFlag?: string,
+                lastUpdDtTm?: string,
+                lastUpdUser?: string,
+                operationCd?: string,
+                resourceName?: string,
+                securityAppEaiNbr?: number,
+                securityResourceUuid?: string;
+            },
+            securityRoleResourceUuid?: string;
+        }
+    ],
+    securityRoleUuid?: string;
+
+};
+
+
+export type { SecurityRoleList, SecurityRole, SecurityRoleResource, SecurityRoleResourceList, SecurityResource, SecurityResourceList, SecurityRoleListSave, SecurityRoleListSaveList };

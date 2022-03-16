@@ -1,9 +1,6 @@
 import { atom, useSetRecoilState } from "recoil";
-import { SecurityGroup } from "../../../types/SecurityGroup";
-import { SecurityGroupRole } from "../../../types/SecurityGroupRole";
-import { SecurityResource } from "../../../types/SecurityResource";
-import { SecurityRole } from "../../../types/SecurityRole";
-import { SecurityRoleResource } from "../../../types/SecurityRoleResource";
+import { SecurityGroup, SecurityGroupList, SecurityGroupRole } from "../../../../types/SecurityGroup";
+import { SecurityResource, SecurityRole, SecurityRoleResource } from "../../../../types/SecurityRole";
 
 interface GroupsState {
     groupsRoleMasterList: SecurityGroupRole[];
@@ -12,9 +9,10 @@ interface GroupsState {
     groupsMasterList: SecurityGroup[];
     resourcesMasterList: SecurityResource[];
     securityRoleResourcesMasterList: SecurityRoleResource[];
-    selectedGroup?: SecurityGroup;
+    selectedGroup: SecurityGroup;
     resourcesFilteredList: SecurityResource[];
     rolesFilteredList: SecurityRole[];
+    groupSelected: SecurityGroupList;
 }
 
 export const groupState = atom({

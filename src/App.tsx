@@ -2,13 +2,11 @@ import { CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { APP_EAI_LIST_REQUEST } from "./apis";
-import { httpRequestList } from "./apis/requests";
+import { appState, useApp } from "./atom/app";
 import { Body } from "./components/Body";
 import { Head } from "./components/Head";
-import { GlobalStyle } from "./GlobalStyle";
-import { appState, useApp } from "./recoil/atoms/app";
 import { Notification } from "./features/Notification/Notification";
+import { GlobalStyle } from "./GlobalStyle";
 const App = () => {
     const navigate = useNavigate();
     const location = useLocation();
