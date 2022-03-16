@@ -50,11 +50,12 @@ export const Selector = ({ rowData, table, index }: Props) => {
                 (act: Action) => act.actionName === option.target.value
             )[0];
             rolesCopy.operationCd = "M";
+            rolesCopy.securityRoleResourceList[index].operationCd = "M";
             rolesCopy.securityRoleResourceList[index].securityAction = action;
-            rolesCopy.fontStyle = "italic";
-            rolesCopy.fontSize = 600;
-            rolesCopy.lastUpdDtTm = new Date().toISOString();
-            rolesCopy.lastUpdUser = app.employee.employeeId;
+            rolesCopy.securityRoleResourceList[index].fontStyle = "italic";
+            rolesCopy.securityRoleResourceList[index].fontSize = 600;
+            rolesCopy.securityRoleResourceList[index].lastUpdDtTm = new Date().toISOString();
+            rolesCopy.securityRoleResourceList[index].lastUpdUser = app.employee.employeeId;
             setRoles((state) => ({
                 ...state,
                 roleSelected: rolesCopy,
@@ -75,7 +76,7 @@ export const Selector = ({ rowData, table, index }: Props) => {
                         onChange={actionSelectorHandler}
                         value={rowData.securityAction.actionName ?? {}}
                     >
-                        {actionOptionsTable.map(
+                        {actionOptionsCreate.map(
                             (option: any, index: number) => (
                                 <MenuItem
                                     key={index}
