@@ -5,6 +5,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { rolesState, useRoles } from "../atoms/roles";
 import { Selector } from "../../Selector/Selector";
 import { SecurityResource } from "../../../../types/SecurityRole";
+import { ActionList } from "../../../../types/ActionList";
+import { httpRequestList } from "../../../apis/requests";
+import { SECURITY_ACTION_REQUEST } from "../../../apis";
+import { appState } from "../../../atom/app";
 
 type Props = {
     index: number;
@@ -12,6 +16,7 @@ type Props = {
 };
 
 export const Row = ({ index, data }: Props) => {
+    const app = useRecoilValue(appState);
     const roles = useRecoilValue(rolesState);
     const setRoles = useRoles();
 
@@ -48,10 +53,10 @@ export const Row = ({ index, data }: Props) => {
     const renderSelectOrText = (rowData: any, index: number) => {
         if (rowData.securityAction) {
             if (
-                rowData.securityAction.actionName === "Access" ||
-                rowData.securityAction.actionName === "Have"
+                rowData.actionTypeName === "ACCESS_TYPE" ||
+                rowData.actionTypeName === "HAVE_TYPE"
             ) {
-                return <Box>{rowData.securityAction.actionName}</Box>;
+                return <Box>{rowData.actionTypeName === "ACCESS_TYPE" ? "Access" : rowData.actionTypeName === "HAVE_TYPE" ? "Have" : <></>}</Box>;
             } else {
                 return (
                     <Selector table={true} index={index} rowData={rowData} />
@@ -62,7 +67,7 @@ export const Row = ({ index, data }: Props) => {
         }
     };
 
-    const newResourceDropdownHandler = (option: SecurityResource) => {
+    const newResourceDropdownHandler = async (option: any) => {
         let rolesCopy = JSON.parse(JSON.stringify(roles.roleSelected));
         let filteredResourceListCopy = JSON.parse(
             JSON.stringify(roles.filteredResourceList)
@@ -72,6 +77,16 @@ export const Row = ({ index, data }: Props) => {
         rolesCopy.securityRoleResourceList[
             index
         ].securityResource.resourceName = option.resourceName;
+        
+        rolesCopy.securityRoleResourceList[
+            index
+        ].securityResource.resourceDesc = option.resourceDesc;
+
+        rolesCopy.securityRoleResourceList[
+            index
+        ].securityResource.actionTypeName = option.actionTypeName;
+        
+        
         rolesCopy.securityRoleResourceList[
             index
         ].securityResource.securityResourceUuid = option.securityResourceUuid;
@@ -84,6 +99,24 @@ export const Row = ({ index, data }: Props) => {
         rolesCopy.securityRoleResourceList[index].color = "black";
         rolesCopy.securityRoleResourceList[index].fontStyle = "italic";
         rolesCopy.securityRoleResourceList[index].fontSize = 600;
+        rolesCopy.securityRoleResourceList[index].newResource = true;
+        rolesCopy.operationCd = "M";
+
+        rolesCopy.securityRoleResourceList[index].actionTypeName = option.actionTypeName;
+        const params = {
+            securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId,
+            actionType: option.actionTypeName
+        };
+        const results: ActionList = await httpRequestList(
+            SECURITY_ACTION_REQUEST,
+            params
+        );
+
+        rolesCopy.securityRoleResourceList[index].securityAction = results.actionList[0]
+
+        
+
 
         setRoles((state) => ({
             ...state,

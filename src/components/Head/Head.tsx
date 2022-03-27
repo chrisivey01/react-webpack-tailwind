@@ -41,25 +41,25 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
     useEffect(() => {
         if (app.employee) {
             fetchEaiList();
-            fetchActionList();
+            // fetchActionList();
         }
     }, [app.employee]);
 
-    const fetchActionList = async () => {
-        const params = {
-            securityAppEaiNbr: app.appId
-        }
-        const results: ActionList = await httpRequestList(
-            SECURITY_ACTION_REQUEST,
-            params
-        )
-        if(results){
-            setApp((state) => ({
-                ...state,
-                actionList: results.actionList
-            }))
-        }
-    }
+    // const fetchActionList = async () => {
+    //     const params = {
+    //         securityAppEaiNbr: app.appId
+    //     }
+    //     const results: ActionList = await httpRequestList(
+    //         SECURITY_ACTION_REQUEST,
+    //         params
+    //     )
+    //     if(results){
+    //         setApp((state) => ({
+    //             ...state,
+    //             actionList: results.actionList
+    //         }))
+    //     }
+    // }
 
     const fetchEaiList = async () => {
         const params = {

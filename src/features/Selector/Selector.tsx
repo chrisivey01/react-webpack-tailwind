@@ -1,7 +1,9 @@
 import { Box, FormControl, MenuItem, Select } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { Action } from "../../../types/ActionList";
+import { Action, ActionList } from "../../../types/ActionList";
+import { SECURITY_ACTION_REQUEST } from "../../apis";
+import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
 import { createRoleState, useCreateRole } from "../Roles/atoms/createRole";
 import { rolesState, useRoles } from "../Roles/atoms/roles";
@@ -33,25 +35,50 @@ export const Selector = ({ rowData, table, index }: Props) => {
 
     const app = useRecoilValue(appState);
 
-    const actionOptionsTable: Action[] = app.actionList;
+    const actionOptionsTable: string[] = ['View', 'Edit'];
 
-    let actionOptionsCreate: Action[] = [];
-    app.actionList.map((act: Action) => {
-        if (act.actionName === "View" || act.actionName === "Edit") {
-            actionOptionsCreate.push(act);
+    const actionSelectorHandler = async (option: any, value: any) => {
+        const pickedAction = value.props.value;
+        let actionType;
+        if (pickedAction === 'Edit' || pickedAction === 'View') {
+            actionType = 'EDIT_VIEW_TYPE';
+        } else if (pickedAction === 'Access') {
+            actionType = 'ACCESS_TYPE';
+        } else {
+            actionType = 'HAVE_TYPE';
         }
-    });
 
-    const actionSelectorHandler = (option: any) => {
+        const params = {
+            securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId,
+            actionType: actionType
+        };
+
+        const results: ActionList = await httpRequestList(
+            SECURITY_ACTION_REQUEST,
+            params
+        );
         if (table && index !== undefined) {
+
             let rolesCopy = JSON.parse(JSON.stringify(roles.roleSelected));
 
-            let action = app.actionList.filter(
-                (act: Action) => act.actionName === option.target.value
-            )[0];
-            rolesCopy.operationCd = "M";
-            rolesCopy.securityRoleResourceList[index].operationCd = "M";
-            rolesCopy.securityRoleResourceList[index].securityAction = action;
+            if (createRole.createdPending) {
+                rolesCopy.operationCd = "I";
+                rolesCopy.securityRoleResourceList[index].operationCd = "I";
+            } else {
+                /**
+                 * If new resource insert with insert opcode, if not, leave opcode for modify as updated role.
+                 */
+                if (rolesCopy.securityRoleResourceList[index].newResource) {
+                    rolesCopy.securityRoleResourceList[index].operationCd = "I";
+                } else {
+                    rolesCopy.securityRoleResourceList[index].operationCd = "M";
+                }
+                rolesCopy.operationCd = "M";
+                rolesCopy.securityAction = results.actionList.filter((action: Action) => action.actionName === pickedAction)[0];
+
+            }
+            rolesCopy.securityRoleResourceList[index].securityAction = results.actionList.filter((action: Action) => action.actionName === pickedAction)[0];
             rolesCopy.securityRoleResourceList[index].fontStyle = "italic";
             rolesCopy.securityRoleResourceList[index].fontSize = 600;
             rolesCopy.securityRoleResourceList[index].lastUpdDtTm = new Date().toISOString();
@@ -61,60 +88,61 @@ export const Selector = ({ rowData, table, index }: Props) => {
                 roleSelected: rolesCopy,
             }));
         } else {
-            const action = app.actionList.filter(
-                (act: Action) => act.actionName === option.target.value
-            )[0];
+            const action = results.actionList.filter((action: Action) => action.actionName === pickedAction)[0];
             setCreateRole((state) => ({ ...state, actionSelected: action }));
+        }
+    };
+
+    const tableSelectorOrCreateSelector = () => {
+        if (rowData && rowData.securityAction) {
+            if (rowData.securityResource.actionTypeName === "EDIT_VIEW_TYPE" || rowData.actionTypeName === "EDIT_VIEW_TYPE") {
+                return (
+                    <SelectAction
+                        onChange={actionSelectorHandler}
+                        value={rowData.securityAction.actionName}
+                    >
+                        {actionOptionsTable.map(
+                            (option: any, index: number) => (
+                                <MenuItem
+                                    key={index}
+                                    value={option}
+                                    style={{ fontSize: 12 }}
+                                >
+                                    {option}
+                                </MenuItem>
+                            )
+                        )}
+                    </SelectAction>
+                );
+            } else {
+                return <Box>{rowData.securityAction.actionName}</Box>;
+            }
+        } else {
+            return (
+                <SelectAction
+                    value={createRole.actionSelected?.actionName ?? ""}
+                    onChange={actionSelectorHandler}
+                >
+                    {actionOptionsTable.map(
+                        (option: any, index: number) => (
+                            <MenuItem
+                                key={index}
+                                value={option}
+                                style={{ fontSize: 12 }}
+                            >
+                                {option}
+                            </MenuItem>
+                        )
+                    )}
+                </SelectAction>
+            );
         }
     };
 
     return (
         <FormControl>
             <Box style={{ display: "flex", alignItems: "center", margin: 8 }}>
-                {rowData && rowData.securityAction ? (
-                    <SelectAction
-                        onChange={actionSelectorHandler}
-                        value={rowData.securityAction.actionName ?? {}}
-                    >
-                        {actionOptionsCreate.map(
-                            (option: any, index: number) => (
-                                <MenuItem
-                                    key={index}
-                                    value={option.actionName}
-                                    style={{ fontSize: 12 }}
-                                >
-                                    {option.actionName}
-                                </MenuItem>
-                            )
-                        )}
-                    </SelectAction>
-                ) : (
-                    <SelectAction
-                        onChange={actionSelectorHandler}
-                        value={
-                            createRole.actionSelected
-                                ? createRole.actionSelected.actionName
-                                : ""
-                        }
-                    >
-                        {actionOptionsCreate.map(
-                            (option: any, index: number) => (
-                                <MenuItem
-                                    key={index}
-                                    value={
-                                        option.actionName
-                                            .charAt(0)
-                                            .toUpperCase() +
-                                        option.actionName.slice(1)
-                                    }
-                                    style={{ fontSize: 12 }}
-                                >
-                                    {option.actionName}
-                                </MenuItem>
-                            )
-                        )}
-                    </SelectAction>
-                )}
+                {tableSelectorOrCreateSelector()}
             </Box>
         </FormControl>
     );

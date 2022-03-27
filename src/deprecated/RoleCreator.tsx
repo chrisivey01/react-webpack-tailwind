@@ -1,15 +1,7 @@
 import { Box, Chip, Divider, Grid, TextField } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { SecurityAction } from "../../types/SecurityAction";
-import { SecurityResource } from "../../types/SecurityResource";
-import { SecurityRoleResource } from "../../types/SecurityRoleResource";
-import * as JSON from "../assets/json";
-import { Selector } from "../features/Selector/Selector";
-import {
-    rolesSelectedHandler,
-    rolesSingleSelectHandler,
-} from "./creator-slice";
 import { Autocomplete, CreateRoleFields } from "../features/Create/styles";
+import { Selector } from "../features/Selector/Selector";
 
 export const RoleCreator = () => {
     const dispatch = useDispatch();
@@ -147,7 +139,7 @@ export const RoleCreator = () => {
                                 <Chip
                                     label={
                                         option.ACTION_NAME.toLowerCase() ===
-                                        "view"
+                                            "view"
                                             ? option.RESOURCE_NAME + " [VIEW]"
                                             : option.RESOURCE_NAME + " [EDIT]"
                                     }

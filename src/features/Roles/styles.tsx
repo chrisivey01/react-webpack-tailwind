@@ -2,7 +2,6 @@ import {
     Box,
     Button,
     TextField as MuiTextField,
-    TextField,
 } from "@mui/material";
 import styled from "styled-components";
 
@@ -18,7 +17,7 @@ export const GroupRolesContainer = styled(Box)`
     justify-content: space-evenly;
 `;
 
-export const RoleField = styled(TextField)`
+export const RoleNameField = styled(MuiTextField)`
     margin: 10px;
     display: block;
     padding-bottom: 10px;
@@ -30,7 +29,7 @@ export const RoleField = styled(TextField)`
     }
 `;
 
-export const RoleDescField = styled(TextField)`
+export const RoleDescField = styled(MuiTextField)`
     margin: 10px;
     display: block;
     padding-bottom: 10px;
@@ -72,14 +71,3 @@ export const CreateRoleContainer = styled(Box)`
     position: absolute;
 `;
 
-export const CreateRoleFields = styled(TextField)`
-    margin: 10px;
-    display: block;
-    padding-bottom: 10px;
-    .MuiOutlinedInput-root {
-        width: 70%;
-    }
-    input {
-        font-size: 12px;
-    }
-`;

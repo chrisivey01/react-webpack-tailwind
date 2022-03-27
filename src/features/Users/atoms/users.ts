@@ -1,33 +1,22 @@
-import { SecurityGroupRole } from '../../../../types/SecurityGroupRole';
-import { SecurityUserGroup } from '../../../../types/SecurityUserGroup';
-import { SecurityRole } from '../../../../types/SecurityRole';
-import { PhxUser } from "../../../../types/PhxUser";
-import { SecurityGroup } from "../../../../types/SecurityGroup";
-import { SecurityResource } from '../../../../types/SecurityResource';
 import { atom, useSetRecoilState } from 'recoil';
-import { SecurityUserRole } from '../../../../types/SecurityUserRole';
-import { SecurityAction } from '../../../../types/SecurityAction';
-import { SecurityRoleResource } from '../../../../types/SecurityRoleResource';
+import { PhxUser, SecurityUserGroup, SecurityUserRole } from "../../../../types/PhxUser";
+import { SecurityRoleResource } from "../../../../types/SecurityRole";
 
-interface UsersState {
+interface UserState {
     employeeMasterList: PhxUser[];
-    securityUserGroupMasterList: SecurityUserGroup[];
-    securityGroupRoleMasterList: SecurityGroupRole[];
-    securityGroupMasterList: SecurityGroup[];
-    rolesMasterList: SecurityRole[];
-    resourcesMasterList: SecurityResource[];
-    securityUserRoleMasterList: SecurityUserRole[];
-    securityActionMasterList: SecurityAction[];
+    groupsMasterList: SecurityUserGroup[];
+    rolesMasterList: SecurityUserRole[];
     employee: PhxUser;
-    groups: SecurityGroup[];
-    roles: SecurityRole[];
-    resources: SecurityResource[];
-    securityRoleResourceMasterList: SecurityRoleResource[];
+    acquiredGroups: SecurityUserGroup[];
+    acquiredRoles: SecurityUserRole[];
+    acquiredResources: SecurityRoleResource[];
+    selectedUser: PhxUser;
+    copySelectedUser: PhxUser;
 }
 
 export const userState = atom({
     key: "user",
-    default: {} as UsersState
+    default: {} as UserState
 });
 
 export const useUser = () => useSetRecoilState(userState);

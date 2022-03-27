@@ -25,12 +25,14 @@ import {
 import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
 import { PageWrapper } from "../styles";
+import { createGroupState } from "./atoms/createGroup";
 import { groupState, useGroups } from "./atoms/groups";
 import GroupTable from "./Table/GroupTable";
 
 export const Groups = () => {
     const app = useRecoilValue(appState);
     const groups = useRecoilValue(groupState);
+    const createGroup = useRecoilValue(createGroupState);
     const setGroups = useGroups();
 
     useEffect(() => {
@@ -130,10 +132,10 @@ export const Groups = () => {
             roleList: selectedGroupCopy.securityGroupRoleList.map((sgr: SecurityGroupRole) => {
                 let obj = {
                     operationCd: "I",
-                    roleName: sgr.securityRole.roleName,
-                    roleDesc: sgr.securityRole.roleDesc,
+                    // roleName: sgr.securityRole.roleName,
+                    // roleDesc: sgr.securityRole.roleDesc,
                     securityAppEaiNbr: app.appId,
-                    securityRoleUuid: sgr.securityRole.securityRoleUuid,
+                    // securityRoleUuid: sgr.securityRole.securityRoleUuid,
                     changeFlag: sgr.securityRole.changeFlag,
                     securityRoleResourceList: sgr.securityRole.securityRoleResourceList
                 };
@@ -145,7 +147,11 @@ export const Groups = () => {
         /**
          * Update resource list by filtering from service filter.
          */
-        selectedGroupCopy.operationCd = "M";
+        if (createGroup.createdPending) {
+            selectedGroupCopy.operationCd = "I";
+        } else {
+            selectedGroupCopy.operationCd = "M";
+        }
         selectedGroupCopy.resourceByPriorityList = results.resourceByPriorityList;
         setGroups((state) => ({
             ...state,
@@ -155,13 +161,19 @@ export const Groups = () => {
 
     const handleDelete = async (option: any, index: number) => {
         let selectedGroupCopy = JSON.parse(JSON.stringify(groups.selectedGroup));
-        selectedGroupCopy.securityGroupRoleList[index].operationCd = "D";
+        selectedGroupCopy.securityGroupRoleList[index].deleted = !selectedGroupCopy.securityGroupRoleList[index].deleted;
         selectedGroupCopy.operationCd = "M";
+        if (selectedGroupCopy.securityGroupRoleList[index].deleted) {
+            selectedGroupCopy.securityGroupRoleList[index].operationCd = "D";
+        } else {
+            selectedGroupCopy.securityGroupRoleList[index].operationCd = "M";
+        }
+        const filteredList = selectedGroupCopy.securityGroupRoleList.filter((sgr: SecurityGroupRole) => sgr.operationCd !== "D");
         let getResourcePriority = {
             userId: app.employee.employeeId,
-            roleList: selectedGroupCopy.securityGroupRoleList.map((sgr: SecurityGroupRole) => {
+            operationCd: "M",
+            roleList: filteredList.map((sgr: SecurityGroupRole) => {
                 let obj = {
-                    operationCd: "D",
                     roleName: sgr.securityRole.roleName,
                     roleDesc: sgr.securityRole.roleDesc,
                     securityAppEaiNbr: app.appId,
@@ -173,7 +185,6 @@ export const Groups = () => {
             })
         };
         const results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
-        // selectedGroupCopy.securityGroupRoleList.splice(index, 1);
 
         /**
          * Update resource list by filtering from service filter.
@@ -181,7 +192,7 @@ export const Groups = () => {
         selectedGroupCopy.resourceByPriorityList = results.resourceByPriorityList;
         setGroups((state) => ({
             ...state,
-            selectedGroup: selectedGroupCopy
+            selectedGroup: selectedGroupCopy,
         }));
     };
     const updateGroupName = () => { };
@@ -198,13 +209,17 @@ export const Groups = () => {
                 <Autocomplete
                     size="small"
                     sx={{ width: 300 }}
-                    options={groups.groupsMasterList}
-                    getOptionLabel={(option: any) => option.groupName}
+                    options={groups.groupsMasterList ?? []}
+                    value={groups.selectedGroup ? groups.selectedGroup.groupName : null}
+                    getOptionLabel={(option: any) => option.groupName ?? option}
+                    isOptionEqualToValue={(option: any, value: any) =>
+                        option.groupName === value
+                    }
                     renderInput={(params) => (
                         <TextField {...params} label="Groups" margin="normal" />
                     )}
                     onChange={(e, option: any) => changeGroup(option)}
-                    renderOption={(props, option, { inputValue }) => {
+                    renderOption={(props, option: any, { inputValue }) => {
                         const matches = match(option.groupName, inputValue);
                         const parts = parse(option.groupName, matches);
 
@@ -252,7 +267,7 @@ export const Groups = () => {
                                     maxWidth: 570,
                                     overflow: "auto",
                                 }}
-                                value={groups.selectedGroup.securityGroupRoleList.filter((sgr: SecurityGroupRole) => sgr.operationCd !== "D")}
+                                value={groups.selectedGroup.securityGroupRoleList}
                                 options={groups.rolesMasterList}
                                 getOptionLabel={(option: any) =>
                                     option.roleName ?? option.securityRole.roleName
@@ -274,6 +289,7 @@ export const Groups = () => {
                                                 label={option.securityRole.roleName}
                                                 style={{
                                                     margin: "2px",
+                                                    color: option.deleted ? "red" : "unset",
                                                     fontStyle: option.added
                                                         ? "italic"
                                                         : "normal",

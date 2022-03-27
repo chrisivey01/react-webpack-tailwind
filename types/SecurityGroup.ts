@@ -48,19 +48,20 @@ type SecurityGroupList = {
 };
 
 type SecurityGroup = {
-    changeFlag: string;
-    groupName: string;
-    lastUpdDtTm: string;
+    changeFlag?: string;
+    groupName?: string;
+    lastUpdDtTm?: string;
     lastUpdUser: string;
     operationCd: string;
     resourceByPriorityList: SecurityGroupResource[];
     securityAppEaiNbr: number;
     securityGroupRoleList: SecurityGroupRole[] | any;
-    securityGroupUuid: string;
+    securityGroupUuid?: string;
 };
 
 type SecurityGroupRole = {
     added?: boolean;
+    deleted?: boolean;
     changeFlag: string;
     lastUpdDtTm: string;
     lastUpdUser: string;
@@ -80,6 +81,7 @@ type SecurityGroupRole = {
         ];
         securityRoleUuid: string;
     };
+    resourceByPriorityList: SecurityGroupResource[];
 };
 
 

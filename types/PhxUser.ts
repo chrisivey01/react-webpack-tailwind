@@ -1,27 +1,84 @@
-export interface PhxUser {
-    PHX_USER_OID: number,
-    USER_ID: string,
-    EMPL_NBR: number,
-    COMPANY_NAME_CODE: number,
-    LAST_UPD_USER: string,
-    LAST_UPD_DT_TM: string,
-    EMAIL_ID: string | null,
-    SMTP_HOST: string | null,
-    GUI_USER_PREFERENCES?: string | null,
-    USER_ROUTE_TYPE_CD: string,
-    CARRIER_GRP_CD: string,
-    PHX_ACCESS: string,
-    OCA: number,
-    CC_RESTRICTED_LEAD_DAYS: number,
-    ALLOWABLE_URSA_NETWORK_CDS?: null,
-    FDX_COMPANY_GRP: number,
-    LAST_LOGIN_DT_TM: string,
-    ACTIVE_FLG: string,
-    METRIC: string,
-    FIRST_NAME: string,
-    LAST_NAME: string,
-    ALT_EFF_DAYS_VIEW: string,
-    DEFAULT_LEG_TYPE_CD?: string | null,
-    ORG_CODE: string | null,
-    INACTIVE_USER_STATUS?: string;
-}
+import { SecurityActionType } from "./ActionList";
+import { SecurityAction } from "./SecurityAction";
+import { SecurityGroupRole } from "./SecurityGroup";
+import { SecurityResource, SecurityRoleResource } from "./SecurityRole";
+
+type PhxUser = {
+    activeFlg?: string,
+    allowableUrsaNetworksCds?: string,
+    altEffDaysView?: string,
+    carrierGrpCd?: string,
+    ccRestrictedLeadDays?: number,
+    companyNameCode?: number,
+    defaultLegTypeCd?: string,
+    emailId?: string,
+    emplNbr?: string,
+    fdxCompanyGrp?: number,
+    firstName?: string,
+    guiUserPreferences?: string,
+    inactiveUserStatus?: string,
+    lastLoginDtTm?: string,
+    lastName?: string,
+    lastUpdDtTm?: string,
+    lastUpdUser?: string,
+    metric?: string,
+    oca?: number,
+    operationCd?: string,
+    orgCode?: string,
+    phxAccess?: string,
+    phxUserOid?: number,
+    resourceByPriorityList?: SecurityRoleResource[],
+    securityUserGroupList?: SecurityUserGroup[],
+    securityUserRoleList?: SecurityUserRole[],
+    smtpHost?: string,
+    userId?: string,
+    userRouteTypeCd?: string;
+};
+
+type SecurityUserGroup = {
+    changeFlag: string;
+    lastUpdDtTm: string;
+    lastUpdUser: string;
+    operationCd: string;
+    phxUser: PhxUser;
+    securityAppEaiNbr: number;
+    securityGroup: SecurityGroup;
+    securityUserGroupUuid: string;
+};
+
+type SecurityGroup = {
+    changeFlag: string;
+    groupName: string;
+    lastUpdDtTm: string;
+    lastUpdUser: string;
+    operationCd: string;
+    resourceByPriorityList: SecurityRoleResource[];
+    securityAppEaiNbr: number;
+    securityGroupRoleList: SecurityGroupRole[];
+    securityGroupUuid: string;
+};
+
+type SecurityUserRole = {
+    changeFlag: string;
+    lastUpdDtTm: string;
+    lastUpdUser: string;
+    operationCd: string;
+    phxUser: PhxUser;
+    securityAppEaiNbr: string;
+    securityRole: SecurityRole;
+    securityUserRoleUuid: string;
+};
+
+type SecurityRole = {
+    changeFlag: string;
+    lastUpdDtTm: string;
+    lastUpdUser: string;
+    operationCd: string;
+    roleDesc: string;
+    roleName: string;
+    securityAppEaiNbr: string;
+    securityRoleResourceList: SecurityRoleResource;
+    securityRoleUuid: string;
+};
+
+export type { SecurityUserGroup, PhxUser, SecurityUserRole, SecurityRole, SecurityGroup };

@@ -1,4 +1,4 @@
-import { Action } from "./ActionList";
+import { Action, SecurityActionType } from "./ActionList";
 
 type SecurityRoleList = {
     securityRoleList: SecurityRole[];
@@ -22,7 +22,7 @@ type SecurityRoleResourceList = {
 
 type SecurityRoleResource = {
     changeFlag?: string;
-    lastUpdDtTm?: Date;
+    lastUpdDtTm?: string;
     operationCd?: string,
     securityAction?: Action;
     securityAppEaiNbr?: number,
@@ -30,6 +30,9 @@ type SecurityRoleResource = {
     securityRoleResourceUuid?: string;
     resourceName?: string;
     securityResourceUuid?: string;
+    color?: string;
+    fontStyle?: string;
+    fontSize?: string;
 };
 
 type SecurityResourceList = {
@@ -42,10 +45,13 @@ type SecurityResource = {
     lastUpdUser?: string;
     operationCd?: string;
     resourceName?: string;
+    resourceDesc?: string;
     securityAppEaiNbr?: number;
     securityResourceUuid?: string;
-    securityResource: SecurityRoleResource;
+    securityResource?: SecurityRoleResource;
     securityAction?: Action;
+    actionTypeName?: string;
+    securityActionType?: SecurityActionType;
     color?: string;
     fontSize?: string;
     fontStyle?: string;

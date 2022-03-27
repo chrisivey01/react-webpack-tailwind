@@ -5,10 +5,10 @@ import { SecurityGroup, SecurityGroupRole } from "../../../../types/SecurityGrou
 import { RESOURCE_BY_PRIORITY_REQUEST, SECURITY_GROUP_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
-import { useNotification } from "../../Notification/atom";
+import { Button } from "../../styles";
 import { createGroupState, useCreateGroup } from "../atoms/createGroup";
-import { groupState } from "../atoms/groups";
-import { CreateRoleButton, CreateRoleFields } from "../styles";
+import { groupState, useGroups } from "../atoms/groups";
+import { GroupNameDesc, GroupNameField } from "../styles";
 
 
 export const GroupPopup = () => {
@@ -16,11 +16,10 @@ export const GroupPopup = () => {
     const groups = useRecoilValue(groupState);
     const createGroup = useRecoilValue(createGroupState);
     const setCreateGroup = useCreateGroup();
-    const setNotification = useNotification();
+    const setGroup = useGroups();
 
     const groupSelectHandler = async (option: any, value: any) => {
         const groupNameList = value.map((va: SecurityGroup) => va.groupName);
-        console.log(groupNameList);
 
         const params = {
             groupNameList: groupNameList,
@@ -44,7 +43,7 @@ export const GroupPopup = () => {
         } else {
             selectedRoles = [];
         }
-        
+
         setCreateGroup((state) => ({
             ...state,
             selectedGroupStrings: value,
@@ -75,16 +74,46 @@ export const GroupPopup = () => {
             }]
         } as NewGroup;
 
-        saveObj.securityGroupList[0].securityAppEaiNbr = app.appId;
-        saveObj.securityGroupList[0].operationCd = "I";
-        if (createGroup.group && createGroup.group.groupName) {
-            saveObj.securityGroupList[0].groupName = createGroup.group.groupName;
-        }
+        // saveObj.securityGroupList[0].securityAppEaiNbr = app.appId;
+        // saveObj.securityGroupList[0].operationCd = "I";
+        // if (createGroup.group && createGroup.group.groupName) {
+        //     saveObj.securityGroupList[0].groupName = createGroup.group.groupName;
+        // }
 
         saveObj.securityGroupList[0].securityGroupRoleList = JSON.parse(JSON.stringify([...saveObj.securityGroupList[0].securityGroupRoleList, ...createGroup.selectedRoles]));
         saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: SecurityGroupRole) => sgr.operationCd = "I");
 
-        setCreateGroup((state) => ({ ...state, createdPending: true, newGroup: saveObj, show: false }));
+        setCreateGroup((state) => ({ ...state, createdPending: true, show: false }));
+
+        const getResourcePriority = {
+            userId: app.employee.employeeId,
+            operationCd: "I",
+            roleList: saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: SecurityGroupRole) => {
+                let obj = {
+                    operationCd: "I",
+                    roleName: sgr.securityRole.roleName,
+                    roleDesc: sgr.securityRole.roleDesc,
+                    securityAppEaiNbr: app.appId,
+                    securityRoleUuid: sgr.securityRole.securityRoleUuid,
+                    changeFlag: sgr.securityRole.changeFlag,
+                    securityRoleResourceList: sgr.securityRole.securityRoleResourceList
+                };
+                return obj;
+            })
+        };
+        
+        const results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+
+        let newSelectedGroup = {
+            groupName: createGroup.group.groupName,
+            operationCd: "I",
+            lastUpdUser: app.employee.employeeId,
+            securityAppEaiNbr: app.appId,
+            securityGroupRoleList: saveObj.securityGroupList[0].securityGroupRoleList,
+            resourceByPriorityList: results.resourceByPriorityList
+        };
+
+        setGroup((state) => ({ ...state, selectedGroup: newSelectedGroup }));
     };
 
     const groupNameHandler = (event: any) => {
@@ -98,7 +127,7 @@ export const GroupPopup = () => {
         <>
             <Grid>
                 <Box>
-                    <CreateRoleFields
+                    <GroupNameField
                         label={"Group Name"}
                         size="small"
                         InputLabelProps={{
@@ -106,7 +135,7 @@ export const GroupPopup = () => {
                         }}
                         onChange={groupNameHandler}
                     />
-                    <CreateRoleFields
+                    <GroupNameDesc
                         label={"Group Description"}
                         size="small"
                         InputLabelProps={{
@@ -129,7 +158,6 @@ export const GroupPopup = () => {
                         }
                         filterSelectedOptions
                         autoHighlight
-                        autoSelect
                         sx={{ maxHeight: 120, maxWidth: 570, overflow: "auto" }}
                         renderInput={(params) => (
                             <TextField
@@ -146,7 +174,6 @@ export const GroupPopup = () => {
                     <Autocomplete
                         size="small"
                         multiple
-                        id="tags-outlined"
                         options={groups.rolesMasterList}
                         value={createGroup.selectedRoles ?? []}
                         getOptionLabel={(option: any) => option.roleName ?? option.securityRole.roleName}
@@ -155,7 +182,6 @@ export const GroupPopup = () => {
                         }
                         filterSelectedOptions
                         autoHighlight
-                        autoSelect
                         onChange={roleSelectHandler}
                         sx={{
                             height: 305,
@@ -184,17 +210,17 @@ export const GroupPopup = () => {
                     position: "absolute",
                 }}
             >
-                <CreateRoleButton onClick={() => groupCreateHandler()}>
+                <Button onClick={() => groupCreateHandler()}>
                     Ok
-                </CreateRoleButton>
-                <CreateRoleButton
+                </Button>
+                <Button
                     onClick={() =>
                         setCreateGroup((state) => ({ ...state, show: false }))
                     }
                 >
                     Cancel
-                </CreateRoleButton>
-                <CreateRoleButton onClick={() =>
+                </Button>
+                <Button onClick={() =>
                     setCreateGroup((state) => ({
                         ...state,
                         selectedGroups: [],
@@ -204,7 +230,7 @@ export const GroupPopup = () => {
                             groupName: "",
                         },
                     }))
-                }>Reset</CreateRoleButton>
+                }>Reset</Button>
             </Box>
         </>
     );

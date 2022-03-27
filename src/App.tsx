@@ -1,17 +1,14 @@
 import { CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { appState, useApp } from "./atom/app";
 import { Body } from "./components/Body";
 import { Head } from "./components/Head";
 import { Notification } from "./features/Notification/Notification";
 import { GlobalStyle } from "./GlobalStyle";
+
 const App = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const app = useRecoilValue(appState);
-    const setApp = useApp();
 
     const [navigation, setNavigation]: any[] = useState([
         { name: "Users", to: "/", current: true },

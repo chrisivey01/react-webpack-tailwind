@@ -1,4 +1,4 @@
-import { Box, Button, styled } from "@mui/material";
+import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useRecoilValue } from "recoil";
 import {
     SecurityResource,
@@ -10,41 +10,17 @@ import { SECURITY_ROLE_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
 import { Severity, useNotification } from "../../Notification/atom";
+import { Selector } from "../../Selector/Selector";
+import { Button } from "../../styles";
 import { createRoleState, useCreateRole } from "../atoms/createRole";
-import { rolesState } from "../atoms/roles";
-import { Creator } from "./Creator";
-
-
-const CreateRoleButton = styled(Button)`
-    margin: 5px;
-    right: 0;
-    color: rgb(255, 255, 255);
-    box-shadow: none;
-    text-transform: none;
-    font-size: 12px;
-    padding: 6px 12px;
-    line-height: 1.5;
-    background-color: #0063cc;
-    border: 1px solid #0063cc;
-    &:hover {
-        background-color: #0069d9;
-        border-color: #0062cc;
-        box-shadow: none;
-    }
-    &:active {
-        box-shadow: none;
-        background-color: #0062cc;
-        border-color: #005cbf;
-    }
-    &:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
-    }
-`;
+import { rolesState, useRoles } from "../atoms/roles";
+import { RoleDescField, RoleNameField } from "../styles";
 
 export const RolePopup = () => {
-    const roles = useRecoilValue(rolesState);
     const app = useRecoilValue(appState);
+    const setRole = useRoles();
     const setCreateRole = useCreateRole();
+    const roles = useRecoilValue(rolesState);
     const createRole = useRecoilValue(createRoleState);
     const setNotification = useNotification();
 
@@ -143,23 +119,44 @@ export const RolePopup = () => {
     };
 
     const roleCreateHandler = () => {
-        let saveList: SecurityRole[] = [];
-        let newRoleCopy: SecurityRole = { ...createRole.role };
         if (createRole.role) {
-            newRoleCopy.securityAppEaiNbr = app.appId;
-            newRoleCopy.securityRoleResourceList =
-                createRole.securityRoleResourceList;
-            newRoleCopy.operationCd = "I";
-            newRoleCopy.roleName = createRole.role?.roleName;
-            newRoleCopy.roleDesc = createRole.role?.roleDesc;
-            saveList.push(newRoleCopy);
             setCreateRole((state) => ({
                 ...state,
                 createdPending: true,
-                securityRoleList: saveList,
                 show: false,
             }));
-        }
+
+            let rolesMasterListCopy = JSON.parse(JSON.stringify(roles.rolesMasterList));
+            rolesMasterListCopy.push({
+                securityAppEaiNbr: app.appId,
+                roleName: createRole.role.roleName,
+                roleDesc: createRole.role.roleDesc
+            });
+            let roleSelectedCopy: SecurityRole;
+            if (roles.roleSelected) {
+                roleSelectedCopy = {
+                    securityAppEaiNbr: app.appId,
+                    operationCd: "I",
+                    roleName: createRole.role.roleName,
+                    roleDesc: createRole.role.roleDesc,
+                    securityRoleResourceList: createRole.securityRoleResourceList
+                };
+            } else {
+                roleSelectedCopy = {
+                    securityAppEaiNbr: app.appId,
+                    operationCd: "I",
+                    roleName: createRole.role.roleName,
+                    roleDesc: createRole.role.roleDesc,
+                    securityRoleResourceList: createRole.securityRoleResourceList
+                };
+            }
+            setRole((state) => ({
+                ...state,
+                rolesMasterList: rolesMasterListCopy,
+                roleSelected: roleSelectedCopy,
+                filteredResourceList: createRole.securityRoleResourceList
+            }));
+        };
     };
 
     const roleNameHandler = (event: any) => {
@@ -176,22 +173,90 @@ export const RolePopup = () => {
 
     return (
         <>
-            <Creator
-                nameHandler={roleNameHandler}
-                descHandler={roleDescHandler}
-                firstMasterList={roles.rolesMasterList}
-                secondMasterList={roles.resourcesMasterList}
-                filteredList={createRole.resourcesFiltered}
-                firstClickHandler={roleSelectHandler}
-                secondClickHandler={resourceSelectHandler}
-                createdTextName={"Role Name"}
-                createdTextDescription={"Role Description"}
-                firstText={"Select Role to Copy"}
-                secondText={"Select Resources"}
-                firstPropDisplay={"roleName"}
-                secondPropLabel={"securityResourceUuid"}
-                secondPropDisplay={"resourceName"}
-            />
+            <Grid>
+                <Box>
+                    <RoleNameField
+                        label={"Role Name"}
+                        size="small"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={roleNameHandler}
+                    />
+                    <RoleDescField
+                        label={"Role Description"}
+                        size="small"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        onChange={roleDescHandler}
+                    />
+                </Box>
+                <Divider style={{ margin: 10 }} />
+                <Box>
+                    <Autocomplete
+                        size="small"
+                        multiple
+                        id="tags-outlined"
+                        value={createRole.rolesSelected ?? []}
+                        options={roles.rolesMasterList}
+                        onChange={roleSelectHandler}
+                        getOptionLabel={(option: any) => option.roleName ?? option}
+                        isOptionEqualToValue={(option: any, value: any) =>
+                            option.roleName === value
+                        }
+                        filterSelectedOptions
+                        autoHighlight
+                        autoSelect
+                        sx={{ maxHeight: 120, maxWidth: 570, overflow: "auto" }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label={"Select Role to Copy"}
+                                style={{ fontSize: 12 }}
+                                margin="normal"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        )}
+                    />
+                    <Box sx={{ fontSize: 12, display: "flex", alignItems: "center", paddingLeft: "5px" }}>
+                        Action Selected <Selector />
+                    </Box>
+                    <Autocomplete
+                        size="small"
+                        multiple
+                        id="tags-outlined"
+                        options={roles.resourcesMasterList}
+                        value={createRole.resourcesFiltered ?? []}
+                        getOptionLabel={(option: any) => option.resourceName}
+                        isOptionEqualToValue={(option: any, value: any) =>
+                            option.securityResourceUuid === value.securityResourceUuid
+                        }
+                        filterSelectedOptions
+                        autoHighlight
+                        autoSelect
+                        onChange={resourceSelectHandler}
+                        sx={{
+                            height: 305,
+                            maxHeight: location.pathname !== "/roles" ? 305 : 220,
+                            overflow: "auto",
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label={"Select Resources"}
+                                style={{ fontSize: 12 }}
+                                margin="normal"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                            />
+                        )}
+                    />
+                </Box>
+            </Grid>
             <Box
                 style={{
                     bottom: 10,
@@ -199,17 +264,17 @@ export const RolePopup = () => {
                     position: "absolute",
                 }}
             >
-                <CreateRoleButton onClick={() => roleCreateHandler()}>
+                <Button onClick={() => roleCreateHandler()}>
                     Ok
-                </CreateRoleButton>
-                <CreateRoleButton
+                </Button>
+                <Button
                     onClick={() =>
                         setCreateRole((state) => ({ ...state, show: false }))
                     }
                 >
                     Cancel
-                </CreateRoleButton>
-                <CreateRoleButton
+                </Button>
+                <Button
                     onClick={() =>
                         setCreateRole((state) => ({
                             ...state,
@@ -227,7 +292,7 @@ export const RolePopup = () => {
                     }
                 >
                     Reset
-                </CreateRoleButton>
+                </Button>
             </Box>
         </>
     );

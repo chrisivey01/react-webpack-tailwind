@@ -19,7 +19,7 @@ export const RolesAutocomplete = ({
     const setRoles = useRoles();
 
     useEffect(() => {
-        if (roles.filteredResourceList.length > 0) {
+        if (roles.filteredResourceList && roles.filteredResourceList.length > 0) {
             let copyResourceMasterList = [...roles.resourcesMasterList];
             roles.filteredResourceList.map((frr: SecurityResource) => {
                 let foundIndex = copyResourceMasterList.findIndex(

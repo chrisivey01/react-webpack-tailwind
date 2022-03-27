@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Divider } from "@mui/material";
+import { Autocomplete, Box, Divider, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { ChangeEvent, useEffect } from "react";
@@ -18,12 +18,14 @@ import {
 import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
 import { PageWrapper } from "../styles";
+import { createRoleState } from "./atoms/createRole";
 import { rolesState, useRoles } from "./atoms/roles";
-import { RoleDescField, RoleField } from "./styles";
+import { RoleDescField, RoleNameField } from "./styles";
 import { RoleTable } from "./Table/RoleTable";
 
 export const Roles = () => {
     const roles = useRecoilValue(rolesState);
+    const createRole = useRecoilValue(createRoleState);
     const setRoles = useRoles();
     const app = useRecoilValue(appState);
 
@@ -31,7 +33,6 @@ export const Roles = () => {
         if (app.appId) {
             fetchRoleMasterList();
             fetchResourceMasterList();
-            fetchSecurityActionList();
         }
     }, [app.appId]);
 
@@ -67,13 +68,13 @@ export const Roles = () => {
         }
     };
 
-    const fetchSecurityActionList = async () => { };
-
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let copyRoleSelected = JSON.parse(JSON.stringify(roles.roleSelected));
 
         copyRoleSelected.roleDesc = e.target.value;
-        copyRoleSelected.operationCd = "M";
+        if (!createRole.createdPending) {
+            copyRoleSelected.operationCd = "M";
+        }
         setRoles((state) => ({
             ...state,
             roleSelected: copyRoleSelected
@@ -134,9 +135,13 @@ export const Roles = () => {
                     size="small"
                     fullWidth
                     options={roles.rolesMasterList ?? []}
-                    getOptionLabel={(option: any) => option.roleName}
+                    value={roles.roleSelected ? roles.roleSelected.roleName : null}
+                    getOptionLabel={(option: any) => option.roleName ?? option}
+                    isOptionEqualToValue={(option: any, value: any) =>
+                        option.roleName === value
+                    }
                     renderInput={(params) => (
-                        <RoleField
+                        <TextField
                             {...params}
                             size="small"
                             label="Roles"
@@ -144,7 +149,7 @@ export const Roles = () => {
                         />
                     )}
                     onChange={(e, option: any) => changeRole(option)}
-                    renderOption={(props, option, { inputValue }) => {
+                    renderOption={(props, option:any, { inputValue }) => {
                         const matches = match(option.roleName, inputValue);
                         const parts = parse(option.roleName, matches);
 
@@ -164,7 +169,7 @@ export const Roles = () => {
             <Box style={{ width: "50%", padding: 10 }}>
                 {roles.roleSelected && roles.roleSelected.roleName !== "" ? (
                     <>
-                        <RoleField
+                        <RoleNameField
                             sx={{
                                 "& .Mui-disabled": {
                                     WebkitTextFillColor: "black !important"

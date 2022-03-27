@@ -14,4 +14,16 @@ type Action = {
     securityAppEaiNbr: number;
 };
 
-export type { ActionList, Action };
+type SecurityActionType = {
+    actionDesc: string;
+    actionName: string;
+    changeFlag: string;
+    lastUpdDtTm: string;
+    lastUpdUser: string;
+    operationCd: string;
+    priorityNbr: number;
+    securityActionUuid: string;
+    securityAppEaiNbr: number;
+};
+
+export type { ActionList, Action, SecurityActionType };

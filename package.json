@@ -19,6 +19,8 @@
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.4.2",
     "@mui/material": "^5.4.2",
+    "@sentry/react": "^6.18.2",
+    "@sentry/tracing": "^6.18.2",
     "axios": "^0.26.0",
     "esbuild": "^0.14.23",
     "react": "^17.0.2",

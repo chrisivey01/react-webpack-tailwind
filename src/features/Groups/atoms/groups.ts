@@ -9,10 +9,10 @@ interface GroupsState {
     groupsMasterList: SecurityGroup[];
     resourcesMasterList: SecurityResource[];
     securityRoleResourcesMasterList: SecurityRoleResource[];
-    selectedGroup: SecurityGroup;
+    selectedGroup?: SecurityGroup;
     resourcesFilteredList: SecurityResource[];
     rolesFilteredList: SecurityRole[];
-    groupSelected: SecurityGroupList;
+    groupSelected?: SecurityGroupList;
 }
 
 export const groupState = atom({

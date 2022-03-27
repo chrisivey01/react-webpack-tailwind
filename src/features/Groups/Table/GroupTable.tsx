@@ -39,7 +39,7 @@ const GroupTable = () => {
             <Table stickyHeader size="small">
                 <Head />
                 <TableBody ref={scrollRef}>
-                    {group.selectedGroup.resourceByPriorityList &&
+                    {group.selectedGroup && group.selectedGroup.resourceByPriorityList &&
                         group.selectedGroup.resourceByPriorityList.map(
                             (sgr: SecurityGroupResource, index: number) => {
                                 return (

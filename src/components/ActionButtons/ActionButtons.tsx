@@ -2,10 +2,11 @@ import { Box } from "@mui/material";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import { PhxUser } from "../../../types/PhxUser";
 import {
     SecurityResource
 } from "../../../types/SecurityRole";
-import { SECURITY_GROUP_SAVE_REQUEST, SECURITY_ROLE_SAVE_REQUEST } from "../../apis";
+import { SECURITY_GROUP_SAVE_REQUEST, SECURITY_ROLE_SAVE_REQUEST, PHX_USER_SAVE_CONTROLLER } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
 import { createGroupState, useCreateGroup } from "../../features/Groups/atoms/createGroup";
@@ -19,6 +20,7 @@ import {
     useCreateRole
 } from "../../features/Roles/atoms/createRole";
 import { rolesState, useRoles } from "../../features/Roles/atoms/roles";
+import { userState, useUser } from "../../features/Users/atoms/users";
 import { SaveButton } from "./styles";
 
 export const ActionButtons = () => {
@@ -26,11 +28,19 @@ export const ActionButtons = () => {
     const [checkedState, setCheckedState] = useState<any>(false);
     const app = useRecoilValue(appState);
     const setNotification = useNotification();
+
+    /**
+     * user state
+     */
+    const user = useRecoilValue(userState);
+    const setUser = useUser();
+
+
     /**
      * create role state
      */
     const createRole = useRecoilValue(createRoleState);
-    const setCreate = useCreateRole();
+    const setCreateRole = useCreateRole();
 
     /**
      * role state
@@ -43,6 +53,7 @@ export const ActionButtons = () => {
      * group state
      */
     const group = useRecoilValue(groupState);
+    const setGroup = useGroups();
     const createGroup = useRecoilValue(createGroupState);
     const setCreateGroup = useCreateGroup();
 
@@ -51,20 +62,13 @@ export const ActionButtons = () => {
             if (role.roleSelected) {
                 let rolesCopy = JSON.parse(JSON.stringify(role.roleSelected));
 
-                let securityObj: SecurityResource = {
-                    securityAction: {},
-                    changeFlg: "I",
-                    lastUpdDtTm: "",
+                let securityObj: any = {
                     lastUpdUser: app.employee.employeeId,
-                    resourceDesc: "",
-                    resourceName: "",
-                    securityResourceUuid: "",
-                    securityAppEaiNbr: 5907,
+                    securityAppEaiNbr: app.appId,
                     securityResource: {
                         changeFlag: "I",
-                        lastUpdDtTm: "",
-                        lastUpdUser: app.employee.employeeId,
                         resourceName: "",
+                        resourceDesc: "",
                         securityAppEaiNbr: 0,
                         securityResourceUuid: "",
                     },
@@ -91,7 +95,7 @@ export const ActionButtons = () => {
     const closeHandler = () => { };
 
     const newRoleHandler = () => {
-        setCreate((state) => ({
+        setCreateRole((state) => ({
             ...state,
             show: true,
         }));
@@ -107,113 +111,127 @@ export const ActionButtons = () => {
     const saveHandler = async () => {
         let params: any = {};
         if (location.pathname === "/roles") {
-            if (createRole.createdPending) {
-                params = {
-                    userId: app.employee.employeeId,
-                    securityRoleList: createRole.securityRoleList,
-                };
+            params = {
+                userId: app.employee.employeeId,
+                securityRoleList: [],
+            };
+            params.securityRoleList.push(role.roleSelected);
 
-                try {
-                    await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: "Success!",
-                        severity: Severity.success,
-                    }));
-                } catch (err: any) {
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: err,
-                        severity: Severity.error,
-                    }));
-                }
-
-                setCreate((state) => ({
+            try {
+                await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
+                setNotification((state) => ({
                     ...state,
-                    createdPending: false,
+                    show: true,
+                    message: "Save Success!",
+                    severity: Severity.success,
                 }));
-            } else {
-                params = {
-                    userId: app.employee.employeeId,
-                    securityRoleList: [],
-                };
-                params.securityRoleList.push(role.roleSelected);
-
-                try {
-                    await httpRequestList(SECURITY_ROLE_SAVE_REQUEST, params);
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: "Save Success!",
-                        severity: Severity.success,
-                    }));
-                } catch (err: any) {
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: err,
-                        severity: Severity.error,
-                    }));
-                }
+            } catch (err: any) {
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message: err,
+                    severity: Severity.error,
+                }));
             }
+            setCreateRole((state) => ({
+                ...state,
+                createdPending: false
+            }));
         }
 
         if (location.pathname === "/groups") {
 
+            params = {
+                userId: app.employee.employeeId,
+                securityGroupList: [],
+            };
+
+            params.securityGroupList.push(group.selectedGroup);
+
             if (createGroup.createdPending) {
-                params = createGroup.newGroup;
-                try {
-                    await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: "Success!",
-                        severity: Severity.success,
-                    }));
-                } catch (err: any) {
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: err,
-                        severity: Severity.error,
-                    }));
-                }
-
-                setCreateGroup((state) => ({
+                let copyGroupsMasterList = JSON.parse(JSON.stringify(group.groupsMasterList));
+                copyGroupsMasterList.push({
+                    groupName: group.selectedGroup?.groupName
+                });
+                setGroup((state: any) => ({
                     ...state,
-                    createdPending: false,
+                    groupsMasterList: copyGroupsMasterList
                 }));
-
-            } else {
-
-                params = {
-                    userId: app.employee.employeeId,
-                    securityGroupList: [],
-                };
-
-                params.securityGroupList.push(group.selectedGroup);
-
-                try {
-                    await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: "Save Success!",
-                        severity: Severity.success,
-                    }));
-                } catch (err: any) {
-                    setNotification((state) => ({
-                        ...state,
-                        show: true,
-                        message: err,
-                        severity: Severity.error,
-                    }));
-                }
             }
 
+
+            try {
+                await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message: "Save Success!",
+                    severity: Severity.success,
+                }));
+            } catch (err: any) {
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message: err,
+                    severity: Severity.error,
+                }));
+            }
+            setCreateGroup((state) => ({
+                ...state,
+                createdPending: false
+            }));
         };
+
+        if (location.pathname === "/") {
+            let userSelected: PhxUser = {
+                activeFlg: user.selectedUser.activeFlg,
+                allowableUrsaNetworksCds: user.selectedUser.allowableUrsaNetworksCds,
+                altEffDaysView: user.selectedUser.altEffDaysView,
+                carrierGrpCd: user.selectedUser.carrierGrpCd,
+                ccRestrictedLeadDays: user.selectedUser.ccRestrictedLeadDays,
+                companyNameCode: user.selectedUser.companyNameCode,
+                defaultLegTypeCd: user.selectedUser.defaultLegTypeCd,
+                emailId: user.selectedUser.emailId,
+                fdxCompanyGrp: user.selectedUser.fdxCompanyGrp,
+                guiUserPreferences: user.selectedUser.guiUserPreferences,
+                inactiveUserStatus: user.selectedUser.inactiveUserStatus,
+                lastLoginDtTm: user.selectedUser.lastLoginDtTm,
+                lastUpdUser: user.selectedUser.lastUpdUser,
+                metric: user.selectedUser.metric,
+                oca: user.selectedUser.oca,
+                smtpHost: user.selectedUser.smtpHost,
+                userRouteTypeCd: user.selectedUser.userRouteTypeCd,
+                userId: user.selectedUser.userId,
+                emplNbr: user.selectedUser.emplNbr,
+                firstName: user.selectedUser.firstName,
+                lastName: user.selectedUser.lastName,
+                operationCd: "M",
+                resourceByPriorityList: user.acquiredResources,
+                securityUserGroupList: user.acquiredGroups,
+                securityUserRoleList: user.acquiredRoles
+            };
+            try {
+                params = {
+                    userId: app.employee.employeeId,
+                    phxUserList: [userSelected],
+                };
+                await httpRequestList(PHX_USER_SAVE_CONTROLLER, params);
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message: "Save Success!",
+                    severity: Severity.success,
+                }));
+            } catch (err: any) {
+                setNotification((state) => ({
+                    ...state,
+                    show: true,
+                    message: err,
+                    severity: Severity.error,
+                }));
+                console.log(err);
+            }
+        }
     };
 
     if (location.pathname === "/roles") {
