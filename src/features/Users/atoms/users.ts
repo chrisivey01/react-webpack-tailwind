@@ -1,5 +1,6 @@
 import { atom, useSetRecoilState } from 'recoil';
-import { PhxUser, SecurityUserGroup, SecurityUserRole } from "../../../../types/PhxUser";
+import { PhxUser, SecurityGroup, SecurityRole, SecurityUserGroup, SecurityUserRole } from "../../../../types/PhxUser";
+import { SecurityGroupRole } from '../../../../types/SecurityGroup';
 import { SecurityRoleResource } from "../../../../types/SecurityRole";
 
 interface UserState {
@@ -7,11 +8,13 @@ interface UserState {
     groupsMasterList: SecurityUserGroup[];
     rolesMasterList: SecurityUserRole[];
     employee: PhxUser;
-    acquiredGroups: SecurityUserGroup[];
-    acquiredRoles: SecurityUserRole[];
-    acquiredResources: SecurityRoleResource[];
-    selectedUser: PhxUser;
-    copySelectedUser: PhxUser;
+    acquiredGroups: SecurityGroup[] | undefined;
+    acquiredRoles: SecurityRole[] | undefined;
+    acquiredResources: SecurityRoleResource[] | undefined;
+    selectedUser: PhxUser | null;
+    copyUser: PhxUser | null;
+    groupObj: any;
+    roleObj: any;
 }
 
 export const userState = atom({

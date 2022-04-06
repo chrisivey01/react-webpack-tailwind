@@ -43,6 +43,7 @@ export const Groups = () => {
     const fetchGroupMasterList = async () => {
         const params = {
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
         };
 
         const results: SecurityGroupList = await httpRequestList(
@@ -61,6 +62,8 @@ export const Groups = () => {
         const params = {
             fetchResources: true,
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
+
         };
         const result: SecurityRoleList = await httpRequestList(
             SECURITY_ROLE_REQUEST,
@@ -75,22 +78,30 @@ export const Groups = () => {
     };
 
     const changeGroup = async (option: SecurityGroup) => {
-        if (option === null) return;
-        const groupName = option.groupName;
-        const params = {
-            fetchResources: true,
-            groupNameList: [groupName],
-            securityAppEaiNbr: app.appId,
-        };
-        const result: SecurityGroupList = await httpRequestList(
-            SECURITY_GROUP_REQUEST,
-            params
-        );
+        if (option){
 
-        if (result) {
+            const groupName = option.groupName;
+            const params = {
+                fetchResources: true,
+                groupNameList: [groupName],
+                securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId
+            };
+            const result: SecurityGroupList = await httpRequestList(
+                SECURITY_GROUP_REQUEST,
+                params
+            );
+    
+            if (result) {
+                setGroups((state) => ({
+                    ...state,
+                    selectedGroup: result.securityGroupList[0],
+                }));
+            }
+        } else {
             setGroups((state) => ({
                 ...state,
-                selectedGroup: result.securityGroupList[0],
+                selectedGroup: null,
             }));
         }
     };
@@ -210,10 +221,9 @@ export const Groups = () => {
                     size="small"
                     sx={{ width: 300 }}
                     options={groups.groupsMasterList ?? []}
-                    value={groups.selectedGroup ? groups.selectedGroup.groupName : null}
                     getOptionLabel={(option: any) => option.groupName ?? option}
                     isOptionEqualToValue={(option: any, value: any) =>
-                        option.groupName === value
+                        option.groupName === value.groupName
                     }
                     renderInput={(params) => (
                         <TextField {...params} label="Groups" margin="normal" />

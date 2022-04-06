@@ -12,8 +12,9 @@ type SecurityRole = {
     operationCd?: string;
     changeFlag?: string;
     securityAppEaiNbr?: number;
-    securityRoleResourceList?: any[];
+    securityRoleResourceList?: SecurityRoleResource[];
     securityRoleUuid?: string;
+    added?: boolean;
 };
 
 type SecurityRoleResourceList = {
@@ -33,6 +34,7 @@ type SecurityRoleResource = {
     color?: string;
     fontStyle?: string;
     fontSize?: string;
+    deleted?: string;
 };
 
 type SecurityResourceList = {

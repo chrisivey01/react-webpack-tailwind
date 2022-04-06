@@ -29,7 +29,7 @@ type PhxUser = {
     phxUserOid?: number,
     resourceByPriorityList?: SecurityRoleResource[],
     securityUserGroupList?: SecurityUserGroup[],
-    securityUserRoleList?: SecurityUserRole[],
+    securityUserRoleList?: SecurityRole[],
     smtpHost?: string,
     userId?: string,
     userRouteTypeCd?: string;
@@ -44,9 +44,13 @@ type SecurityUserGroup = {
     securityAppEaiNbr: number;
     securityGroup: SecurityGroup;
     securityUserGroupUuid: string;
+    deleted?: boolean;
+    added?: boolean;
 };
 
 type SecurityGroup = {
+    added?: boolean;
+    deleted?: boolean;
     changeFlag: string;
     groupName: string;
     lastUpdDtTm: string;
@@ -54,7 +58,7 @@ type SecurityGroup = {
     operationCd: string;
     resourceByPriorityList: SecurityRoleResource[];
     securityAppEaiNbr: number;
-    securityGroupRoleList: SecurityGroupRole[];
+    securityGroupRoleList: SecurityRole[];
     securityGroupUuid: string;
 };
 
@@ -64,21 +68,27 @@ type SecurityUserRole = {
     lastUpdUser: string;
     operationCd: string;
     phxUser: PhxUser;
-    securityAppEaiNbr: string;
+    securityAppEaiNbr: number;
     securityRole: SecurityRole;
     securityUserRoleUuid: string;
 };
 
-type SecurityRole = {
-    changeFlag: string;
-    lastUpdDtTm: string;
-    lastUpdUser: string;
-    operationCd: string;
-    roleDesc: string;
-    roleName: string;
-    securityAppEaiNbr: string;
-    securityRoleResourceList: SecurityRoleResource;
-    securityRoleUuid: string;
+type SecurityUserRoleList = {
+    securityRoleList: SecurityUserRole[];
 };
 
-export type { SecurityUserGroup, PhxUser, SecurityUserRole, SecurityRole, SecurityGroup };
+type SecurityRole = {
+    changeFlag?: string;
+    lastUpdDtTm?: string;
+    lastUpdUser?: string;
+    operationCd?: string;
+    roleDesc?: string;
+    roleName?: string;
+    securityAppEaiNbr?: number;
+    securityRoleResourceList?: SecurityRoleResource[];
+    securityRoleUuid?: string;
+    deleted?: boolean;
+    added?:boolean;
+};
+
+export type { SecurityUserGroup, PhxUser, SecurityUserRole, SecurityUserRoleList, SecurityRole, SecurityGroup };

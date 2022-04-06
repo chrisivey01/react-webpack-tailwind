@@ -1,11 +1,11 @@
-import { Autocomplete, Box, Divider, TextField } from "@mui/material";
+import { Autocomplete, Box, Chip, Divider, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { PhxUser, SecurityUserGroup, SecurityUserRole } from "../../../types/PhxUser";
+import { PhxUser, SecurityUserGroup, SecurityUserRole, SecurityRole, SecurityGroup } from "../../../types/PhxUser";
 import { SecurityGroupRole } from "../../../types/SecurityGroup";
-import { SecurityRole, SecurityRoleList, SecurityRoleResource } from "../../../types/SecurityRole";
+import { SecurityRoleList, SecurityRoleResource } from "../../../types/SecurityRole";
 import { PHX_USER_LIST_CONTROLLER, PHX_USER_REQUEST, RESOURCE_BY_PRIORITY_REQUEST, SECURITY_GROUP_LIST_REQUEST, SECURITY_GROUP_REQUEST, SECURITY_ROLE_LIST_REQUEST, SECURITY_ROLE_REQUEST } from "../../apis";
 import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
@@ -59,28 +59,65 @@ export const Users = () => {
             const params = {
                 fetchResources: true,
                 securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId,
                 userIdList: [option.userId]
             };
             const results = await httpRequestList(PHX_USER_REQUEST, params);
-            const emp: PhxUser = results.phxUserList[0];
+            const emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
 
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
              */
-            let acquiredGroups: SecurityUserGroup[] = emp.securityUserGroupList;
-            let acquiredRoles: SecurityUserRole[] = emp.securityUserRoleList;
-            let acquiredResources: SecurityRoleResource[] = emp.resourceByPriorityList;
-
-            if (acquiredGroups.length === 0 && acquiredRoles.length === 0 && acquiredResources.length === 0) {
-                setNotification((state) => ({
-                    ...state,
-                    show: true,
-                    message:
-                        "There are no results for this user.",
-                    severity: Severity.warning,
-                }));
+            let acquiredGroups: SecurityGroup[] = [];
+            let acquiredRoles: SecurityRole[] = [];
+            let groupObj: any[] = [];
+            let roleObj: any[] = [];
+            let acquiredResources: SecurityRoleResource[] = [];
+            if (emp.securityUserGroupList && emp.resourceByPriorityList) {
+                emp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
+                    groupObj.push({
+                        groupName: sug.securityGroup.groupName,
+                        added: false
+                    });
+                    acquiredGroups?.push(sug.securityGroup);
+                    sug.securityGroup.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
+                        roleObj.push({
+                            roleName: sugr.securityRole.roleName,
+                            added: false
+                        });
+                        acquiredRoles.push(sugr.securityRole);
+                    });
+                });
+                acquiredResources = emp.resourceByPriorityList.map((res: any) => {
+                    res.added = false;
+                    return res;
+                });
             }
-            setUser((state) => ({ ...state, selectedUser: option, acquiredGroups: acquiredGroups, acquiredRoles: acquiredRoles, acquiredResources: acquiredResources }));
+
+            if (acquiredGroups && acquiredRoles && acquiredResources) {
+                let totalListCount = acquiredGroups.length + acquiredRoles.length + acquiredResources.length;
+                if (totalListCount > 0) {
+                    setUser((state) => ({
+                        ...state,
+                        selectedUser: emp,
+                        acquiredGroups: acquiredGroups,
+                        acquiredRoles: acquiredRoles,
+                        acquiredResources: acquiredResources,
+                        groupObj: groupObj,
+                        roleObj: roleObj
+                    }));
+                } else {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message:
+                            "There are no results for this user.",
+                        severity: Severity.warning,
+                    }));
+                }
+            }
+        } else {
+            setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
         }
     };
 
@@ -97,27 +134,58 @@ export const Users = () => {
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
              */
-            let acquiredGroups: SecurityUserGroup[] = emp.securityUserGroupList;
-            let acquiredRoles: SecurityUserRole[] = emp.securityUserRoleList;
-            let acquiredResources: SecurityRoleResource[] = emp.resourceByPriorityList;
+            let acquiredGroups: SecurityGroup[] = [];
+            let acquiredRoles: SecurityRole[] = [];
+            let groupObj: any[] = [];
+            let roleObj: any[] = [];
 
-            if (acquiredGroups.length === 0 && acquiredRoles.length === 0 && acquiredResources.length === 0) {
-                setNotification((state) => ({
-                    ...state,
-                    show: true,
-                    message:
-                        "There are no results for this user.",
-                    severity: Severity.warning,
-                }));
+            let acquiredResources: SecurityRoleResource[] = [];
+            if (emp.securityUserGroupList && emp.resourceByPriorityList) {
+                emp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
+                    groupObj.push({
+                        groupName: sug.securityGroup.groupName,
+                        added: true
+                    });
+                    acquiredGroups?.push(sug.securityGroup);
+                    sug.securityGroup.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
+                        roleObj.push({
+                            roleName: sugr.securityRole.roleName,
+                            added: true
+                        });
+                        acquiredRoles.push(sugr.securityRole);
+                    });
+                });
+                acquiredResources = emp.resourceByPriorityList;
             }
-            setUser((state) => ({ ...state, copyUser: option, acquiredGroups: acquiredGroups, acquiredRoles: acquiredRoles, acquiredResources: acquiredResources }));
+
+            if (acquiredGroups && acquiredRoles && acquiredResources) {
+                let totalListCount = acquiredGroups.length + acquiredRoles.length + acquiredResources.length;
+                if (totalListCount > 0) {
+                    setUser((state) => ({
+                        ...state,
+                        copyUser: option,
+                        acquiredGroups: acquiredGroups,
+                        acquiredRoles: acquiredRoles,
+                        acquiredResources: acquiredResources
+                    }));
+                } else {
+                    setNotification((state) => ({
+                        ...state,
+                        show: true,
+                        message:
+                            "There are no results for this user.",
+                        severity: Severity.warning,
+                    }));
+                }
+            }
+        } else {
+            setUser((state) => ({ ...state, copyUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
         }
     };
 
-    const handleChangeGroups = async (option: any, value: any) => {
+    const handleChangeGroups = async (option: any) => {
         let groupNames: string[] = [];
-
-        value.forEach((gr: any) => {
+        option.forEach((gr: any) => {
             if (gr.groupName) {
                 groupNames.push(gr.groupName);
             } else {
@@ -137,16 +205,17 @@ export const Users = () => {
             params
         );
 
+
+
         let results: any;
         if (result) {
             let getResourcePriority = {
-                userId: app.employee.employeeId,
-                operationCd: "I",
-                roleList: result.securityGroupList.map((sgr: SecurityGroupRole) => {
+                userId: app.employee.employeeId, 
+                roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
                     let obj = {
                         operationCd: "I",
                         securityAppEaiNbr: app.appId,
-                        changeFlag: sgr.changeFlag,
+                        userId: app.employee.employeeId, 
                         securityRoleResourceList: sgr.resourceByPriorityList
                     };
                     return obj;
@@ -154,8 +223,29 @@ export const Users = () => {
             };
             results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
 
+            /**
+             * added
+             * groupName
+             */
+            let copyAcquiredGroups = JSON.parse(JSON.stringify(result.securityGroupList));
+            copyAcquiredGroups.map((group: SecurityGroup) => {
+                let grpIndex = user.groupObj.findIndex((grpSearch: any) => grpSearch.groupName !== group.groupName);
+                if (grpIndex !== -1) {
+                    group.added = true;
+                    group.operationCd = "I"
+                } else {
+                    group.added = false;
+                }
+                return group;
+            });
+
+
             try {
-                setUser((state) => ({ ...state, acquiredGroups: result.securityGroupList, acquiredResources: results.resourceByPriorityList }));
+                setUser((state) => ({
+                    ...state,
+                    acquiredGroups: copyAcquiredGroups,
+                    acquiredResources: results.resourceByPriorityList
+                }));
             } catch (err) {
                 setUser((state) => ({ ...state, acquiredGroups: result.securityGroupList, acquiredResources: [] }));
             }
@@ -164,10 +254,9 @@ export const Users = () => {
         }
     };
 
-    const handleChangeRoles = async (option: any, value: any) => {
+    const handleChangeRoles = async (option: any) => {
         let roleNames: string[] = [];
-
-        value.forEach((rn: any) => {
+        option.forEach((rn: any) => {
             if (rn.roleName) {
                 roleNames.push(rn.roleName);
             } else {
@@ -179,36 +268,73 @@ export const Users = () => {
             fetchResources: true,
             roleNameList: roleNames,
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
         };
+
         const srlResults: SecurityRoleList = await httpRequestList(
             SECURITY_ROLE_REQUEST,
             params
         );
 
-        let roleSelectedResources: any = srlResults.securityRoleList.map((srr: SecurityRole) => {
-            return srr.securityRoleResourceList;
-        });
-        let resourcesFromRole = roleSelectedResources;
         let getResourcePriority = {
             userId: app.employee.employeeId,
             operationCd: "I",
-            roleList: resourcesFromRole.map((sgr: any) => {
-                let obj = {
-                    operationCd: "I",
-                    securityAppEaiNbr: app.appId,
-                    changeFlag: sgr.changeFlag,
-                    securityRoleResourceList: sgr
-                };
-                return obj;
-            })
+            roleList: srlResults.securityRoleList
         };
         const acquiredResources = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+
+
+        /**
+         * added
+         * groupName
+         */
+        let copyAcquiredRoles = JSON.parse(JSON.stringify(srlResults.securityRoleList));
+        copyAcquiredRoles.map((role: SecurityRole) => {
+            let roleIndex = user.roleObj.findIndex((roleSearch: any) => (roleSearch.roleName === role.roleName));
+            if (roleIndex !== -1) {
+                role.added = false;
+            } else {
+                role.added = true;
+            }
+            return role;
+        });
 
         setUser((state) => ({
             ...state,
             acquiredResources: acquiredResources ? acquiredResources.resourceByPriorityList : [],
-            acquiredRoles: srlResults.securityRoleList
+            acquiredRoles: copyAcquiredRoles
         }));
+    };
+
+    const handleDelete = (option: any, index: number, groupsOrRoles: string) => {
+        let acquiredGroupsCopy: any[] = [];
+        let acquiredRolesCopy: any[] = [];
+
+        if (groupsOrRoles === "groups") {
+            acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
+            acquiredGroupsCopy[index].deleted = !acquiredGroupsCopy[index].deleted;
+            if (acquiredGroupsCopy[index].deleted) {
+                acquiredGroupsCopy[index].operationCd = "D";
+            } else {
+                acquiredGroupsCopy[index].operationCd = "M";
+            }
+            setUser((state) => ({
+                ...state,
+                acquiredGroups: acquiredGroupsCopy,
+            }));
+        } else {
+            acquiredRolesCopy = JSON.parse(JSON.stringify(user.acquiredRoles));
+            acquiredRolesCopy[index].deleted = !acquiredRolesCopy[index].deleted;
+            if (acquiredRolesCopy[index].deleted) {
+                acquiredRolesCopy[index].operationCd = "D";
+            } else {
+                acquiredRolesCopy[index].operationCd = "M";
+            }
+            setUser((state) => ({
+                ...state,
+                acquiredRoles: acquiredRolesCopy
+            }));
+        }
     };
 
     return (
@@ -247,6 +373,7 @@ export const Users = () => {
                                 />
                             )}
                             onChange={(e, option) => changeUser(option)}
+
                             renderOption={(
                                 props,
                                 option,
@@ -365,7 +492,6 @@ export const Users = () => {
                     <Box sx={{ padding: "10px" }}>
                         <Autocomplete
                             filterSelectedOptions
-                            autoHighlight
                             size="small"
                             sx={{
                                 maxHeight: 120,
@@ -378,6 +504,29 @@ export const Users = () => {
                             options={user.groupsMasterList ?? []}
                             getOptionLabel={(option: any) =>
                                 option.groupName ?? option.securityGroup.groupName
+                            }
+                            renderTags={(value: any, getTagProps: any) =>
+                                value.map(
+                                    (option: any, index: any) => (
+                                        <Chip
+                                            key={index}
+                                            variant="outlined"
+                                            clickable
+                                            onDelete={() => handleDelete(option, index, 'groups')}
+                                            label={option.groupName}
+                                            style={{
+                                                margin: "2px",
+                                                color: option.deleted ? "red" : "unset",
+                                                fontStyle: option.added
+                                                    ? "italic"
+                                                    : "normal",
+                                                fontWeight: option.added
+                                                    ? 600
+                                                    : 100,
+                                            }}
+                                        />
+                                    )
+                                )
                             }
                             isOptionEqualToValue={(option: any, value: any) => {
                                 if (option && value) {
@@ -394,7 +543,9 @@ export const Users = () => {
                                     }
                                 }
                             }}
-                            onChange={handleChangeGroups}
+                            onChange={(e, option: any) =>
+                                handleChangeGroups(option)
+                            }
                             value={user.acquiredGroups ?? []}
                             renderInput={(params) => (
                                 <TextField
@@ -409,7 +560,6 @@ export const Users = () => {
                     <Box sx={{ padding: "10px" }}>
                         <Autocomplete
                             filterSelectedOptions
-                            autoHighlight
                             size="small"
                             sx={{
                                 maxHeight: 220,
@@ -424,7 +574,32 @@ export const Users = () => {
                             isOptionEqualToValue={(option: any, value: any) =>
                                 option.roleName === value.roleName
                             }
-                            onChange={handleChangeRoles}
+                            renderTags={(value: any, getTagProps: any) =>
+                                value.map(
+                                    (option: any, index: any) => (
+                                        <Chip
+                                            key={index}
+                                            variant="outlined"
+                                            clickable
+                                            onDelete={() => handleDelete(option, index, 'roles')}
+                                            label={option.roleName}
+                                            style={{
+                                                margin: "2px",
+                                                color: option.deleted ? "red" : "unset",
+                                                fontStyle: option.added
+                                                    ? "italic"
+                                                    : "normal",
+                                                fontWeight: option.added
+                                                    ? 600
+                                                    : 100,
+                                            }}
+                                        />
+                                    )
+                                )
+                            }
+                            onChange={(e, option: any) =>
+                                handleChangeRoles(option)
+                            }
                             value={user.acquiredRoles ?? []}
                             renderInput={(params) => (
                                 <TextField
@@ -440,7 +615,7 @@ export const Users = () => {
             </PageContainer>
             <Divider orientation="horizontal" flexItem />
 
-            {user.selectedUser && (user.acquiredGroups.length > 0 || user.acquiredRoles.length > 0 || user.acquiredResources.length > 0) ? <UserTable /> : <></>}
+            {user.selectedUser || user.copyUser ? <UserTable /> : <></>}
         </PageWrapper>
     );
 

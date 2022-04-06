@@ -35,9 +35,7 @@ type SecurityGroupResource = {
         roleDesc: string;
         roleName: string;
         securityAppEaiNbr: 0;
-        securityRoleResourceList: [
-            null
-        ];
+        securityRoleResourceList: any[];
         securityRoleUuid: string;
     };
     securityRoleResourceUuid: string;
@@ -76,9 +74,7 @@ type SecurityGroupRole = {
         roleDesc: string;
         roleName: string;
         securityAppEaiNbr: number;
-        securityRoleResourceList: [
-            null
-        ];
+        securityRoleResourceList: any[];
         securityRoleUuid: string;
     };
     resourceByPriorityList: SecurityGroupResource[];

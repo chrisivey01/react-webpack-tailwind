@@ -24,6 +24,7 @@ export const GroupPopup = () => {
         const params = {
             groupNameList: groupNameList,
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
         };
         let result = {
             securityGroupList: []
@@ -74,11 +75,6 @@ export const GroupPopup = () => {
             }]
         } as NewGroup;
 
-        // saveObj.securityGroupList[0].securityAppEaiNbr = app.appId;
-        // saveObj.securityGroupList[0].operationCd = "I";
-        // if (createGroup.group && createGroup.group.groupName) {
-        //     saveObj.securityGroupList[0].groupName = createGroup.group.groupName;
-        // }
 
         saveObj.securityGroupList[0].securityGroupRoleList = JSON.parse(JSON.stringify([...saveObj.securityGroupList[0].securityGroupRoleList, ...createGroup.selectedRoles]));
         saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: SecurityGroupRole) => sgr.operationCd = "I");

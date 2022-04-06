@@ -37,6 +37,7 @@ export const RolePopup = () => {
             fetchResources: true,
             roleNameList: roleList,
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
         };
         const results: SecurityRoleList = await httpRequestList(
             SECURITY_ROLE_REQUEST,

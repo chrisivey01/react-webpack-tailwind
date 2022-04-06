@@ -39,6 +39,7 @@ export const Roles = () => {
     const fetchRoleMasterList = async () => {
         const params = {
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId,
         };
         const results: SecurityRoleList = await httpRequestList(
             SECURITY_ROLE_LIST_REQUEST,
@@ -55,6 +56,7 @@ export const Roles = () => {
     const fetchResourceMasterList = async () => {
         const params = {
             securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId,
         };
         const results: SecurityResourceList = await httpRequestList(
             SECURITY_RESOURCE_REQUEST,
@@ -82,50 +84,63 @@ export const Roles = () => {
     };
 
     const changeRole = async (option: SecurityRole) => {
-        if (option === null) return;
-        const securityRoleName = option.roleName;
-        const params = {
-            fetchResources: true,
-            roleNameList: [securityRoleName],
-            securityAppEaiNbr: app.appId,
-        };
-        const results: SecurityRoleList = await httpRequestList(
-            SECURITY_ROLE_REQUEST,
-            params
-        );
+        if (option) {
 
-        let roleSelectedResponse: SecurityRole = results.securityRoleList[0];
+            const securityRoleName = option.roleName;
+            const params = {
+                fetchResources: true,
+                roleNameList: [securityRoleName],
+                securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId,
+            };
+            const results: SecurityRoleList = await httpRequestList(
+                SECURITY_ROLE_REQUEST,
+                params
+            );
 
-        let resourcesFromRole = roleSelectedResponse.securityRoleResourceList;
+            let roleSelectedResponse: SecurityRole = results.securityRoleList[0];
 
-        let tableView: any[] = [];
+            let resourcesFromRole = roleSelectedResponse.securityRoleResourceList;
 
-        if (resourcesFromRole) {
-            resourcesFromRole.map((roleResource: SecurityRoleResource) => {
-                roles.resourcesMasterList.map(
-                    (masterResource: SecurityResource) => {
-                        if (
-                            roleResource.securityResource &&
-                            roleResource.securityResource
-                                .securityResourceUuid ===
-                            masterResource.securityResourceUuid
-                        ) {
-                            const merged = {
-                                ...roleResource,
-                                ...masterResource,
-                            };
-                            tableView.push(merged);
+            let tableView: any[] = [];
+
+            if (resourcesFromRole) {
+                resourcesFromRole.map((roleResource: SecurityRoleResource) => {
+                    roles.resourcesMasterList.map(
+                        (masterResource: SecurityResource) => {
+                            if (
+                                roleResource.securityResource &&
+                                roleResource.securityResource
+                                    .securityResourceUuid ===
+                                masterResource.securityResourceUuid
+                            ) {
+                                const merged = {
+                                    ...roleResource,
+                                    ...masterResource,
+                                };
+                                tableView.push(merged);
+                            }
                         }
-                    }
-                );
-            });
-        }
+                    );
+                });
+            }
 
-        setRoles((state) => ({
-            ...state,
-            filteredResourceList: tableView,
-            roleSelected: roleSelectedResponse,
-        }));
+            setRoles((state) => ({
+                ...state,
+                filteredResourceList: tableView,
+                roleSelected: roleSelectedResponse,
+            }));
+        } else {
+            setRoles((state) => ({
+                ...state,
+                filteredResourceList: [],
+                roleSelected: {
+                    ...state,
+                    roleName: '',
+                    roleDesc: ''
+                },
+            }));
+        }
     };
 
     return (
@@ -135,10 +150,10 @@ export const Roles = () => {
                     size="small"
                     fullWidth
                     options={roles.rolesMasterList ?? []}
-                    value={roles.roleSelected ? roles.roleSelected.roleName : null}
+                    // value={roles.roleSelected ? roles.roleSelected.roleName : undefined}
                     getOptionLabel={(option: any) => option.roleName ?? option}
                     isOptionEqualToValue={(option: any, value: any) =>
-                        option.roleName === value
+                        option.roleName === value.roleName
                     }
                     renderInput={(params) => (
                         <TextField
@@ -149,7 +164,7 @@ export const Roles = () => {
                         />
                     )}
                     onChange={(e, option: any) => changeRole(option)}
-                    renderOption={(props, option:any, { inputValue }) => {
+                    renderOption={(props, option: any, { inputValue }) => {
                         const matches = match(option.roleName, inputValue);
                         const parts = parse(option.roleName, matches);
 

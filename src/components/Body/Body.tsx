@@ -26,30 +26,28 @@ export const Body = () => {
     const createRole = useRecoilValue(createRoleState);
     const createGroup = useRecoilValue(createGroupState);
     return (
-        <>
-            <Container>
-                <ActionButtons />
-                <Dialog open={createRole.show || createGroup.show}>
-                    <CreateRoleContainer>
-                        {location.pathname === "/roles" ? (
-                            <Typography sx={{ fontWeight: 600, padding: "20x" }}>
-                                New Role
-                            </Typography>
-                        ) : (
-                            <Typography sx={{ fontWeight: 600, padding: "20x" }}>
-                                New Group
-                            </Typography>
-                        )}
-                        {location.pathname === "/roles" ? <RolePopup /> : <></>}
-                        {location.pathname === "/groups" ? <GroupPopup /> : <></>}
-                    </CreateRoleContainer>
-                </Dialog>
-                <Routes>
-                    <Route path="/" element={<Users />} />
-                    <Route path="roles" element={<Roles />} />
-                    <Route path="groups" element={<Groups />} />
-                </Routes>
-            </Container>
-        </>
+        <Container>
+            <ActionButtons />
+            <Dialog open={createRole.show || createGroup.show}>
+                <CreateRoleContainer>
+                    {location.pathname === "/roles" ? (
+                        <Typography sx={{ fontWeight: 600, padding: "20x" }}>
+                            New Role
+                        </Typography>
+                    ) : (
+                        <Typography sx={{ fontWeight: 600, padding: "20x" }}>
+                            New Group
+                        </Typography>
+                    )}
+                    {location.pathname === "/roles" ? <RolePopup /> : <></>}
+                    {location.pathname === "/groups" ? <GroupPopup /> : <></>}
+                </CreateRoleContainer>
+            </Dialog>
+            <Routes>
+                <Route path="/" element={<Users />} />
+                <Route path="roles" element={<Roles />} />
+                <Route path="groups" element={<Groups />} />
+            </Routes>
+        </Container>
     );
 };
