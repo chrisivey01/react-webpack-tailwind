@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { SecurityGroup } from "../../../../types/PhxUser";
+import { SecurityGroup, SecurityUserGroup } from "../../../../types/PhxUser";
 import { PHX_USER_SAVE_CONTROLLER } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
+import { appState } from "../../../atom/app";
 import { Severity } from "../../../features/Notification/atom";
 import { userState, useUser } from "../../../features/Users/atoms/users";
 import { SaveButton } from "../styles";
@@ -19,15 +20,17 @@ const Users = ({ app, setNotification }: Props) => {
     const saveHandler = async () => {
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
 
-        employee.operationCd = "M"
-        employee.securityUserGroupList = JSON.parse(JSON.stringify(user.acquiredGroups));
-        employee.securityUserGroupList.map((sug: SecurityGroup) => {
-            if (user.acquiredRoles) {
-                sug.securityGroupRoleList = user.acquiredRoles;
-                return sug;
-            }
-        });
-        employee.securityUserRoleList = JSON.parse(JSON.stringify(user.acquiredRoles));
+        // employee.operationCd = "M";
+        // let acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
+        // employee.securityUserGroupList = acquiredGroupsCopy.map((sug: SecurityUserGroup) => {
+        //     return {
+        //         securityAppEaiNbr: app.appId,
+        //         securityGroup: sug,
+        //         changeFlag: "I",
+        //         operationCd: "I"
+        //     };
+        // });
+        // employee.securityUserRoleList = JSON.parse(JSON.stringify(user.acquiredRoles));
 
         try {
             let params = {
@@ -36,14 +39,14 @@ const Users = ({ app, setNotification }: Props) => {
             };
 
             await httpRequestList(PHX_USER_SAVE_CONTROLLER, params);
-            setNotification((state:any) => ({
+            setNotification((state: any) => ({
                 ...state,
                 show: true,
                 message: "Save Success!",
                 severity: Severity.success,
             }));
         } catch (err: any) {
-            setNotification((state:any) => ({
+            setNotification((state: any) => ({
                 ...state,
                 show: true,
                 message: err,

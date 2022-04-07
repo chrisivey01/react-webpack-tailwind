@@ -58,7 +58,7 @@ type SecurityGroup = {
     operationCd: string;
     resourceByPriorityList: SecurityRoleResource[];
     securityAppEaiNbr: number;
-    securityGroupRoleList: SecurityRole[];
+    securityGroupRoleList: SecurityGroupRole[];
     securityGroupUuid: string;
 };
 

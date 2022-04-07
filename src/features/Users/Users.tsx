@@ -143,7 +143,7 @@ export const Users = () => {
             if (emp.securityUserGroupList && emp.resourceByPriorityList) {
                 emp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
                     groupObj.push({
-                        groupName: sug.securityGroup.groupName,
+                        securityGroup: sug.securityGroup.groupName,
                         added: true
                     });
                     acquiredGroups?.push(sug.securityGroup);
@@ -184,7 +184,9 @@ export const Users = () => {
     };
 
     const handleChangeGroups = async (option: any) => {
+        let employee = JSON.parse(JSON.stringify(user.selectedUser));
         let groupNames: string[] = [];
+
         option.forEach((gr: any) => {
             if (gr.groupName) {
                 groupNames.push(gr.groupName);
@@ -205,17 +207,15 @@ export const Users = () => {
             params
         );
 
-
-
         let results: any;
         if (result) {
             let getResourcePriority = {
-                userId: app.employee.employeeId, 
+                userId: app.employee.employeeId,
                 roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
                     let obj = {
                         operationCd: "I",
                         securityAppEaiNbr: app.appId,
-                        userId: app.employee.employeeId, 
+                        userId: app.employee.employeeId,
                         securityRoleResourceList: sgr.resourceByPriorityList
                     };
                     return obj;
@@ -227,23 +227,34 @@ export const Users = () => {
              * added
              * groupName
              */
-            let copyAcquiredGroups = JSON.parse(JSON.stringify(result.securityGroupList));
-            copyAcquiredGroups.map((group: SecurityGroup) => {
-                let grpIndex = user.groupObj.findIndex((grpSearch: any) => grpSearch.groupName !== group.groupName);
-                if (grpIndex !== -1) {
-                    group.added = true;
-                    group.operationCd = "I"
-                } else {
-                    group.added = false;
-                }
-                return group;
-            });
+            let acquiredGroupsCopy = JSON.parse(JSON.stringify(result.securityGroupList));
 
+            employee.operationCd = "M";
+            employee.securityUserGroupList = acquiredGroupsCopy.map((sug: SecurityGroup) => {
+                let grpIndex = user.groupObj.findIndex((grpSearch: any) => grpSearch.groupName === sug.groupName);
+                if (grpIndex !== -1) {
+                    return {
+                        securityAppEaiNbr: app.appId,
+                        securityGroup: sug,
+                        added: false
+                    };
+                } else {
+                    return {
+                        securityAppEaiNbr: app.appId,
+                        securityGroup: sug,
+                        changeFlag: "I",
+                        operationCd: "I",
+                        added: true
+                    };
+                }
+            });
+            employee.securityUserRoleList = JSON.parse(JSON.stringify(user.acquiredRoles));
 
             try {
                 setUser((state) => ({
                     ...state,
-                    acquiredGroups: copyAcquiredGroups,
+                    selectedUser: employee,
+                    acquiredGroups: employee.securityUserGroupList,
                     acquiredResources: results.resourceByPriorityList
                 }));
             } catch (err) {
@@ -306,30 +317,87 @@ export const Users = () => {
         }));
     };
 
-    const handleDelete = (option: any, index: number, groupsOrRoles: string) => {
-        let acquiredGroupsCopy: any[] = [];
-        let acquiredRolesCopy: any[] = [];
+    const handleDelete = async (option: any, index: number, groupsOrRoles: string) => {
+        let employee = JSON.parse(JSON.stringify(user.selectedUser));
+        let acquiredRolesCopy: any[] = JSON.parse(JSON.stringify(user.acquiredRoles));
+        let acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
+
+        let groupNames: any[] = [];
+
+        acquiredGroupsCopy.forEach((gr: any) => {
+            if (gr.groupName || gr.securityGroup.groupName) {
+                groupNames.push({
+                    groupName: gr.groupName ?? gr.securityGroup.groupName,
+                    deleted: false
+                });
+            }
+        });
+
+        groupNames[index].deleted = !groupNames[index].deleted
+
+        groupNames = groupNames.map((gr:any) => {
+            if(gr.deleted){
+                return gr.groupName
+            }
+        })
+
+        const params = {
+            fetchResources: true,
+            groupNameList: groupNames,
+            securityAppEaiNbr: app.appId,
+            userId: app.employee.employeeId
+        };
+
+        let result = await httpRequestList(
+            SECURITY_GROUP_REQUEST,
+            params
+        );
 
         if (groupsOrRoles === "groups") {
-            acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
-            acquiredGroupsCopy[index].deleted = !acquiredGroupsCopy[index].deleted;
-            if (acquiredGroupsCopy[index].deleted) {
-                acquiredGroupsCopy[index].operationCd = "D";
+            let getResourcePriority = {
+                userId: app.employee.employeeId,
+                roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
+                    let obj = {
+                        operationCd: "I",
+                        securityAppEaiNbr: app.appId,
+                        userId: app.employee.employeeId,
+                        securityRoleResourceList: sgr.resourceByPriorityList
+                    };
+                    return obj;
+                })
+            };
+            let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+
+
+            employee.operationCd = "M";
+            employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
+            if (employee.securityUserGroupList[index].deleted) {
+                employee.securityUserGroupList[index].operationCd = "D";
+                employee.securityUserGroupList[index].changeFlag = "D";
             } else {
-                acquiredGroupsCopy[index].operationCd = "M";
+                employee.securityUserGroupList[index].operationCd = "M";
+                employee.securityUserGroupList[index].changeFlag = "M";
             }
+            employee.securityUserRoleList = JSON.parse(JSON.stringify(user.acquiredRoles));
+
             setUser((state) => ({
                 ...state,
-                acquiredGroups: acquiredGroupsCopy,
+                selectedUser: employee,
+                acquiredGroups: employee.securityUserGroupList,
+                acquiredResources: results.resourceByPriorityList
             }));
+
+
         } else {
             acquiredRolesCopy = JSON.parse(JSON.stringify(user.acquiredRoles));
             acquiredRolesCopy[index].deleted = !acquiredRolesCopy[index].deleted;
+
             if (acquiredRolesCopy[index].deleted) {
                 acquiredRolesCopy[index].operationCd = "D";
             } else {
                 acquiredRolesCopy[index].operationCd = "M";
             }
+
             setUser((state) => ({
                 ...state,
                 acquiredRoles: acquiredRolesCopy
@@ -513,7 +581,7 @@ export const Users = () => {
                                             variant="outlined"
                                             clickable
                                             onDelete={() => handleDelete(option, index, 'groups')}
-                                            label={option.groupName}
+                                            label={option.groupName ?? option.securityGroup.groupName}
                                             style={{
                                                 margin: "2px",
                                                 color: option.deleted ? "red" : "unset",
