@@ -20,18 +20,6 @@ const Users = ({ app, setNotification }: Props) => {
     const saveHandler = async () => {
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
 
-        // employee.operationCd = "M";
-        // let acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
-        // employee.securityUserGroupList = acquiredGroupsCopy.map((sug: SecurityUserGroup) => {
-        //     return {
-        //         securityAppEaiNbr: app.appId,
-        //         securityGroup: sug,
-        //         changeFlag: "I",
-        //         operationCd: "I"
-        //     };
-        // });
-        // employee.securityUserRoleList = JSON.parse(JSON.stringify(user.acquiredRoles));
-
         try {
             let params = {
                 userId: app.employee.employeeId,
