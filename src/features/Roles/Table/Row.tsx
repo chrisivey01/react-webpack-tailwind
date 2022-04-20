@@ -121,6 +121,7 @@ export const Row = ({ index, data }: Props) => {
         setRoles((state) => ({
             ...state,
             roleSelected: rolesCopy,
+            savePending: true,
             filteredResourceList: filteredResourceListCopy,
         }));
     };
@@ -146,7 +147,7 @@ export const Row = ({ index, data }: Props) => {
                 </Box>
             </TableCell>
             <TableCell
-                align={"left"}
+                align={"center"}
                 style={{
                     fontSize: "12px",
                     color: data.color,

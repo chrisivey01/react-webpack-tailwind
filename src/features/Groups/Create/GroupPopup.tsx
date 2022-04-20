@@ -1,22 +1,22 @@
 
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { SecurityGroup, SecurityGroupRole } from "../../../../types/SecurityGroup";
 import { RESOURCE_BY_PRIORITY_REQUEST, SECURITY_GROUP_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
 import { Button } from "../../styles";
-import { createGroupState, useCreateGroup } from "../atoms/createGroup";
-import { groupState, useGroups } from "../atoms/groups";
+import { createGroupState } from "../atoms/createGroup";
+import { groupState } from "../atoms/groups";
 import { GroupNameDesc, GroupNameField } from "../styles";
 
 
 export const GroupPopup = () => {
     const app = useRecoilValue(appState);
     const groups = useRecoilValue(groupState);
+    const setGroups = useSetRecoilState(groupState);
     const createGroup = useRecoilValue(createGroupState);
-    const setCreateGroup = useCreateGroup();
-    const setGroup = useGroups();
+    const setCreateGroup = useSetRecoilState(createGroupState);
 
     const groupSelectHandler = async (option: any, value: any) => {
         const groupNameList = value.map((va: SecurityGroup) => va.groupName);
@@ -97,7 +97,7 @@ export const GroupPopup = () => {
                 return obj;
             })
         };
-        
+
         const results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
 
         let newSelectedGroup = {
@@ -109,7 +109,7 @@ export const GroupPopup = () => {
             resourceByPriorityList: results.resourceByPriorityList
         };
 
-        setGroup((state) => ({ ...state, selectedGroup: newSelectedGroup }));
+        setGroups((state) => ({ ...state, selectedGroup: newSelectedGroup }));
     };
 
     const groupNameHandler = (event: any) => {

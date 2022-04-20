@@ -2,8 +2,8 @@ import { Autocomplete, Box, Divider, TextField } from "@mui/material";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
-import { useRecoilValue } from "recoil";
-import { PhxUser, SecurityGroup, SecurityRole, SecurityUserGroup } from "../../../types/PhxUser";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { PhxUser, SecurityGroup, SecurityRole, SecurityUserGroup, SecurityUserRole } from "../../../types/PhxUser";
 import { SecurityGroupRole } from "../../../types/SecurityGroup";
 import { SecurityRoleResource } from "../../../types/SecurityRole";
 import { PHX_USER_LIST_CONTROLLER, PHX_USER_REQUEST, SECURITY_GROUP_LIST_REQUEST, SECURITY_ROLE_LIST_REQUEST } from "../../apis";
@@ -17,7 +17,7 @@ import Roles from "./components/Roles";
 import { UserTable } from "./Table/UserTable";
 
 export const Users = () => {
-    const setUser = useUser();
+    const setUser = useSetRecoilState(userState);
     const user = useRecoilValue(userState);
     const app = useRecoilValue(appState);
     const setNotification = useNotification();
@@ -70,8 +70,8 @@ export const Users = () => {
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
              */
-            let acquiredGroups: SecurityGroup[] = [];
-            let acquiredRoles: SecurityRole[] = [];
+            let acquiredGroups: SecurityUserGroup[] = [];
+            let acquiredRoles: SecurityUserRole[] = [];
             let groupObj: any[] = [];
             let roleObj: any[] = [];
             let acquiredResources: SecurityRoleResource[] = [];
@@ -81,19 +81,23 @@ export const Users = () => {
                         groupName: sug.securityGroup.groupName,
                         added: false
                     });
-                    acquiredGroups?.push(sug.securityGroup);
+                    acquiredGroups?.push(sug);
                     sug.securityGroup.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
                         roleObj.push({
                             roleName: sugr.securityRole.roleName,
                             added: false
                         });
-                        acquiredRoles.push(sugr.securityRole);
+                        // acquiredRoles.push(sugr.securityRole);
                     });
                 });
                 acquiredResources = emp.resourceByPriorityList.map((res: any) => {
                     res.added = false;
                     return res;
                 });
+
+                if (emp.securityUserRoleList) {
+                    acquiredRoles = emp.securityUserRoleList;
+                }
             }
 
             if (acquiredGroups && acquiredRoles && acquiredResources) {
@@ -128,36 +132,43 @@ export const Users = () => {
             const params = {
                 fetchResources: true,
                 securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId,
                 userIdList: [option.userId]
             };
             const results = await httpRequestList(PHX_USER_REQUEST, params);
-            const emp: PhxUser = results.phxUserList[0];
+            const emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
 
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
              */
-            let acquiredGroups: SecurityGroup[] = [];
-            let acquiredRoles: SecurityRole[] = [];
+            let acquiredGroups: SecurityUserGroup[] = [];
+            let acquiredRoles: SecurityUserRole[] = [];
             let groupObj: any[] = [];
             let roleObj: any[] = [];
-
             let acquiredResources: SecurityRoleResource[] = [];
             if (emp.securityUserGroupList && emp.resourceByPriorityList) {
                 emp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
                     groupObj.push({
-                        securityGroup: sug.securityGroup.groupName,
-                        added: true
+                        groupName: sug.securityGroup.groupName,
+                        added: false
                     });
-                    acquiredGroups?.push(sug.securityGroup);
+                    acquiredGroups?.push(sug);
                     sug.securityGroup.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
                         roleObj.push({
                             roleName: sugr.securityRole.roleName,
-                            added: true
+                            added: false
                         });
-                        acquiredRoles.push(sugr.securityRole);
+                        // acquiredRoles.push(sugr.securityRole);
                     });
                 });
-                acquiredResources = emp.resourceByPriorityList;
+                acquiredResources = emp.resourceByPriorityList.map((res: any) => {
+                    res.added = false;
+                    return res;
+                });
+
+                if (emp.securityUserRoleList) {
+                    acquiredRoles = emp.securityUserRoleList;
+                }
             }
 
             if (acquiredGroups && acquiredRoles && acquiredResources) {
@@ -165,10 +176,12 @@ export const Users = () => {
                 if (totalListCount > 0) {
                     setUser((state) => ({
                         ...state,
-                        copyUser: option,
+                        selectedUser: emp,
                         acquiredGroups: acquiredGroups,
                         acquiredRoles: acquiredRoles,
-                        acquiredResources: acquiredResources
+                        acquiredResources: acquiredResources,
+                        groupObj: groupObj,
+                        roleObj: roleObj
                     }));
                 } else {
                     setNotification((state) => ({
@@ -181,7 +194,7 @@ export const Users = () => {
                 }
             }
         } else {
-            setUser((state) => ({ ...state, copyUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
+            setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
         }
     };
 

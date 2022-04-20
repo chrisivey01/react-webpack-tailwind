@@ -1,5 +1,6 @@
 import { Box, FormControl, MenuItem, Select } from "@mui/material";
-import { useRecoilValue } from "recoil";
+import { useEffect } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { Action, ActionList } from "../../../types/ActionList";
 import { SECURITY_ACTION_REQUEST } from "../../apis";
@@ -31,11 +32,30 @@ export const Selector = ({ rowData, table, index }: Props) => {
     const roles = useRecoilValue(rolesState);
     const setRoles = useRoles();
     const createRole = useRecoilValue(createRoleState);
-    const setCreateRole = useCreateRole();
+    const setCreateRole = useSetRecoilState(createRoleState);
 
     const app = useRecoilValue(appState);
 
     const actionOptionsTable: string[] = ['View', 'Edit'];
+
+    useEffect(() => {
+
+        const getAction = async () => {
+            const params = {
+                securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId,
+                actionType: 'EDIT_VIEW_TYPE'
+            };
+
+            const results: ActionList = await httpRequestList(
+                SECURITY_ACTION_REQUEST,
+                params
+            );
+
+            setCreateRole((state) => ({ ...state, actionSelected: results.actionList.filter((action:Action) => action.actionName === "View" )[0]}));
+        };
+        getAction();
+    }, [createRole.show]);
 
     const actionSelectorHandler = async (option: any, value: any) => {
         const pickedAction = value.props.value;
@@ -120,7 +140,7 @@ export const Selector = ({ rowData, table, index }: Props) => {
         } else {
             return (
                 <SelectAction
-                    value={createRole.actionSelected?.actionName ?? ""}
+                    value={createRole.actionSelected?.actionName ?? "View"}
                     onChange={actionSelectorHandler}
                 >
                     {actionOptionsTable.map(

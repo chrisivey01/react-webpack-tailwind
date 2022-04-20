@@ -36,9 +36,10 @@ export const Groups = () => {
     const setGroups = useGroups();
 
     useEffect(() => {
+        if (!app.employee) return;
         fetchGroupMasterList();
         fetchRolesMasterList();
-    }, [app.appId]);
+    }, [app.appId, app.employee]);
 
     const fetchGroupMasterList = async () => {
         const params = {
@@ -78,7 +79,7 @@ export const Groups = () => {
     };
 
     const changeGroup = async (option: SecurityGroup) => {
-        if (option){
+        if (option) {
 
             const groupName = option.groupName;
             const params = {
@@ -91,7 +92,7 @@ export const Groups = () => {
                 SECURITY_GROUP_REQUEST,
                 params
             );
-    
+
             if (result) {
                 setGroups((state) => ({
                     ...state,
@@ -220,6 +221,7 @@ export const Groups = () => {
                 <Autocomplete
                     size="small"
                     sx={{ width: 300 }}
+                    filterSelectedOptions
                     options={groups.groupsMasterList ?? []}
                     getOptionLabel={(option: any) => option.groupName ?? option}
                     isOptionEqualToValue={(option: any, value: any) =>
@@ -272,6 +274,7 @@ export const Groups = () => {
                                 size="small"
                                 fullWidth
                                 multiple
+                                filterSelectedOptions
                                 sx={{
                                     maxHeight: 220,
                                     maxWidth: 570,

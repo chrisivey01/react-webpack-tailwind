@@ -1,6 +1,8 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { useRecoilValue } from "recoil";
-import { SecurityRole, SecurityRoleList } from "../../../../types/SecurityRole";
+import { SecurityUserGroup, SecurityUserRole } from "../../../../types/PhxUser";
+import { SecurityGroupRole } from "../../../../types/SecurityGroup";
+import { SecurityRoleList } from "../../../../types/SecurityRole";
 import { RESOURCE_BY_PRIORITY_REQUEST, SECURITY_ROLE_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
@@ -15,14 +17,20 @@ const Roles = (props: Props) => {
 
     const handleChangeRoles = async (option: any) => {
         let roleNames: string[] = [];
+        let roleNamesNoGroups: string[] = [];
+
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
 
-        option.forEach((rn: any) => {
-            if (rn.roleName) {
-                roleNames.push(rn.roleName);
-            } else {
-                roleNames.push(rn);
-            }
+        employee.operationCd = "M";
+
+
+        roleNames = option.map((role: any) => role.roleName ?? role.securityRole.roleName);
+        roleNamesNoGroups = option.map((role: any) => role.roleName ?? role.securityRole.roleName);
+
+        employee.securityUserGroupList.forEach((group: SecurityUserGroup) => {
+            group.securityGroup.securityGroupRoleList.forEach((sgr: SecurityGroupRole) => {
+                roleNames.push(sgr.securityRole.roleName);
+            });
         });
 
         const params = {
@@ -37,36 +45,52 @@ const Roles = (props: Props) => {
             params
         );
 
-        employee.securityUserRoleList = srlResults.securityRoleList;
-
         let getResourcePriority = {
             userId: app.employee.employeeId,
             operationCd: "I",
             roleList: srlResults.securityRoleList
         };
         const acquiredResources = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
-
-
-        /**
-         * added
-         * groupName
-         */
-        let copyAcquiredRoles = JSON.parse(JSON.stringify(srlResults.securityRoleList));
-        copyAcquiredRoles.map((role: SecurityRole) => {
-            let roleIndex = user.roleObj.findIndex((roleSearch: any) => (roleSearch.roleName === role.roleName));
-            if (roleIndex !== -1) {
-                role.added = false;
-            } else {
-                role.added = true;
-            }
-            return role;
+        let copyAcquiredRoles:any = [];
+        roleNamesNoGroups.forEach((roles: any) => {
+            JSON.parse(JSON.stringify(srlResults.securityRoleList)).forEach((srlSr: any) => {
+                if (roles === srlSr.roleName) {
+                    copyAcquiredRoles.push(srlSr);
+                }
+            });
         });
+
+        let employeesRoles: SecurityUserRole[] = [];
+        copyAcquiredRoles.forEach((role: any) => {
+            let employeeRole: SecurityUserRole = {
+                lastUpdUser: app.employee.employeeId,
+                securityAppEaiNbr: app.appId,
+                added: false,
+                changeFlag: "M",
+                securityRole: {
+                    lastUpdUser: app.employee.employeeId,
+                    roleDesc: role.roleDesc,
+                    roleName: role.roleName,
+                    securityAppEaiNbr: app.appId,
+                    securityRoleResourceList: role.securityRoleResourceList,
+                    securityRoleUuid: role.securityRoleUuid
+                }
+            };
+            if (user && user.acquiredRoles) {
+                let roleIndex = user.acquiredRoles.findIndex((roleSearch: any) => (roleSearch.securityRole.roleName === role.roleName));
+                if (roleIndex === -1) {
+                    employeeRole.added = true;
+                    employeeRole.operationCd = "I";
+                }
+            }
+            employeesRoles.push(employeeRole);
+        });
+        employee.securityUserRoleList = employeesRoles;
 
         setUser((state) => ({
             ...state,
             selectedUser: employee,
-            acquiredResources: acquiredResources ? acquiredResources.resourceByPriorityList : [],
-            acquiredRoles: copyAcquiredRoles
+            acquiredResources: acquiredResources ? [...user.acquiredResources, acquiredResources.resourceByPriorityList] : [],
         }));
     };
 
@@ -89,7 +113,14 @@ const Roles = (props: Props) => {
         }
 
         roleNames = acquiredRolesCopy.filter((role) => !role.deleted);
-        roleNames = roleNames.map((role) => role.roleName);
+        roleNames = roleNames.map((role) => role.securityRole.roleName);
+        employee.securityUserGroupList.forEach((group: SecurityUserGroup) => {
+            group.securityGroup.securityGroupRoleList.forEach((sgr: SecurityGroupRole) => {
+                roleNames.push(sgr.securityRole.roleName);
+            });
+        });
+
+        employee.securityUserRoleList = acquiredRolesCopy;
 
         if (roleNames.length > 0) {
             const params = {
@@ -104,7 +135,6 @@ const Roles = (props: Props) => {
                 params
             );
 
-            employee.securityUserRoleList = acquiredRolesCopy;
 
             let getResourcePriority = {
                 userId: app.employee.employeeId,
@@ -123,7 +153,8 @@ const Roles = (props: Props) => {
         } else {
             setUser((state) => ({
                 ...state,
-                acquiredResources: [],
+                selectedUser: employee,
+                acquiredRoles: acquiredRolesCopy
             }));
         }
     };
@@ -143,9 +174,15 @@ const Roles = (props: Props) => {
                 id="tags-outlined"
                 options={user.rolesMasterList ?? []}
                 getOptionLabel={(option: any) => option.roleName ?? option}
-                isOptionEqualToValue={(option: any, value: any) =>
-                    option.roleName === value.roleName
-                }
+                isOptionEqualToValue={(option: any, value: any) => {
+                    if (option === undefined || value === undefined) return;
+
+                    if (value.securityRole) {
+                        return option.roleName === value.securityRole.roleName;
+                    } else {
+                        return option.roleName === value.roleName;
+                    }
+                }}
                 renderTags={(value: any, getTagProps: any) =>
                     value.map(
                         (option: any, index: any) => (
@@ -154,7 +191,7 @@ const Roles = (props: Props) => {
                                 variant="outlined"
                                 clickable
                                 onDelete={() => handleDeleteRoles(option, index)}
-                                label={option.roleName}
+                                label={option.roleName ?? option.securityRole.roleName}
                                 style={{
                                     margin: "2px",
                                     color: option.deleted ? "red" : "unset",
@@ -172,7 +209,7 @@ const Roles = (props: Props) => {
                 onChange={(e, option: any) =>
                     handleChangeRoles(option)
                 }
-                value={user.acquiredRoles ?? []}
+                value={user.selectedUser?.securityUserRoleList ?? []}
                 renderInput={(params) => (
                     <TextField
                         {...params}

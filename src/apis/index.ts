@@ -28,6 +28,8 @@ export const SECURITY_GROUP_SAVE_REQUEST = "securitygroupsaverequest";
 export const PHX_USER_REQUEST = "phxuserrequest";
 export const PHX_USER_LIST_CONTROLLER = "phxuserlistrequest";
 export const PHX_USER_SAVE_CONTROLLER = "phxusersaverequest";
+export const ROLES_FOR_USER_CONTROLLER = "rolesforuserrequest";
+export const USERS_FOR_GROUP_CONTROLLER = "usersforgrouprequest";
 
 /**
  * RESOURCE PRIORITY

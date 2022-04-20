@@ -52,7 +52,8 @@ const Roles = ({ app, setNotification }: Props) => {
         }
         setCreateRole((state) => ({
             ...state,
-            createdPending: false
+            createdPending: false,
+            savePending: false
         }));
     };
 
@@ -87,7 +88,7 @@ const Roles = ({ app, setNotification }: Props) => {
                     roleSelected: rolesCopy,
                 }));
             } else {
-                setNotification((state) => ({
+                setNotification((state:any) => ({
                     ...state,
                     show: true,
                     message:
@@ -133,7 +134,7 @@ const Roles = ({ app, setNotification }: Props) => {
                     </SaveButton>
                     <SaveButton
                         sx={{
-                            backgroundColor: createRole.createdPending
+                            backgroundColor: createRole.createdPending || role.savePending
                                 ? "#00FF00"
                                 : "#0063cc",
                         }}

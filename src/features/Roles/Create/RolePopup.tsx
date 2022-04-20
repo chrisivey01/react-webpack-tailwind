@@ -240,8 +240,8 @@ export const RolePopup = () => {
                         autoSelect
                         onChange={resourceSelectHandler}
                         sx={{
-                            height: 305,
-                            maxHeight: location.pathname !== "/roles" ? 305 : 220,
+                            height: 275,
+                            maxHeight: location.pathname !== "/roles" ? 275 : 220,
                             overflow: "auto",
                         }}
                         renderInput={(params) => (

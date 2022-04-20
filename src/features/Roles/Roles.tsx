@@ -71,6 +71,10 @@ export const Roles = () => {
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setRoles((state) => ({
+            ...state,
+            savePending: true
+        }));
         let copyRoleSelected = JSON.parse(JSON.stringify(roles.roleSelected));
 
         copyRoleSelected.roleDesc = e.target.value;
@@ -85,7 +89,6 @@ export const Roles = () => {
 
     const changeRole = async (option: SecurityRole) => {
         if (option) {
-
             const securityRoleName = option.roleName;
             const params = {
                 fetchResources: true,

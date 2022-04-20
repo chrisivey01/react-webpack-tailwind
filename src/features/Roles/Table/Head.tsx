@@ -1,18 +1,18 @@
 import { TableCell, TableHead as MuiTableHead, TableRow } from "@mui/material";
 
 export const Head = () => (
-    <MuiTableHead>
+    <MuiTableHead >
         <TableRow>
             <TableCell
                 style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    paddingLeft: 25
                 }}
             >
                 Resource
             </TableCell>
-            <TableCell
+            <TableCell align={"center"}
                 style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    paddingLeft: 25,
                 }}
             >
                 Action

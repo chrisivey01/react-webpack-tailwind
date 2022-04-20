@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { SecurityUserGroup } from "../../../../types/PhxUser";
 import { SecurityGroup, SecurityGroupRole } from "../../../../types/SecurityGroup";
 import { SecurityRole } from "../../../../types/SecurityRole";
@@ -8,10 +8,8 @@ import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
 import { userState, useUser } from "../atoms/users";
 
-type Props = {};
-
-const Groups = (props: Props) => {
-    const setUser = useUser();
+const Groups = () => {
+    const setUser = useSetRecoilState(userState);
     const user = useRecoilValue(userState);
     const app = useRecoilValue(appState);
 
@@ -36,15 +34,15 @@ const Groups = (props: Props) => {
                 userId: app.employee.employeeId
             };
 
-            let result = await httpRequestList(
+            let resultSecurityGroup = await httpRequestList(
                 SECURITY_GROUP_REQUEST,
                 params
             );
 
-            let results: any;
+            let resultResourcePriority: any;
             let getResourcePriority = {
                 userId: app.employee.employeeId,
-                roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
+                roleList: resultSecurityGroup.securityGroupList.map((sgr: SecurityGroup) => {
                     let obj = {
                         operationCd: "I",
                         securityAppEaiNbr: app.appId,
@@ -54,13 +52,9 @@ const Groups = (props: Props) => {
                     return obj;
                 })
             };
-            results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+            resultResourcePriority = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
 
-            /**
-             * added
-             * groupName
-             */
-            let acquiredGroupsCopy = JSON.parse(JSON.stringify(result.securityGroupList));
+            let acquiredGroupsCopy = JSON.parse(JSON.stringify(resultSecurityGroup.securityGroupList));
 
             employee.operationCd = "M";
             employee.securityUserGroupList = acquiredGroupsCopy.map((sug: SecurityGroup) => {
@@ -94,96 +88,99 @@ const Groups = (props: Props) => {
                     ...state,
                     selectedUser: employee,
                     acquiredGroups: employee.securityUserGroupList,
-                    acquiredRoles: employee.securityUserRoleList,
-                    acquiredResources: results.resourceByPriorityList
+                    // acquiredRoles: employee.securityUserRoleList,
+                    acquiredResources: resultResourcePriority.resourceByPriorityList,
+                    savePending: true
                 }));
             } catch (err) {
-                setUser((state) => ({ ...state, acquiredGroups: result.securityGroupList, acquiredResources: [] }));
+                setUser((state) => ({ ...state, acquiredGroups: resultSecurityGroup.securityGroupList, acquiredResources: [], savePending: true }));
             }
         } else {
-            setUser((state) => ({ ...state, acquiredGroups: [], acquiredResources: [] }));
+            setUser((state) => ({ ...state, acquiredGroups: [], acquiredResources: [], savePending: true }));
         }
     };
 
     const handleDeleteGroups = async (option: any, index: number) => {
-        let acquiredRoles: SecurityRole[] = [];
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
         let acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
 
         let groupNames: any[] = [];
 
-        acquiredGroupsCopy[index].deleted = !acquiredGroupsCopy[index].deleted;
-        acquiredGroupsCopy.forEach((gr: any) => {
-            if (gr.groupName || gr.securityGroup.groupName) {
-                groupNames.push({
-                    groupName: gr.groupName ?? gr.securityGroup.groupName,
-                    deleted: gr.deleted
-                });
-            }
-        });
-
-        groupNames = groupNames.filter((grp) => !grp.deleted);
-        groupNames = groupNames.map((grp) => grp.groupName);
-        const params = {
-            fetchResources: true,
-            groupNameList: groupNames,
-            securityAppEaiNbr: app.appId,
-            userId: app.employee.employeeId
-        };
-
-        if (groupNames.length > 0) {
-
-            let result = await httpRequestList(
-                SECURITY_GROUP_REQUEST,
-                params
-            );
-
-            let getResourcePriority = {
-                userId: app.employee.employeeId,
-                roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
-                    let obj = {
-                        operationCd: "I",
-                        securityAppEaiNbr: app.appId,
-                        userId: app.employee.employeeId,
-                        securityRoleResourceList: sgr.resourceByPriorityList
-                    };
-                    return obj;
-                })
-            };
-            let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
-
-
-            employee.operationCd = "M";
-            employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
-            if (employee.securityUserGroupList[index].deleted) {
-                employee.securityUserGroupList[index].operationCd = "D";
-                employee.securityUserGroupList[index].changeFlag = "D";
-            } else {
-                employee.securityUserGroupList[index].operationCd = "M";
-                employee.securityUserGroupList[index].changeFlag = "M";
-            }
-
-            result.securityGroupList.forEach((sug: SecurityGroup) => {
-                sug.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
-                    acquiredRoles.push(sugr.securityRole);
-                });
+        if (acquiredGroupsCopy.length > 0) {
+            acquiredGroupsCopy[index].deleted = !acquiredGroupsCopy[index].deleted;
+            acquiredGroupsCopy.forEach((gr: any) => {
+                if (gr.groupName || gr.securityGroup.groupName) {
+                    groupNames.push({
+                        groupName: gr.groupName ?? gr.securityGroup.groupName,
+                        deleted: gr.deleted
+                    });
+                }
             });
-            employee.securityUserRoleList = acquiredRoles;
 
-            setUser((state) => ({
-                ...state,
-                selectedUser: employee,
-                acquiredGroups: employee.securityUserGroupList,
-                acquiredRoles: employee.securityUserRoleList,
-                acquiredResources: results.resourceByPriorityList
-            }));
-        } else {
-            setUser((state) => ({
-                ...state,
-                selectedUser: employee,
-                acquiredGroups: [],
-                acquiredResources: []
-            }));
+            const params = {
+                fetchResources: true,
+                groupNameList: groupNames.filter((grp) => !grp.deleted).map((grp) => grp.groupName),
+                securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId
+            };
+
+            if (groupNames.filter((grp) => !grp.deleted).length > 0) {
+
+                let result = await httpRequestList(
+                    SECURITY_GROUP_REQUEST,
+                    params
+                );
+
+                let getResourcePriority = {
+                    userId: app.employee.employeeId,
+                    roleList: result.securityGroupList.map((sgr: SecurityGroup) => {
+                        let obj = {
+                            operationCd: "I",
+                            securityAppEaiNbr: app.appId,
+                            userId: app.employee.employeeId,
+                            securityRoleResourceList: sgr.resourceByPriorityList
+                        };
+                        return obj;
+                    })
+                };
+                let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+
+
+                employee.operationCd = "M";
+                employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
+                if (employee.securityUserGroupList[index].deleted) {
+                    employee.securityUserGroupList[index].operationCd = "D";
+                    employee.securityUserGroupList[index].changeFlag = "D";
+                } else {
+                    employee.securityUserGroupList[index].operationCd = "M";
+                    employee.securityUserGroupList[index].changeFlag = "M";
+                }
+
+                setUser((state) => ({
+                    ...state,
+                    selectedUser: employee,
+                    acquiredGroups: employee.securityUserGroupList,
+                    // acquiredRoles: employee.securityUserRoleList,
+                    acquiredResources: results.resourceByPriorityList,
+                    savePending: true
+                }));
+            } else {
+                employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
+                if (employee.securityUserGroupList[index].deleted) {
+                    employee.securityUserGroupList[index].operationCd = "D";
+                    employee.securityUserGroupList[index].changeFlag = "D";
+                } else {
+                    employee.securityUserGroupList[index].operationCd = "M";
+                    employee.securityUserGroupList[index].changeFlag = "M";
+                }
+                setUser((state) => ({
+                    ...state,
+                    selectedUser: employee,
+                    acquiredGroups: employee.securityUserGroupList,
+                    acquiredResources: [],
+                    savePending: true
+                }));
+            }
         }
     };
 
@@ -228,24 +225,18 @@ const Groups = (props: Props) => {
                     )
                 }
                 isOptionEqualToValue={(option: any, value: any) => {
-                    if (option && value) {
-                        if (option.groupName === value) {
-                            return option;
-                        }
+                    if (option === undefined || value === undefined) return;
 
-                        if (option.groupName === value.groupName) {
-                            return option;
-                        }
-
-                        if (option.groupName === (value.groupName ?? value.securityGroup.groupName)) {
-                            return option;
-                        }
+                    if (value.securityGroup) {
+                        return option.groupName === value.securityGroup.groupName;
+                    } else {
+                        return option.groupName === value.groupName;
                     }
                 }}
                 onChange={(e, option: any) =>
                     handleChangeGroups(option)
                 }
-                value={user.acquiredGroups ?? []}
+                value={user.selectedUser?.securityUserGroupList ?? []}
                 renderInput={(params) => (
                     <TextField
                         {...params}

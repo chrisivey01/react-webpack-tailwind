@@ -33,6 +33,10 @@ const Users = ({ app, setNotification }: Props) => {
                 message: "Save Success!",
                 severity: Severity.success,
             }));
+            setUser((state: any) => ({
+                ...state,
+                savePending: false
+            }));
         } catch (err: any) {
             setNotification((state: any) => ({
                 ...state,
@@ -53,7 +57,11 @@ const Users = ({ app, setNotification }: Props) => {
                 right: 0,
             }}
         >
-            <SaveButton sx={{ backgroundColor: "#0063cc" }} onClick={() => saveHandler()}>Save</SaveButton>
+            <SaveButton sx={{
+                backgroundColor: user.savePending
+                    ? "#00FF00"
+                    : "#0063cc",
+            }} onClick={() => saveHandler()}>Save</SaveButton>
         </Box>
     );
 };

@@ -47,14 +47,14 @@ const Groups = ({ app, setNotification }: Props) => {
 
         try {
             await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
-            setNotification((state) => ({
+            setNotification((state:any) => ({
                 ...state,
                 show: true,
                 message: "Save Success!",
                 severity: Severity.success,
             }));
         } catch (err: any) {
-            setNotification((state) => ({
+            setNotification((state:any) => ({
                 ...state,
                 show: true,
                 message: err,

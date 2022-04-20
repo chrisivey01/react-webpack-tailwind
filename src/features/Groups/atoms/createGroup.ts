@@ -6,7 +6,7 @@ import { SecurityResource, SecurityRole, SecurityRoleListSaveList, SecurityRoleR
 
 type Group = {
     groupName: string | undefined;
-    securityAppEaiNbr: number | undefined;
+    securityAppEaiNbr?: number | undefined;
     operationCd?: string;
 };
 
@@ -30,7 +30,6 @@ export const createGroupState = atom({
         createdPending: false,
         group: {
             groupName: undefined,
-            securityAppEaiNbr: undefined
         }
     } as CreateGroupState
 });

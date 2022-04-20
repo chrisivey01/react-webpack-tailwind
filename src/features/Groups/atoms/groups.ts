@@ -17,7 +17,16 @@ interface GroupsState {
 
 export const groupState = atom({
     key: "groups",
-    default: {} as GroupsState
+    default: {
+        groupsRoleMasterList: [],
+        rolesSelected: [],
+        rolesMasterList: [],
+        groupsMasterList: [],
+        resourcesMasterList: [],
+        securityRoleResourcesMasterList: [],
+        resourcesFilteredList: [],
+        rolesFilteredList: []
+    } as GroupsState
 });
 
 export const useGroups = () => useSetRecoilState(groupState);

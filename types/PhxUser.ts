@@ -29,7 +29,7 @@ type PhxUser = {
     phxUserOid?: number,
     resourceByPriorityList?: SecurityRoleResource[],
     securityUserGroupList?: SecurityUserGroup[],
-    securityUserRoleList?: SecurityRole[],
+    securityUserRoleList?: SecurityUserRole[],
     smtpHost?: string,
     userId?: string,
     userRouteTypeCd?: string;
@@ -63,14 +63,15 @@ type SecurityGroup = {
 };
 
 type SecurityUserRole = {
-    changeFlag: string;
-    lastUpdDtTm: string;
+    changeFlag?: string;
+    lastUpdDtTm?: string;
     lastUpdUser: string;
-    operationCd: string;
-    phxUser: PhxUser;
+    operationCd?: string;
+    phxUser?: PhxUser;
     securityAppEaiNbr: number;
     securityRole: SecurityRole;
-    securityUserRoleUuid: string;
+    securityUserRoleUuid?: string;
+    added?:boolean;
 };
 
 type SecurityUserRoleList = {

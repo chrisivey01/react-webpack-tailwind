@@ -114,7 +114,7 @@ export const Head = ({ navigateHandler, navigation }: Props) => {
                                 {app.appEaiList.map((app: EAI, index: number) => {
                                     return (
                                         <MenuItem value={app.securityAppEaiNbr} key={index}>
-                                            {app.securityAppEaiNbr}
+                                            {app.securityAppEaiNbr} - {app.appName}
                                         </MenuItem>
                                     );
                                 })}

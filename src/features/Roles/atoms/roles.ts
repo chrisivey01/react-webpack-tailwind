@@ -9,6 +9,7 @@ interface RolesState {
     actionSelected: any;
     roleSaved: SecurityRoleListSave;
     resourcesLeft: SecurityResource[];
+    savePending: boolean;
 }
 
 export const rolesState = atom({
