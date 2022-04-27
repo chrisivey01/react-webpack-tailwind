@@ -3,7 +3,7 @@ import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { PhxUser, SecurityGroup, SecurityRole, SecurityUserGroup, SecurityUserRole } from "../../../types/PhxUser";
+import { PhxUser, SecurityUserGroup, SecurityUserRole } from "../../../types/PhxUser";
 import { SecurityGroupRole } from "../../../types/SecurityGroup";
 import { SecurityRoleResource } from "../../../types/SecurityRole";
 import { PHX_USER_LIST_CONTROLLER, PHX_USER_REQUEST, SECURITY_GROUP_LIST_REQUEST, SECURITY_ROLE_LIST_REQUEST } from "../../apis";
@@ -11,7 +11,7 @@ import { httpRequestList } from "../../apis/requests";
 import { appState } from "../../atom/app";
 import { Severity, useNotification } from "../Notification/atom";
 import { OptionsWrapper, PageContainer, PageWrapper } from "../styles";
-import { userState, useUser } from "./atoms/users";
+import { userState } from "./atoms/users";
 import Groups from "./components/Groups";
 import Roles from "./components/Roles";
 import { UserTable } from "./Table/UserTable";
@@ -29,6 +29,12 @@ export const Users = () => {
             fetchRolesMasterList();
         }
     }, [app.employee]);
+
+    useEffect(() => {
+        if (!user.savePending) {
+            changeUser(user.selectedUser);
+        }
+    }, [user.savePending]);
 
     const fetchUsersMasterList = async () => {
         const params = {
@@ -58,6 +64,10 @@ export const Users = () => {
 
     const changeUser = async (option: PhxUser | null) => {
         if (option) {
+            setUser((state: any) => ({
+                ...state,
+                savePending: false
+            }));
             const params = {
                 fetchResources: true,
                 securityAppEaiNbr: app.appId,
@@ -87,7 +97,6 @@ export const Users = () => {
                             roleName: sugr.securityRole.roleName,
                             added: false
                         });
-                        // acquiredRoles.push(sugr.securityRole);
                     });
                 });
                 acquiredResources = emp.resourceByPriorityList.map((res: any) => {
@@ -120,6 +129,7 @@ export const Users = () => {
                             "There are no results for this user.",
                         severity: Severity.warning,
                     }));
+                    setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
                 }
             }
         } else {
@@ -158,7 +168,6 @@ export const Users = () => {
                             roleName: sugr.securityRole.roleName,
                             added: false
                         });
-                        // acquiredRoles.push(sugr.securityRole);
                     });
                 });
                 acquiredResources = emp.resourceByPriorityList.map((res: any) => {
@@ -174,6 +183,10 @@ export const Users = () => {
             if (acquiredGroups && acquiredRoles && acquiredResources) {
                 let totalListCount = acquiredGroups.length + acquiredRoles.length + acquiredResources.length;
                 if (totalListCount > 0) {
+                    emp.securityUserGroupList = [...user.selectedUser?.securityUserGroupList, ...emp.securityUserGroupList]
+                    emp.securityUserRoleList = [...user.selectedUser?.securityUserRoleList, ...emp.securityUserRoleList ]
+                    emp.resourceByPriorityList = [...user.selectedUser?.resourceByPriorityList,  ...emp.resourceByPriorityList]
+
                     setUser((state) => ({
                         ...state,
                         selectedUser: emp,
@@ -191,6 +204,8 @@ export const Users = () => {
                             "There are no results for this user.",
                         severity: Severity.warning,
                     }));
+
+                    setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
                 }
             }
         } else {
@@ -217,6 +232,7 @@ export const Users = () => {
                                 maxWidth: 570,
                                 overflow: "auto",
                             }}
+                            // value={user.selectedUser}
                             options={user.employeeMasterList ?? []}
                             getOptionLabel={(option) =>
                                 [
@@ -234,7 +250,6 @@ export const Users = () => {
                                 />
                             )}
                             onChange={(e, option) => changeUser(option)}
-
                             renderOption={(
                                 props,
                                 option,
@@ -281,6 +296,7 @@ export const Users = () => {
                     <Box sx={{ padding: "10px" }}>
                         <Autocomplete
                             size="small"
+                            disabled={user.selectedUser ? false : true}
                             sx={{
                                 maxHeight: 120,
                                 width: 300,
@@ -358,5 +374,5 @@ export const Users = () => {
             {user.selectedUser || user.copyUser ? <UserTable /> : <></>}
         </PageWrapper>
     );
-
 };
+

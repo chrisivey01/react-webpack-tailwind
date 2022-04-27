@@ -55,6 +55,10 @@ const Roles = ({ app, setNotification }: Props) => {
             createdPending: false,
             savePending: false
         }));
+        setRoles((state) => ({
+            ...state,
+            savePending: false
+        }))
     };
 
     const newRoleHandler = () => {

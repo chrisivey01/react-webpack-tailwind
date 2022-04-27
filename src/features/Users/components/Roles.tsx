@@ -50,18 +50,20 @@ const Roles = (props: Props) => {
             operationCd: "I",
             roleList: srlResults.securityRoleList
         };
-        const acquiredResources = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
-        let copyAcquiredRoles:any = [];
+        let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+        employee.resourceByPriorityList = results.resourceByPriorityList;
+
+        let acquiredRolesCopy: any = [];
         roleNamesNoGroups.forEach((roles: any) => {
             JSON.parse(JSON.stringify(srlResults.securityRoleList)).forEach((srlSr: any) => {
                 if (roles === srlSr.roleName) {
-                    copyAcquiredRoles.push(srlSr);
+                    acquiredRolesCopy.push(srlSr);
                 }
             });
         });
 
         let employeesRoles: SecurityUserRole[] = [];
-        copyAcquiredRoles.forEach((role: any) => {
+        acquiredRolesCopy.forEach((role: any) => {
             let employeeRole: SecurityUserRole = {
                 lastUpdUser: app.employee.employeeId,
                 securityAppEaiNbr: app.appId,
@@ -76,11 +78,25 @@ const Roles = (props: Props) => {
                     securityRoleUuid: role.securityRoleUuid
                 }
             };
-            if (user && user.acquiredRoles) {
-                let roleIndex = user.acquiredRoles.findIndex((roleSearch: any) => (roleSearch.securityRole.roleName === role.roleName));
-                if (roleIndex === -1) {
-                    employeeRole.added = true;
+            if (user.acquiredRoles && employee.securityUserRoleList) {
+                let deleteIndex = employee.securityUserRoleList.findIndex((roleSearch: any) => (roleSearch.securityRole.roleName === role.roleName));
+                let roleIndex = user.acquiredRoles.findIndex((roleSearch: any) => roleSearch.securityRole.roleName === role.roleName);
+
+                if (roleIndex > -1) {
+                    employeeRole.securityUserRoleUuid = employee.securityUserRoleList[deleteIndex].securityUserRoleUuid ? employee.securityUserRoleList[deleteIndex].securityUserRoleUuid : null;
+                    employeeRole.deleted = employee.securityUserRoleList[deleteIndex]?.deleted ? true : false;
+                    employeeRole.operationCd = employee.securityUserRoleList[deleteIndex]?.deleted ? "D" : "M";
+                    employeeRole.securityAppEaiNbr = app.appId;
+                    employeeRole.securityRole = role;
+                    employeeRole.added = false;
+                    employeeRole.lastUpdUser = app.employee.employeeId;
+                } else {
+                    employeeRole.securityAppEaiNbr = app.appId;
+                    employeeRole.securityRole = role;
+                    employeeRole.changeFlag = "I";
                     employeeRole.operationCd = "I";
+                    employeeRole.added = true;
+                    employeeRole.lastUpdUser = app.employee.employeeId;
                 }
             }
             employeesRoles.push(employeeRole);
@@ -90,37 +106,33 @@ const Roles = (props: Props) => {
         setUser((state) => ({
             ...state,
             selectedUser: employee,
-            acquiredResources: acquiredResources ? [...user.acquiredResources, acquiredResources.resourceByPriorityList] : [],
+            savePending: true
         }));
     };
 
 
 
     const handleDeleteRoles = async (option: any, index: number) => {
-        let acquiredRolesCopy: any[] = JSON.parse(JSON.stringify(user.acquiredRoles));
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
         let roleNames: any[] = [];
 
         employee.operationCd = "M";
 
-        acquiredRolesCopy = JSON.parse(JSON.stringify(user.acquiredRoles));
-        acquiredRolesCopy[index].deleted = !acquiredRolesCopy[index].deleted;
+        employee.securityUserRoleList[index].deleted = !employee.securityUserRoleList[index].deleted;
 
-        if (acquiredRolesCopy[index].deleted) {
-            acquiredRolesCopy[index].operationCd = "D";
+        if (employee.securityUserRoleList[index].deleted) {
+            employee.securityUserRoleList[index].operationCd = "D";
         } else {
-            acquiredRolesCopy[index].operationCd = "M";
+            employee.securityUserRoleList[index].operationCd = "M";
         }
 
-        roleNames = acquiredRolesCopy.filter((role) => !role.deleted);
+        roleNames = employee.securityUserRoleList.filter((role) => !role.deleted);
         roleNames = roleNames.map((role) => role.securityRole.roleName);
         employee.securityUserGroupList.forEach((group: SecurityUserGroup) => {
             group.securityGroup.securityGroupRoleList.forEach((sgr: SecurityGroupRole) => {
                 roleNames.push(sgr.securityRole.roleName);
             });
         });
-
-        employee.securityUserRoleList = acquiredRolesCopy;
 
         if (roleNames.length > 0) {
             const params = {
@@ -135,7 +147,6 @@ const Roles = (props: Props) => {
                 params
             );
 
-
             let getResourcePriority = {
                 userId: app.employee.employeeId,
                 operationCd: "I",
@@ -143,18 +154,17 @@ const Roles = (props: Props) => {
             };
 
             const acquiredResources = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+            employee.resourceByPriorityList = acquiredResources.resourceByPriorityList;
 
             setUser((state) => ({
                 ...state,
                 selectedUser: employee,
-                acquiredResources: acquiredResources ? acquiredResources.resourceByPriorityList : [],
-                acquiredRoles: acquiredRolesCopy
+                savePending: true
             }));
         } else {
             setUser((state) => ({
                 ...state,
                 selectedUser: employee,
-                acquiredRoles: acquiredRolesCopy
             }));
         }
     };

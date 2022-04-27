@@ -8,6 +8,7 @@ import {
 import { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { userState } from "../atoms/users";
+import Footer from "./Footer";
 import Head from "./Head";
 import Row from "./Row";
 
@@ -37,8 +38,8 @@ export const UserTable = () => {
       <Table stickyHeader size="small">
         <Head />
         <TableBody ref={scrollRef}>
-          {user.acquiredResources &&
-            user.acquiredResources.map(
+          {user.selectedUser?.resourceByPriorityList &&
+            user.selectedUser?.resourceByPriorityList.map(
               (data: any, index: number) => {
                 return (
                   <Row
@@ -50,6 +51,7 @@ export const UserTable = () => {
               }
             )}
         </TableBody>
+        <Footer />
       </Table>
     </TableContainer>
   );

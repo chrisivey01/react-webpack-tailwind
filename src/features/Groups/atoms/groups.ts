@@ -13,6 +13,7 @@ interface GroupsState {
     resourcesFilteredList: SecurityResource[];
     rolesFilteredList: SecurityRole[];
     groupSelected?: SecurityGroupList;
+    savePending: boolean;
 }
 
 export const groupState = atom({
@@ -25,7 +26,8 @@ export const groupState = atom({
         resourcesMasterList: [],
         securityRoleResourcesMasterList: [],
         resourcesFilteredList: [],
-        rolesFilteredList: []
+        rolesFilteredList: [],
+        savePending: false
     } as GroupsState
 });
 

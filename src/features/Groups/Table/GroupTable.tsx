@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { SecurityGroupResource } from "../../../../types/SecurityGroup";
 import { groupState } from "../atoms/groups";
+import Footer from "./Footer";
 import Head from "./Head";
 import Row from "./Row";
 
@@ -52,6 +53,7 @@ const GroupTable = () => {
                             }
                         )}
                 </TableBody>
+                <Footer />
             </Table>
         </TableContainer>
     );

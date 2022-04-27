@@ -8,6 +8,7 @@ import {
 import { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import { rolesState } from "../atoms/roles";
+import Footer from "./Footer";
 import { Head } from "./Head";
 import { Row } from "./Row";
 
@@ -50,6 +51,7 @@ export const RoleTable = () => {
                             }
                         )}
                 </TableBody>
+                <Footer />
             </Table>
         </TableContainer>
     );

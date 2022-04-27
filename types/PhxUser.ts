@@ -72,6 +72,7 @@ type SecurityUserRole = {
     securityRole: SecurityRole;
     securityUserRoleUuid?: string;
     added?:boolean;
+    deleted?: boolean;
 };
 
 type SecurityUserRoleList = {

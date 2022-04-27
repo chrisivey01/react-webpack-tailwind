@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
-import { useRecoilValue } from "recoil";
-import { SecurityGroup, SecurityUserGroup } from "../../../../types/PhxUser";
-import { PHX_USER_SAVE_CONTROLLER } from "../../../apis";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { PhxUser, SecurityGroup, SecurityUserGroup } from "../../../../types/PhxUser";
+import { PHX_USER_REQUEST, PHX_USER_SAVE_CONTROLLER } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
 import { Severity } from "../../../features/Notification/atom";
@@ -15,13 +15,12 @@ type Props = {
 
 const Users = ({ app, setNotification }: Props) => {
     const user = useRecoilValue(userState);
-    const setUser = useUser();
-
+    const setUser = useSetRecoilState(userState);
     const saveHandler = async () => {
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
-
+        let params;
         try {
-            let params = {
+            params = {
                 userId: app.employee.employeeId,
                 phxUserList: [employee],
             };
@@ -33,10 +32,21 @@ const Users = ({ app, setNotification }: Props) => {
                 message: "Save Success!",
                 severity: Severity.success,
             }));
+
+            params = {
+                fetchResources: true,
+                securityAppEaiNbr: app.appId,
+                userId: app.employee.employeeId,
+                userIdList: [user.selectedUser.userId]
+            };
+            const results = await httpRequestList(PHX_USER_REQUEST, params);
+            const emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
+
             setUser((state: any) => ({
                 ...state,
                 savePending: false
             }));
+
         } catch (err: any) {
             setNotification((state: any) => ({
                 ...state,

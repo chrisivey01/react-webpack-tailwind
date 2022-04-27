@@ -121,11 +121,6 @@ export const RolePopup = () => {
 
     const roleCreateHandler = () => {
         if (createRole.role) {
-            setCreateRole((state) => ({
-                ...state,
-                createdPending: true,
-                show: false,
-            }));
 
             let rolesMasterListCopy = JSON.parse(JSON.stringify(roles.rolesMasterList));
             rolesMasterListCopy.push({
@@ -156,6 +151,14 @@ export const RolePopup = () => {
                 rolesMasterList: rolesMasterListCopy,
                 roleSelected: roleSelectedCopy,
                 filteredResourceList: createRole.securityRoleResourceList
+            }));
+
+            setCreateRole((state) => ({
+                ...state,
+                createdPending: true,
+                show: false,
+                rolesSelected: [],
+                resourcesFiltered: []
             }));
         };
     };

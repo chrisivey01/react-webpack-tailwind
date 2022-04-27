@@ -24,8 +24,8 @@ const Groups = ({ app, setNotification }: Props) => {
     const createGroup = useRecoilValue(createGroupState);
     const setCreateGroup = useCreateGroup();
 
-    const saveHandler = async () => {
 
+    const saveHandler = async () => {
         let params = {
             userId: app.employee.employeeId,
             securityGroupList: [],
@@ -40,21 +40,26 @@ const Groups = ({ app, setNotification }: Props) => {
             });
             setGroup((state: any) => ({
                 ...state,
-                groupsMasterList: copyGroupsMasterList
+                groupsMasterList: copyGroupsMasterList,
             }));
         }
 
 
         try {
             await httpRequestList(SECURITY_GROUP_SAVE_REQUEST, params);
-            setNotification((state:any) => ({
+            setNotification((state: any) => ({
                 ...state,
                 show: true,
                 message: "Save Success!",
                 severity: Severity.success,
             }));
+            setGroup((state: any) => ({
+                ...state,
+                savePending: false
+            }));
+
         } catch (err: any) {
-            setNotification((state:any) => ({
+            setNotification((state: any) => ({
                 ...state,
                 show: true,
                 message: err,
@@ -87,7 +92,7 @@ const Groups = ({ app, setNotification }: Props) => {
                 New Group
             </SaveButton>
             <SaveButton sx={{
-                backgroundColor: createGroup.createdPending
+                backgroundColor: createGroup.createdPending || group.savePending
                     ? "#00FF00"
                     : "#0063cc",
             }} onClick={() => saveHandler()}>Save</SaveButton>

@@ -36,7 +36,14 @@ export const Roles = () => {
         }
     }, [app.appId]);
 
+    useEffect(() => {
+        if (!roles.savePending && roles.roleSelected) {
+            changeRole(roles.roleSelected);
+        }
+    }, [roles.savePending]);
+
     const fetchRoleMasterList = async () => {
+
         const params = {
             securityAppEaiNbr: app.appId,
             userId: app.employee.employeeId,
@@ -71,10 +78,7 @@ export const Roles = () => {
     };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setRoles((state) => ({
-            ...state,
-            savePending: true
-        }));
+
         let copyRoleSelected = JSON.parse(JSON.stringify(roles.roleSelected));
 
         copyRoleSelected.roleDesc = e.target.value;
@@ -89,6 +93,10 @@ export const Roles = () => {
 
     const changeRole = async (option: SecurityRole) => {
         if (option) {
+            setRoles((state: any) => ({
+                ...state,
+                savePending: false
+            }));
             const securityRoleName = option.roleName;
             const params = {
                 fetchResources: true,

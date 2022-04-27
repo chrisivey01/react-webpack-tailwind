@@ -1,12 +1,11 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { SecurityUserGroup } from "../../../../types/PhxUser";
-import { SecurityGroup, SecurityGroupRole } from "../../../../types/SecurityGroup";
+import { SecurityGroup } from "../../../../types/SecurityGroup";
 import { SecurityRole } from "../../../../types/SecurityRole";
 import { RESOURCE_BY_PRIORITY_REQUEST, SECURITY_GROUP_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
-import { userState, useUser } from "../atoms/users";
+import { userState } from "../atoms/users";
 
 const Groups = () => {
     const setUser = useSetRecoilState(userState);
@@ -39,7 +38,6 @@ const Groups = () => {
                 params
             );
 
-            let resultResourcePriority: any;
             let getResourcePriority = {
                 userId: app.employee.employeeId,
                 roleList: resultSecurityGroup.securityGroupList.map((sgr: SecurityGroup) => {
@@ -52,15 +50,22 @@ const Groups = () => {
                     return obj;
                 })
             };
-            resultResourcePriority = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
 
+            let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
+            employee.resourceByPriorityList = results.resourceByPriorityList;
             let acquiredGroupsCopy = JSON.parse(JSON.stringify(resultSecurityGroup.securityGroupList));
 
             employee.operationCd = "M";
+
+
             employee.securityUserGroupList = acquiredGroupsCopy.map((sug: SecurityGroup) => {
+                let deleteIndex = employee.securityUserGroupList.findIndex((sugFind: any) => sugFind.securityGroup.groupName === sug.groupName);
                 let grpIndex = user.groupObj.findIndex((grpSearch: any) => grpSearch.groupName === sug.groupName);
-                if (grpIndex !== -1) {
+                if (grpIndex > -1) {
                     return {
+                        securityUserGroupUuid: employee.securityUserGroupList[deleteIndex]?.securityUserGroupUuid ? employee.securityUserGroupList[deleteIndex].securityUserGroupUuid : null,
+                        deleted: employee.securityUserGroupList[deleteIndex]?.deleted ? true : false,
+                        operationCd: employee.securityUserGroupList[deleteIndex].deleted ? "D" : "M",
                         securityAppEaiNbr: app.appId,
                         securityGroup: sug,
                         added: false
@@ -76,20 +81,11 @@ const Groups = () => {
                 }
             });
 
-            employee.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
-                sug.securityGroup.securityGroupRoleList.forEach((sugr: SecurityGroupRole) => {
-                    acquiredRoles.push(sugr.securityRole);
-                });
-            });
-            employee.securityUserRoleList = acquiredRoles;
 
             try {
                 setUser((state) => ({
                     ...state,
                     selectedUser: employee,
-                    acquiredGroups: employee.securityUserGroupList,
-                    // acquiredRoles: employee.securityUserRoleList,
-                    acquiredResources: resultResourcePriority.resourceByPriorityList,
                     savePending: true
                 }));
             } catch (err) {
@@ -102,17 +98,16 @@ const Groups = () => {
 
     const handleDeleteGroups = async (option: any, index: number) => {
         let employee = JSON.parse(JSON.stringify(user.selectedUser));
-        let acquiredGroupsCopy = JSON.parse(JSON.stringify(user.acquiredGroups));
 
         let groupNames: any[] = [];
 
-        if (acquiredGroupsCopy.length > 0) {
-            acquiredGroupsCopy[index].deleted = !acquiredGroupsCopy[index].deleted;
-            acquiredGroupsCopy.forEach((gr: any) => {
+        if (employee.securityUserGroupList.length > 0) {
+            employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
+            employee.securityUserGroupList.forEach((gr: any) => {
                 if (gr.groupName || gr.securityGroup.groupName) {
                     groupNames.push({
-                        groupName: gr.groupName ?? gr.securityGroup.groupName,
-                        deleted: gr.deleted
+                        groupName: gr.securityGroup.groupName,
+                        deleted: gr.deleted ?? false
                     });
                 }
             });
@@ -144,10 +139,9 @@ const Groups = () => {
                     })
                 };
                 let results = await httpRequestList(RESOURCE_BY_PRIORITY_REQUEST, getResourcePriority);
-
+                employee.resourceByPriorityList = results.resourceByPriorityList;
 
                 employee.operationCd = "M";
-                employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
                 if (employee.securityUserGroupList[index].deleted) {
                     employee.securityUserGroupList[index].operationCd = "D";
                     employee.securityUserGroupList[index].changeFlag = "D";
@@ -159,9 +153,6 @@ const Groups = () => {
                 setUser((state) => ({
                     ...state,
                     selectedUser: employee,
-                    acquiredGroups: employee.securityUserGroupList,
-                    // acquiredRoles: employee.securityUserRoleList,
-                    acquiredResources: results.resourceByPriorityList,
                     savePending: true
                 }));
             } else {
@@ -176,8 +167,6 @@ const Groups = () => {
                 setUser((state) => ({
                     ...state,
                     selectedUser: employee,
-                    acquiredGroups: employee.securityUserGroupList,
-                    acquiredResources: [],
                     savePending: true
                 }));
             }

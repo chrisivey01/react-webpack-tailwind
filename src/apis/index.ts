@@ -1,4 +1,4 @@
-export const SERVICE = 'http://c0033942.test.cloud.fedex.com:7025/';
+export const SERVICE = 'http://c0023606.test.cloud.fedex.com:3131/';
 export const APP_EAI_LIST_REQUEST = "securityappeailistrequest";
 export const SECURITY_ACTION_REQUEST = "securityactionrequest";
 

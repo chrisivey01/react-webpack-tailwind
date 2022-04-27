@@ -9,7 +9,7 @@ import {
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import { useEffect } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
     SecurityGroup,
     SecurityGroupList,
@@ -34,12 +34,19 @@ export const Groups = () => {
     const groups = useRecoilValue(groupState);
     const createGroup = useRecoilValue(createGroupState);
     const setGroups = useGroups();
+    const setCreateGroups = useSetRecoilState(createGroupState);
 
     useEffect(() => {
         if (!app.employee) return;
         fetchGroupMasterList();
         fetchRolesMasterList();
     }, [app.appId, app.employee]);
+
+    useEffect(() => {
+        if (!groups.savePending && groups.selectedGroup) {
+            changeGroup(groups.selectedGroup.groupName);
+        }
+    }, [groups.savePending]);
 
     const fetchGroupMasterList = async () => {
         const params = {
@@ -59,6 +66,7 @@ export const Groups = () => {
             }));
         }
     };
+
     const fetchRolesMasterList = async () => {
         const params = {
             fetchResources: true,
@@ -80,7 +88,7 @@ export const Groups = () => {
 
     const changeGroup = async (option: SecurityGroup) => {
         if (option) {
-
+            setCreateGroups((state: any) => ({ ...state, createdPending: false }));
             const groupName = option.groupName;
             const params = {
                 fetchResources: true,
@@ -108,8 +116,12 @@ export const Groups = () => {
     };
 
     const roleHandler = async (option: any) => {
-        let selectedGroupCopy = JSON.parse(JSON.stringify(groups.selectedGroup));
+        setGroups((state) => ({
+            ...state,
+            savePending: true
+        }));
 
+        let selectedGroupCopy = JSON.parse(JSON.stringify(groups.selectedGroup));
         selectedGroupCopy.userId = app.employee.employeeId;
 
         /**
@@ -144,10 +156,7 @@ export const Groups = () => {
             roleList: selectedGroupCopy.securityGroupRoleList.map((sgr: SecurityGroupRole) => {
                 let obj = {
                     operationCd: "I",
-                    // roleName: sgr.securityRole.roleName,
-                    // roleDesc: sgr.securityRole.roleDesc,
                     securityAppEaiNbr: app.appId,
-                    // securityRoleUuid: sgr.securityRole.securityRoleUuid,
                     changeFlag: sgr.securityRole.changeFlag,
                     securityRoleResourceList: sgr.securityRole.securityRoleResourceList
                 };
@@ -202,9 +211,11 @@ export const Groups = () => {
          * Update resource list by filtering from service filter.
          */
         selectedGroupCopy.resourceByPriorityList = results.resourceByPriorityList;
+
         setGroups((state) => ({
             ...state,
             selectedGroup: selectedGroupCopy,
+            savePending: true
         }));
     };
     const updateGroupName = () => { };
@@ -285,21 +296,19 @@ export const Groups = () => {
                                 getOptionLabel={(option: any) =>
                                     option.roleName ?? option.securityRole.roleName
                                 }
-                                isOptionEqualToValue={(option: any, value: any) =>
-                                    option.roleName === value.securityRole.roleName
-                                }
+                                isOptionEqualToValue={(option: any, value: any) => option.roleName === (value.roleName ?? value.securityRole.roleName)}
                                 onChange={(e, option: any) =>
                                     roleHandler(option)
                                 }
                                 renderTags={(value: any, getTagProps: any) =>
                                     value.map(
-                                        (option: SecurityGroupRole, index: any) => (
+                                        (option: SecurityGroupRole | any, index: any) => (
                                             <Chip
                                                 key={index}
                                                 variant="outlined"
                                                 clickable
                                                 onDelete={() => handleDelete(option, index)}
-                                                label={option.securityRole.roleName}
+                                                label={option.roleName ?? option.securityRole.roleName}
                                                 style={{
                                                     margin: "2px",
                                                     color: option.deleted ? "red" : "unset",

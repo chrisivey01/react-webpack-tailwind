@@ -1,6 +1,7 @@
 
 import { Autocomplete, Box, Divider, Grid, TextField } from "@mui/material";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { SecurityRole } from "../../../../types/PhxUser";
 import { SecurityGroup, SecurityGroupRole } from "../../../../types/SecurityGroup";
 import { RESOURCE_BY_PRIORITY_REQUEST, SECURITY_GROUP_REQUEST } from "../../../apis";
 import { httpRequestList } from "../../../apis/requests";
@@ -79,21 +80,33 @@ export const GroupPopup = () => {
         saveObj.securityGroupList[0].securityGroupRoleList = JSON.parse(JSON.stringify([...saveObj.securityGroupList[0].securityGroupRoleList, ...createGroup.selectedRoles]));
         saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: SecurityGroupRole) => sgr.operationCd = "I");
 
-        setCreateGroup((state) => ({ ...state, createdPending: true, show: false }));
 
+        let obj = {};
         const getResourcePriority = {
             userId: app.employee.employeeId,
             operationCd: "I",
-            roleList: saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: SecurityGroupRole) => {
-                let obj = {
-                    operationCd: "I",
-                    roleName: sgr.securityRole.roleName,
-                    roleDesc: sgr.securityRole.roleDesc,
-                    securityAppEaiNbr: app.appId,
-                    securityRoleUuid: sgr.securityRole.securityRoleUuid,
-                    changeFlag: sgr.securityRole.changeFlag,
-                    securityRoleResourceList: sgr.securityRole.securityRoleResourceList
-                };
+            roleList: saveObj.securityGroupList[0].securityGroupRoleList.map((sgr: any) => {
+                if (sgr.securityRole) {
+                    obj = {
+                        operationCd: "I",
+                        roleName: sgr.securityRole.roleName,
+                        roleDesc: sgr.securityRole.roleDesc,
+                        securityAppEaiNbr: app.appId,
+                        securityRoleUuid: sgr.securityRole.securityRoleUuid,
+                        changeFlag: sgr.securityRole.changeFlag,
+                        securityRoleResourceList: sgr.securityRole.securityRoleResourceList
+                    };
+                } else {
+                    obj = {
+                        operationCd: "I",
+                        roleName: sgr.roleName,
+                        roleDesc: sgr.roleDesc,
+                        securityAppEaiNbr: app.appId,
+                        securityRoleUuid: sgr.securityRoleUuid,
+                        changeFlag: sgr.changeFlag,
+                        securityRoleResourceList: sgr.securityRoleResourceList
+                    };
+                }
                 return obj;
             })
         };
@@ -110,6 +123,14 @@ export const GroupPopup = () => {
         };
 
         setGroups((state) => ({ ...state, selectedGroup: newSelectedGroup }));
+        setCreateGroup((state) => ({
+            ...state,
+            createdPending: true,
+            show: false,
+            selectedGroupStrings: [],
+            selectedRoles: []
+        }));
+
     };
 
     const groupNameHandler = (event: any) => {
@@ -221,6 +242,7 @@ export const GroupPopup = () => {
                         ...state,
                         selectedGroups: [],
                         selectedRoles: [],
+                        selectedGroupStrings: [],
                         securityRoleResourceList: [],
                         group: {
                             groupName: "",
