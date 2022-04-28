@@ -47,6 +47,7 @@ export const Row = ({ index, data }: Props) => {
         setRoles((state) => ({
             ...state,
             roleSelected: rolesCopy,
+            savePending: true
         }));
     };
 

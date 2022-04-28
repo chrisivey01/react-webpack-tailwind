@@ -46,7 +46,7 @@ export const RolesAutocomplete = ({
                     width: 500,
                 }}
                 id="tags-outlined"
-                options={roles.resourcesLeft}
+                options={roles.resourcesLeft ? roles.resourcesLeft : roles.resourcesMasterList}
                 isOptionEqualToValue={(option: any, value: any) =>
                     option["resourceName"] === value["resourceName"]
                 }

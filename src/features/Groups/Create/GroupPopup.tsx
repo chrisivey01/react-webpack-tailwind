@@ -152,13 +152,6 @@ export const GroupPopup = () => {
                         }}
                         onChange={groupNameHandler}
                     />
-                    <GroupNameDesc
-                        label={"Group Description"}
-                        size="small"
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
                 </Box>
                 <Divider style={{ margin: 10 }} />
                 <Box>

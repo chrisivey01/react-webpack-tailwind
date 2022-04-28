@@ -87,7 +87,8 @@ export const Roles = () => {
         }
         setRoles((state) => ({
             ...state,
-            roleSelected: copyRoleSelected
+            roleSelected: copyRoleSelected,
+            savePending: true
         }));
     };
 
@@ -161,6 +162,7 @@ export const Roles = () => {
                     size="small"
                     fullWidth
                     options={roles.rolesMasterList ?? []}
+                    disableClearable={true}
                     // value={roles.roleSelected ? roles.roleSelected.roleName : undefined}
                     getOptionLabel={(option: any) => option.roleName ?? option}
                     isOptionEqualToValue={(option: any, value: any) =>

@@ -8,9 +8,8 @@ import { httpRequestList } from "../../../apis/requests";
 import { appState } from "../../../atom/app";
 import { userState, useUser } from "../atoms/users";
 
-type Props = {};
 
-const Roles = (props: Props) => {
+const Roles = () => {
     const setUser = useUser();
     const user = useRecoilValue(userState);
     const app = useRecoilValue(appState);

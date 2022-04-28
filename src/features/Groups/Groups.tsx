@@ -287,12 +287,14 @@ export const Groups = () => {
                                 multiple
                                 filterSelectedOptions
                                 sx={{
+                                    width: 570,
                                     maxHeight: 220,
                                     maxWidth: 570,
                                     overflow: "auto",
                                 }}
                                 value={groups.selectedGroup.securityGroupRoleList}
                                 options={groups.rolesMasterList}
+                                disableClearable={true}
                                 getOptionLabel={(option: any) =>
                                     option.roleName ?? option.securityRole.roleName
                                 }

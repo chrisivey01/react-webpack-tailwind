@@ -7,7 +7,7 @@ function Footer() {
     const group = useRecoilValue(groupState);
     if (group.selectedGroup) {
         return (
-            <TableFooter style={{ display: "flex", justifyContent: "flex-end" }}><Box style={{ fontSize: 11, padding: 5 }}>Resource Count: {group.selectedGroup.resourceByPriorityList.length}</Box></TableFooter>
+            <TableFooter style={{ display: "flex", justifyContent: "flex-end" }}><Box style={{ fontSize: 11, padding: 5 }}>Resource Count: {group.selectedGroup.resourceByPriorityList ? group.selectedGroup.resourceByPriorityList.length : 0}</Box></TableFooter>
         );
     } else {
         return <></>;

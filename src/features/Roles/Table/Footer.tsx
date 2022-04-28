@@ -7,7 +7,7 @@ function Footer() {
     const roles = useRecoilValue(rolesState);
     if (roles.roleSelected.securityRoleResourceList) {
         return (
-            <TableFooter style={{ display: "flex", justifyContent: "flex-end" }}><Box style={{ fontSize: 11, padding: 5 }}>Resource Count: {roles.roleSelected.securityRoleResourceList.length}</Box></TableFooter>
+            <TableFooter style={{ display: "flex", justifyContent: "flex-end" }}><Box style={{ fontSize: 11, padding: 5 }}>Resource Count: {roles.roleSelected.securityRoleResourceList ? roles.roleSelected.securityRoleResourceList.length : 0}</Box></TableFooter>
         );
     } else {
         return <></>;
