@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
+import { SecurityRoleResource } from "../../../../types/SecurityRoleResource";
 import { rolesState } from "../atoms/roles";
 import Footer from "./Footer";
 import { Head } from "./Head";

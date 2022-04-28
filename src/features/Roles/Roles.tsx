@@ -137,6 +137,20 @@ export const Roles = () => {
                 });
             }
 
+            if (roleSelectedResponse && roleSelectedResponse.securityRoleResourceList) {
+                roleSelectedResponse.securityRoleResourceList = roleSelectedResponse.securityRoleResourceList.sort((a: SecurityRoleResource, b: SecurityRoleResource) => {
+                    if (a.securityResource && b.securityResource) {
+                        if (a.securityResource.resourceName < b.securityResource.resourceName) {
+                            return -1;
+                        } else if (a.securityResource.resourceName > b.securityResource.resourceName) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+
+                });
+            }
             setRoles((state) => ({
                 ...state,
                 filteredResourceList: tableView,
