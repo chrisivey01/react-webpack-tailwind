@@ -1,4 +1,5 @@
 import { Autocomplete, Box, Chip, TextField } from "@mui/material";
+import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { SecurityGroup } from "../../../../types/SecurityGroup";
 import { SecurityRole } from "../../../../types/SecurityRole";
@@ -156,14 +157,14 @@ const Groups = () => {
                     savePending: true
                 }));
             } else {
-                employee.securityUserGroupList[index].deleted = !employee.securityUserGroupList[index].deleted;
                 if (employee.securityUserGroupList[index].deleted) {
-                    employee.securityUserGroupList[index].operationCd = "D";
-                    employee.securityUserGroupList[index].changeFlag = "D";
-                } else {
                     employee.securityUserGroupList[index].operationCd = "M";
                     employee.securityUserGroupList[index].changeFlag = "M";
+                } else {
+                    employee.securityUserGroupList[index].operationCd = "D";
+                    employee.securityUserGroupList[index].changeFlag = "D";
                 }
+                employee.resourceByPriorityList = [];
                 setUser((state) => ({
                     ...state,
                     selectedUser: employee,
@@ -185,7 +186,7 @@ const Groups = () => {
                     overflow: "auto",
                 }}
                 multiple
-                id="tags-outlined"
+                disableClearable={true}
                 options={user.groupsMasterList ?? []}
                 getOptionLabel={(option: any) =>
                     option.groupName ?? option.securityGroup.groupName

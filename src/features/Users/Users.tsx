@@ -41,7 +41,7 @@ export const Users = () => {
             userId: app.employee.employeeId
         };
         const results = await httpRequestList(PHX_USER_LIST_CONTROLLER, params);
-        setUser((state) => ({ ...state, employeeMasterList: results.phxUserList }));
+        setUser((state) => ({ ...state, employeeMasterList: results.phxUserList.sort((a: PhxUser, b: PhxUser) => a.userId - b.userId) }));
     };
 
     const fetchGroupsMasterList = async () => {
@@ -75,7 +75,7 @@ export const Users = () => {
                 userIdList: [option.userId]
             };
             const results = await httpRequestList(PHX_USER_REQUEST, params);
-            const emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
+            let emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
 
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
@@ -129,7 +129,10 @@ export const Users = () => {
                             "There are no results for this user.",
                         severity: Severity.warning,
                     }));
-                    setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
+                    emp.securityUserGroupList = [];
+                    emp.securityUserRoleList = [];
+                    emp.resourceByPriorityList = [];
+                    setUser((state) => ({ ...state, selectedUser: emp, acquiredGroups: [], acquiredRoles: [], acquiredResources: [], groupObj: [], roleObj: [] }));
                 }
             }
         } else {
@@ -146,8 +149,8 @@ export const Users = () => {
                 userIdList: [option.userId]
             };
             const results = await httpRequestList(PHX_USER_REQUEST, params);
-            const emp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
-
+            const copiedEmp: PhxUser = JSON.parse(JSON.stringify(results.phxUserList[0]));
+            const emp: PhxUser = JSON.parse(JSON.stringify(user.selectedUser));
             /**
              * Update roles and groups assigned to each user to use as values within the other autocompletes.
              */
@@ -156,8 +159,8 @@ export const Users = () => {
             let groupObj: any[] = [];
             let roleObj: any[] = [];
             let acquiredResources: SecurityRoleResource[] = [];
-            if (emp.securityUserGroupList && emp.resourceByPriorityList) {
-                emp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
+            if (copiedEmp.securityUserGroupList && copiedEmp.resourceByPriorityList) {
+                copiedEmp.securityUserGroupList.forEach((sug: SecurityUserGroup) => {
                     groupObj.push({
                         groupName: sug.securityGroup.groupName,
                         added: false
@@ -170,25 +173,26 @@ export const Users = () => {
                         });
                     });
                 });
-                acquiredResources = emp.resourceByPriorityList.map((res: any) => {
+                acquiredResources = copiedEmp.resourceByPriorityList.map((res: any) => {
                     res.added = false;
                     return res;
                 });
 
-                if (emp.securityUserRoleList) {
-                    acquiredRoles = emp.securityUserRoleList;
+                if (copiedEmp.securityUserRoleList) {
+                    acquiredRoles = copiedEmp.securityUserRoleList;
                 }
             }
 
             if (acquiredGroups && acquiredRoles && acquiredResources) {
                 let totalListCount = acquiredGroups.length + acquiredRoles.length + acquiredResources.length;
-                if (totalListCount > 0) {
-                    emp.securityUserGroupList = [...user.selectedUser?.securityUserGroupList, ...emp.securityUserGroupList]
-                    emp.securityUserRoleList = [...user.selectedUser?.securityUserRoleList, ...emp.securityUserRoleList ]
-                    emp.resourceByPriorityList = [...user.selectedUser?.resourceByPriorityList,  ...emp.resourceByPriorityList]
+                if (totalListCount > 0 && copiedEmp.securityUserGroupList && copiedEmp.securityUserRoleList && copiedEmp.resourceByPriorityList && user.selectedUser && user.selectedUser.securityUserGroupList && user.selectedUser.securityUserRoleList && user.selectedUser.resourceByPriorityList) {
+                    emp.securityUserGroupList = [...user.selectedUser.securityUserGroupList, ...copiedEmp.securityUserGroupList];
+                    emp.securityUserRoleList = [...user.selectedUser.securityUserRoleList, ...copiedEmp.securityUserRoleList];
+                    emp.resourceByPriorityList = [...user.selectedUser.resourceByPriorityList, ...copiedEmp.resourceByPriorityList];
 
-                    setUser((state) => ({
+                    setUser((state: any) => ({
                         ...state,
+                        copyUser: copiedEmp,
                         selectedUser: emp,
                         acquiredGroups: acquiredGroups,
                         acquiredRoles: acquiredRoles,
@@ -205,7 +209,7 @@ export const Users = () => {
                         severity: Severity.warning,
                     }));
 
-                    setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
+                    // setUser((state) => ({ ...state, selectedUser: null, acquiredGroups: [], acquiredRoles: [], acquiredResources: [] }));
                 }
             }
         } else {
@@ -232,16 +236,30 @@ export const Users = () => {
                                 maxWidth: 570,
                                 overflow: "auto",
                             }}
-                            // value={user.selectedUser}
+                            value={user.selectedUser ?? null}
                             options={user.employeeMasterList ?? []}
-                            getOptionLabel={(option) =>
-                                [
-                                    option.userId,
-                                    " - ",
-                                    option.firstName,
-                                    option.lastName,
-                                ].join(" ")
-                            }
+                            isOptionEqualToValue={(option: any, value: any) => {
+                                if (option.userId === value) {
+                                    return option;
+                                }
+                                if (option.userId === value.userId) {
+                                    return option;
+                                }
+                            }}
+                            getOptionLabel={(option) => {
+                                if (option) {
+                                    return (
+                                        [
+                                            option.userId,
+                                            " - ",
+                                            option.firstName,
+                                            option.lastName,
+                                        ].join(" ")
+                                    );
+                                } else {
+                                    return option;
+                                }
+                            }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -303,6 +321,7 @@ export const Users = () => {
                                 maxWidth: 570,
                                 overflow: "auto",
                             }}
+                            value={user.copyUser ?? null}
                             options={user.employeeMasterList ?? []}
                             getOptionLabel={(option) =>
                                 [

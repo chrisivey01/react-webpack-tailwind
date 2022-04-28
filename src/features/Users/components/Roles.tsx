@@ -182,6 +182,7 @@ const Roles = (props: Props) => {
                 }}
                 multiple
                 id="tags-outlined"
+                disableClearable={true}
                 options={user.rolesMasterList ?? []}
                 getOptionLabel={(option: any) => option.roleName ?? option}
                 isOptionEqualToValue={(option: any, value: any) => {
